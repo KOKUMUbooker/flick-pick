@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using MovieManager.Models;
 using MovieManager.Utils;
-using Microsoft.EntityFrameworkCore;
+using MovieManager.Endpoints;
+using MovieManager.Services;
 
 namespace MovieManager;
 
@@ -16,6 +18,8 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddTransient<IMovieService, MovieService>();
 
         builder.Services.AddDbContext<MovieDbContext>(options =>
         {
@@ -38,6 +42,8 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
+
+        app.MapMovieEndpoints();
 
         app.MapGet("/", () => "Hello World!")
         .Produces(200, typeof(string));
