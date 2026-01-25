@@ -8,7 +8,7 @@
 
 {#if movies.length > 0}
 	<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-		{#each movies as movie (movie.id)}
+		{#each movies as movie (movie.Id)}
 			<div class="transform transition-transform hover:-translate-y-2">
 				<MovieCard {...movie} />
 			</div>

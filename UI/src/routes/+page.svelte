@@ -1,17 +1,18 @@
-<script>
-	import StatsOverview from '$lib/components/home/StatsOverview.svelte';
-	import FeaturedMovies from '$lib/components/home/FeaturedMovies.svelte';
+<script lang="ts">
 	import CTAButtons from '$lib/components/home/CTAButtons.svelte';
-	import { movies as mvs, stats as t } from '../data/movies';
+	import FeaturedMovies from '$lib/components/home/FeaturedMovies.svelte';
+	import StatsOverview from '$lib/components/home/StatsOverview.svelte';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
+	import Autoplay from 'embla-carousel-autoplay';
+	import { dummyMovies } from '../data/movies';
+	import evilDead from '../lib/assets/evildead.jpg';
+	import frankenstein from '../lib/assets/frankenstein.jpg';
 	import hereditary from '../lib/assets/hereditary.jpg';
 	import it from '../lib/assets/it.jpg';
-	import frankenstein from '../lib/assets/frankenstein.jpg';
 	import rec from '../lib/assets/rec.jpg';
-	import evilDead from '../lib/assets/evildead.jpg';
 	import smile from '../lib/assets/smile.jpg';
 	import Hero from '../lib/components/home/HeroSection.svelte';
-	import Autoplay from 'embla-carousel-autoplay';
+	import type { Movie } from '../types/movie';
 
 	let stats = {
 		totalMovies: 0,
@@ -19,7 +20,7 @@
 		avgRating: 0,
 		recentAdditions: 0
 	};
-	let featuredMovies = [...mvs];
+	let featuredMovies: Movie[] = dummyMovies.slice(1, 4);
 	const movieUrls = [hereditary, rec, evilDead, it, smile, frankenstein];
 </script>
 
@@ -73,7 +74,8 @@
 		<section class="mx-auto max-w-7xl px-4 py-12">
 			<div class="mb-8 flex items-center justify-between">
 				<h2 class="text-3xl font-bold">
-					{featuredMovies.length >= 6 ? 'Top Rated Films' : 'Your Movies'}
+					<!-- {featuredMovies.length >= 6 ? 'Top Rated Films' : 'Your Movies'} -->
+					Featured movies
 				</h2>
 				<a
 					href="/movies"
