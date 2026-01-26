@@ -144,7 +144,9 @@
 	{#if showActions}
 		<CardFooter class="p-4 pt-0">
 			<div class="flex w-full gap-2">
-				<Button variant="outline" class="flex-1" size="sm">Details</Button>
+				<a class="flex-1" href={`/movies/${movie.Id}`}>
+					<Button variant="outline" class="w-full" size="sm">Details</Button>
+				</a>
 				<Button variant="default" class="flex-1" size="sm">Watch Trailer</Button>
 			</div>
 		</CardFooter>
