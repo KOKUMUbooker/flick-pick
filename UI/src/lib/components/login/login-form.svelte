@@ -16,6 +16,7 @@
   }: WithElementRef<HTMLFormAttributes> = $props();
   const id = $props.id();
 </script>
+
 <form class={cn("flex flex-col gap-6", className)} bind:this={ref} {...restProps}>
   <FieldGroup>
     <div class="flex flex-col items-center gap-1 text-center">
@@ -31,7 +32,7 @@
     <Field>
       <div class="flex items-center">
         <FieldLabel for="password-{id}">Password</FieldLabel>
-        <a href="##" class="ms-auto text-sm underline-offset-4 hover:underline">
+        <a href="/forgot-password" class="ms-auto text-sm underline-offset-4 hover:underline">
           Forgot your password?
         </a>
       </div>
@@ -43,7 +44,7 @@
     <Field>
       <FieldDescription class="text-center">
         Don't have an account?
-        <a href="##" class="underline underline-offset-4">Sign up</a>
+        <a href="/signup" class="underline underline-offset-4">Sign up</a>
       </FieldDescription>
     </Field>
   </FieldGroup>
