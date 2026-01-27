@@ -1,7 +1,6 @@
 <script>
-  import GalleryVerticalEndIcon from "@lucide/svelte/icons/gallery-vertical-end";
+  import mvImg from "$lib/assets/movie.jpg";
   import SignupForm from "$lib/components/signup/signup-form.svelte";
-    import mvImg from "$lib/assets/movie.jpg"
 </script>
 
 <div class="grid min-h-svh lg:grid-cols-2">
