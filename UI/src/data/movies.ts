@@ -377,5 +377,4 @@ export const movieUtils = {
     }
 };
 
-// For TypeScript type exports
 export type { Genre };
