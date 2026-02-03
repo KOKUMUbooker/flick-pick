@@ -6,12 +6,22 @@ public sealed class Movie : EntityBase
     public string Genre { get; private set; }
     public DateTimeOffset ReleaseDate { get; private set; }
     public double Rating { get; private set; }
-
+    public string Description {get; private set;}
+    public string AgeRating {get; private set;}
+    public string ImageUrl {get;private set;}
+    public string AddedBy {get;private set;}
+    public DateTimeOffset CreatedAt { get; private set; }
+    public bool Verified { get; private set; }
+    
     // Private constructor for ORM frameworks
     private Movie()
     {
         Title = string.Empty;
         Genre = string.Empty;
+        Description = string.Empty;
+        AgeRating = string.Empty;
+        ImageUrl = string.Empty;
+        AddedBy = string.Empty;
     }
     private Movie(string title, string genre, DateTimeOffset releaseDate, double rating)
     {
