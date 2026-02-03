@@ -19,7 +19,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2018-06-08"),
         Rating: 7.3,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=V6wWKNij_1M",
+        TrailerUrl: "https://www.youtube.com/watch?v=V6wWKNij_1M",
         CreatedAt: new Date("2024-01-15"),
         verified: true
     },
@@ -34,7 +34,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2018-04-06"),
         Rating: 7.5,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=WR7cc5t7tv8",
+        TrailerUrl: "https://www.youtube.com/watch?v=WR7cc5t7tv8",
         CreatedAt: new Date("2024-01-16"),
         verified: true
     },
@@ -49,7 +49,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2007-11-23"),
         Rating: 7.4,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=0Y4Lxh7nYBE",
+        TrailerUrl: "https://www.youtube.com/watch?v=0Y4Lxh7nYBE",
         CreatedAt: new Date("2024-01-17"),
         verified: true
     },
@@ -64,7 +64,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2024-09-07"), // Cannes premiere
         Rating: 8.2,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=9BvF3YlZ0_o",
+        TrailerUrl: "https://www.youtube.com/watch?v=9BvF3YlZ0_o",
         CreatedAt: new Date("2024-01-18"),
         verified: true
     },
@@ -79,7 +79,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2022-09-30"),
         Rating: 6.7,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=BcDK7kTzz9w",
+        TrailerUrl: "https://www.youtube.com/watch?v=BcDK7kTzz9w",
         CreatedAt: new Date("2024-01-19"),
         verified: true
     },
@@ -94,7 +94,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2024-10-16"),
         Rating: 6.9,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=T8GbycK2pXk",
+        TrailerUrl: "https://www.youtube.com/watch?v=T8GbycK2pXk",
         CreatedAt: new Date("2024-01-20"),
         verified: true
     },
@@ -109,7 +109,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2013-04-05"),
         Rating: 6.5,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=Q-CpalU4xys",
+        TrailerUrl: "https://www.youtube.com/watch?v=Q-CpalU4xys",
         CreatedAt: new Date("2024-01-21"),
         verified: true
     },
@@ -124,7 +124,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2023-04-21"),
         Rating: 6.5,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=BqQNO7BzN08",
+        TrailerUrl: "https://www.youtube.com/watch?v=BqQNO7BzN08",
         CreatedAt: new Date("2024-01-22"),
         verified: true
     },
@@ -139,7 +139,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2023-01-21"),
         Rating: 6.1,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=VCk2gZ14TAk",
+        TrailerUrl: "https://www.youtube.com/watch?v=VCk2gZ14TAk",
         CreatedAt: new Date("2024-01-23"),
         verified: true
     },
@@ -154,7 +154,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2014-11-07"),
         Rating: 8.6,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=zSWdZVtXT7E",
+        TrailerUrl: "https://www.youtube.com/watch?v=zSWdZVtXT7E",
         CreatedAt: new Date("2024-01-24"),
         verified: true
     },
@@ -169,7 +169,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2014-05-23"),
         Rating: 7.9,
         AddedBy: "admin",
-        trailerUrl: "https://www.youtube.com/watch?v=pK2zYHWDZKo",
+        TrailerUrl: "https://www.youtube.com/watch?v=pK2zYHWDZKo",
         CreatedAt: new Date("2024-01-25"),
         verified: true
     },
@@ -184,7 +184,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2008-07-18"),
         Rating: 9.0,
         AddedBy: "movie_fan",
-        trailerUrl: "https://www.youtube.com/watch?v=EXeTwQWrcwY",
+        TrailerUrl: "https://www.youtube.com/watch?v=EXeTwQWrcwY",
         CreatedAt: new Date("2024-01-26"),
         verified: true
     },
@@ -199,7 +199,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2010-07-16"),
         Rating: 8.8,
         AddedBy: "movie_fan",
-        trailerUrl: "https://www.youtube.com/watch?v=YoHD9XEInc0",
+        TrailerUrl: "https://www.youtube.com/watch?v=YoHD9XEInc0",
         CreatedAt: new Date("2024-01-27"),
         verified: true
     },
@@ -214,7 +214,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2019-05-30"),
         Rating: 8.6,
         AddedBy: "critic_user",
-        trailerUrl: "https://www.youtube.com/watch?v=5xH0HfJHsaY",
+        TrailerUrl: "https://www.youtube.com/watch?v=5xH0HfJHsaY",
         CreatedAt: new Date("2024-01-28"),
         verified: true
     },
@@ -229,7 +229,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("1994-09-23"),
         Rating: 9.3,
         AddedBy: "classic_cinema",
-        trailerUrl: "https://www.youtube.com/watch?v=6hB3S9bIaco",
+        TrailerUrl: "https://www.youtube.com/watch?v=6hB3S9bIaco",
         CreatedAt: new Date("2024-01-29"),
         verified: true
     },
@@ -244,7 +244,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("1994-10-14"),
         Rating: 8.9,
         AddedBy: "classic_cinema",
-        trailerUrl: "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
+        TrailerUrl: "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
         CreatedAt: new Date("2024-01-30"),
         verified: true
     },
@@ -259,7 +259,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("1999-03-31"),
         Rating: 8.7,
         AddedBy: "scifi_fan",
-        trailerUrl: "https://www.youtube.com/watch?v=vKQi3bBA1y8",
+        TrailerUrl: "https://www.youtube.com/watch?v=vKQi3bBA1y8",
         CreatedAt: new Date("2024-01-31"),
         verified: true
     },
@@ -274,7 +274,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2001-07-20"),
         Rating: 8.6,
         AddedBy: "anime_lover",
-        trailerUrl: "https://www.youtube.com/watch?v=ByXuk9QqQkk",
+        TrailerUrl: "https://www.youtube.com/watch?v=ByXuk9QqQkk",
         CreatedAt: new Date("2024-02-01"),
         verified: true
     },
@@ -289,7 +289,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2003-12-17"),
         Rating: 8.9,
         AddedBy: "fantasy_fan",
-        trailerUrl: "https://www.youtube.com/watch?v=r5X-hFf6Bwo",
+        TrailerUrl: "https://www.youtube.com/watch?v=r5X-hFf6Bwo",
         CreatedAt: new Date("2024-02-02"),
         verified: true
     },
@@ -304,7 +304,7 @@ export const dummyMovies: Movie[] = [
         ReleaseDate: new Date("2016-12-09"),
         Rating: 8.0,
         AddedBy: "musical_fan",
-        trailerUrl: "https://www.youtube.com/watch?v=0pdqf4P9MB8",
+        TrailerUrl: "https://www.youtube.com/watch?v=0pdqf4P9MB8",
         CreatedAt: new Date("2024-02-03"),
         verified: true
     }

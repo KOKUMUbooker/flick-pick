@@ -18,7 +18,7 @@ export interface Movie {
     Genre: Genre;
     ImgUrl: string;
     ReleaseDate: Date;
-    trailerUrl: string;
+    TrailerUrl: string;
     Rating: number;
     AddedBy: string;
     CreatedAt: Date;
