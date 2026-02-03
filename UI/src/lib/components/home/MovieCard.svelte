@@ -92,7 +92,7 @@
 		</div>
 
 		<!-- Verified Badge -->
-		{#if movie.verified}
+		{#if movie.Verified}
 			<div class="absolute top-3 right-3">
 				<Badge variant="outline" class="bg-background/90 backdrop-blur-sm">
 					<ShieldCheck size={12} class="mr-1" />

@@ -22,5 +22,5 @@ export interface Movie {
     Rating: number;
     AddedBy: string;
     CreatedAt: Date;
-    verified: boolean
+    Verified: boolean
 }

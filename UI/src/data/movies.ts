@@ -21,7 +21,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=V6wWKNij_1M",
         CreatedAt: new Date("2024-01-15"),
-        verified: true
+        Verified: true
     },
     {
         Id: 2,
@@ -36,7 +36,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=WR7cc5t7tv8",
         CreatedAt: new Date("2024-01-16"),
-        verified: true
+        Verified: true
     },
     {
         Id: 3,
@@ -51,7 +51,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=0Y4Lxh7nYBE",
         CreatedAt: new Date("2024-01-17"),
-        verified: true
+        Verified: true
     },
     {
         Id: 4,
@@ -66,7 +66,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=9BvF3YlZ0_o",
         CreatedAt: new Date("2024-01-18"),
-        verified: true
+        Verified: true
     },
     {
         Id: 5,
@@ -81,7 +81,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=BcDK7kTzz9w",
         CreatedAt: new Date("2024-01-19"),
-        verified: true
+        Verified: true
     },
     {
         Id: 6,
@@ -96,7 +96,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=T8GbycK2pXk",
         CreatedAt: new Date("2024-01-20"),
-        verified: true
+        Verified: true
     },
     {
         Id: 7,
@@ -111,7 +111,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=Q-CpalU4xys",
         CreatedAt: new Date("2024-01-21"),
-        verified: true
+        Verified: true
     },
     {
         Id: 8,
@@ -126,7 +126,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=BqQNO7BzN08",
         CreatedAt: new Date("2024-01-22"),
-        verified: true
+        Verified: true
     },
     {
         Id: 9,
@@ -141,7 +141,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=VCk2gZ14TAk",
         CreatedAt: new Date("2024-01-23"),
-        verified: true
+        Verified: true
     },
     {
         Id: 10,
@@ -156,7 +156,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=zSWdZVtXT7E",
         CreatedAt: new Date("2024-01-24"),
-        verified: true
+        Verified: true
     },
     {
         Id: 11,
@@ -171,7 +171,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "admin",
         TrailerUrl: "https://www.youtube.com/watch?v=pK2zYHWDZKo",
         CreatedAt: new Date("2024-01-25"),
-        verified: true
+        Verified: true
     },
     {
         Id: 12,
@@ -186,7 +186,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "movie_fan",
         TrailerUrl: "https://www.youtube.com/watch?v=EXeTwQWrcwY",
         CreatedAt: new Date("2024-01-26"),
-        verified: true
+        Verified: true
     },
     {
         Id: 13,
@@ -201,7 +201,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "movie_fan",
         TrailerUrl: "https://www.youtube.com/watch?v=YoHD9XEInc0",
         CreatedAt: new Date("2024-01-27"),
-        verified: true
+        Verified: true
     },
     {
         Id: 14,
@@ -216,7 +216,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "critic_user",
         TrailerUrl: "https://www.youtube.com/watch?v=5xH0HfJHsaY",
         CreatedAt: new Date("2024-01-28"),
-        verified: true
+        Verified: true
     },
     {
         Id: 15,
@@ -231,7 +231,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "classic_cinema",
         TrailerUrl: "https://www.youtube.com/watch?v=6hB3S9bIaco",
         CreatedAt: new Date("2024-01-29"),
-        verified: true
+        Verified: true
     },
     {
         Id: 16,
@@ -246,7 +246,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "classic_cinema",
         TrailerUrl: "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
         CreatedAt: new Date("2024-01-30"),
-        verified: true
+        Verified: true
     },
     {
         Id: 17,
@@ -261,7 +261,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "scifi_fan",
         TrailerUrl: "https://www.youtube.com/watch?v=vKQi3bBA1y8",
         CreatedAt: new Date("2024-01-31"),
-        verified: true
+        Verified: true
     },
     {
         Id: 18,
@@ -276,7 +276,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "anime_lover",
         TrailerUrl: "https://www.youtube.com/watch?v=ByXuk9QqQkk",
         CreatedAt: new Date("2024-02-01"),
-        verified: true
+        Verified: true
     },
     {
         Id: 19,
@@ -291,7 +291,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "fantasy_fan",
         TrailerUrl: "https://www.youtube.com/watch?v=r5X-hFf6Bwo",
         CreatedAt: new Date("2024-02-02"),
-        verified: true
+        Verified: true
     },
     {
         Id: 20,
@@ -306,7 +306,7 @@ export const dummyMovies: Movie[] = [
         AddedBy: "musical_fan",
         TrailerUrl: "https://www.youtube.com/watch?v=0pdqf4P9MB8",
         CreatedAt: new Date("2024-02-03"),
-        verified: true
+        Verified: true
     }
 ];
 
@@ -367,7 +367,7 @@ export const movieUtils = {
             totalGenres: genres.size,
             totalWatchTime: `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`,
             averageRating: avgRating.toFixed(1),
-            verifiedMovies: dummyMovies.filter(m => m.verified).length,
+            verifiedMovies: dummyMovies.filter(m => m.Verified).length,
             recentAdditions: dummyMovies.filter(m => {
                 const thirtyDaysAgo = new Date();
                 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

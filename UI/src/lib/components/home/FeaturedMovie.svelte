@@ -39,7 +39,7 @@
 					<Badge variant="outline" class="text-sm">
 						{movie.Genre}
 					</Badge>
-					{#if movie.verified}
+					{#if movie.Verified}
 						<Badge variant="default" class="bg-green-500 hover:bg-green-600">✓ Verified</Badge>
 					{/if}
 				</div>

@@ -246,7 +246,7 @@
 							</div>
 
 							<!-- Verified Badge -->
-							{#if movie.verified}
+							{#if movie.Verified}
 								<div class="absolute top-4 right-4">
 									<Badge variant="default" class="gap-1 bg-green-500 hover:bg-green-600">
 										<Verified size={12} />
@@ -430,8 +430,8 @@
 										<div>
 											<p class="mb-2 text-sm text-muted-foreground">Status</p>
 											<div class="flex items-center gap-2">
-												<Badge variant={movie.verified ? 'default' : 'outline'}>
-													{movie.verified ? 'Verified' : 'Unverified'}
+												<Badge variant={movie.Verified ? 'default' : 'outline'}>
+													{movie.Verified ? 'Verified' : 'Unverified'}
 												</Badge>
 												<Badge variant="outline">Active</Badge>
 											</div>
@@ -656,7 +656,7 @@
 								<Verified size={18} class="text-green-500" />
 							</div>
 							<div class="flex-1">
-								<p class="font-medium">Movie verified by system</p>
+								<p class="font-medium">Movie Verified by system</p>
 								<p class="text-sm text-muted-foreground">
 									{new Date(movie.CreatedAt.getTime() + 86400000).toLocaleDateString()}
 								</p>
