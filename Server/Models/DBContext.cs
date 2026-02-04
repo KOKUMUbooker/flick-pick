@@ -1,4 +1,5 @@
 using  Microsoft.EntityFrameworkCore;
+using MovieManager.Utils;
 
 namespace MovieManager.Models;
 
@@ -17,24 +18,6 @@ public class MovieAppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("app");
-
-        // Seed Roles FIRST (before other entities that reference them)
-        modelBuilder.Entity<Role>().HasData(
-            new Role
-            {
-                Id = RoleConstants.AdminRoleId,
-                RoleValue = RoleEnum.Admin,
-                Created = DateTimeOffset.UtcNow,
-                LastModified = DateTimeOffset.UtcNow
-            },
-            new Role
-            {
-                Id = RoleConstants.UserRoleId,
-                RoleValue = RoleEnum.User, 
-                Created = DateTimeOffset.UtcNow,
-                LastModified = DateTimeOffset.UtcNow
-            }
-        );
 
         // 1. MOVIE - REVIEWS (One-to-Many)
         modelBuilder.Entity<Review>()
@@ -77,11 +60,58 @@ public class MovieAppDbContext : DbContext
 
         base.OnModelCreating(modelBuilder);
 
+        SeedRoles(modelBuilder);
+        SeedAdminUser(modelBuilder);
+
         // Configure required properties and constraints
         ConfigureEntityConstraints(modelBuilder);
         
         // Configure indexes for performance
         ConfigureIndexes(modelBuilder); 
+    }
+
+    private static void SeedRoles(ModelBuilder modelBuilder)
+    {
+        var now = DateTimeOffset.UtcNow;
+        
+        modelBuilder.Entity<Role>().HasData(
+            new Role
+            {
+                Id = RoleConstants.AdminRoleId,
+                RoleValue = RoleEnum.Admin,
+                Created = now,
+                LastModified = now
+            },
+            new Role
+            {
+                Id = RoleConstants.UserRoleId,
+                RoleValue = RoleEnum.User,
+                Created = now,
+                LastModified = now
+            }
+        );
+    }
+
+    private static void SeedAdminUser(ModelBuilder modelBuilder)
+    {
+        // Create password hash for the admin password
+        PasswordHasher.CreatePasswordHash("Admin@123", out byte[] passwordHash, out byte[] passwordSalt);
+        
+        var now = DateTimeOffset.UtcNow;
+        
+        modelBuilder.Entity<User>().HasData(
+            new User
+            {
+                Id = RoleConstants.AdminRoleId,
+                Email = "admin@system.com",
+                FullName = "System Administrator",
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                RoleId = RoleConstants.AdminRoleId, 
+                Created = now,
+                LastModified = now
+            }
+        );
     }
 
     private static void ConfigureEntityConstraints(ModelBuilder modelBuilder)

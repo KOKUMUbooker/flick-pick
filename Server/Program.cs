@@ -15,7 +15,7 @@ public class Program
 
         // Register services
         builder.Services.AddControllers();
-        builder.Services.AddTransient<IUserService, UserService>();
+        builder.Services.AddScoped<IUserService, UserService>();
 
         builder.Services.AddDbContext<MovieAppDbContext>(options =>
         {
