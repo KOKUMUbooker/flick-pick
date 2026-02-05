@@ -113,33 +113,6 @@
 		users: users.filter((u) => u.role === RoleEnum.User).length
 	};
 
-	// Helper functions
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case 'active':
-				return 'bg-green-500';
-			case 'suspended':
-				return 'bg-yellow-500';
-			case 'inactive':
-				return 'bg-gray-500';
-			default:
-				return 'bg-gray-500';
-		}
-	};
-
-	const getStatusText = (status: string) => {
-		switch (status) {
-			case 'active':
-				return 'Active';
-			case 'suspended':
-				return 'Suspended';
-			case 'inactive':
-				return 'Inactive';
-			default:
-				return 'Unknown';
-		}
-	};
-
 	const toggleUserRole = (user: UserModel | null) => {
 		if (!user) return;
 		const userId = user.id;

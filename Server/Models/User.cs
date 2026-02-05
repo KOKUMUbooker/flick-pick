@@ -19,6 +19,9 @@ public class User : EntityBase
 
     [Required]
     public required string PasswordHash { get; set; }
+
+    public int Movies {get; set;} = 0;
+
     
     // Navigation properties
     public Role Role { get; set; } = null!;
