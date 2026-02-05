@@ -30,6 +30,19 @@ public class Program
             options.UseNpgsql(connectionString);
         });
 
+        // Configure a specific CORS policy
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigin", policy =>
+            {
+                policy
+                    // Only allow these origins
+                    .WithOrigins("https://localhost:5173", "https://prodUrl.com")
+                    // Only allow these HTTP methods
+                    .WithMethods("GET", "POST", "PUT", "DELETE");
+            });
+        });
+
         Lazy<IClientCacheService>? clientCacheInstance = null;
 
         // Configure JWT Bearer Authentication
