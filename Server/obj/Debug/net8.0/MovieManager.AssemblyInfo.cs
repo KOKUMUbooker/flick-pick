@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MovieManager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c1307f670383df58a978db76cd9ecf90581a9e5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dce744c74a01ed79c64018a340162311be6c0dc5")]
 [assembly: System.Reflection.AssemblyProductAttribute("MovieManager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MovieManager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
