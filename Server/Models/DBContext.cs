@@ -1,5 +1,4 @@
 using  Microsoft.EntityFrameworkCore;
-using MovieManager.Utils;
 
 namespace MovieManager.Models;
 
@@ -323,6 +322,5 @@ public class MovieAppDbContext : DbContext
 
         modelBuilder.Entity<RefreshToken>()
             .HasIndex(r=>new { r.UserId, r.IsRevoked, r.Expires });
-
     }
 }

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using MovieManager.Models;
 using MovieManager.DTOs;
 using Microsoft.EntityFrameworkCore;
-using MovieManager.Utils;
 using MovieManager.Services;
 
 namespace MovieManager.Controllers;
@@ -23,6 +22,8 @@ public class AuthController : ControllerBase
     [HttpPost("sign-up")]
     public async Task<IActionResult> SignUp([FromBody] RegisterUserDto userDetails)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
         var userExists = await _context.Users.AnyAsync(u => u.Email == userDetails.Email);
         if (userExists) return BadRequest("Email is already in use.");
         
@@ -30,12 +31,7 @@ public class AuthController : ControllerBase
         {
             var user = await _userService.CreateUserAsync(userDetails);
             
-            // TODO: Generate token that is to be sent
-            return Ok(new { 
-                Message = "User registered successfully.",
-                // Token = token,
-                UserId = user.Id
-            });
+            return Ok(new { message = "User registered successfully." });
         }
         catch (Exception ex)
         {
@@ -43,19 +39,48 @@ public class AuthController : ControllerBase
         }
     }
 
-
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginUserDto userDetails)
+    public async Task<IActionResult> Login(UserLoginDto loginDto)
     {
-        // Retrieve the user by email
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userDetails.Email);
-        if (user == null) return Unauthorized("Invalid email or password.");
+        try
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // Verify the password
-        if (!PasswordHasher.VerifyPasswordHash(userDetails.Password, user.PasswordHash, user.PasswordSalt))
-            return Unauthorized("Invalid email or password.");
-       
-        // TODO: Generate JWT or other token as needed
-        return Ok(new { Message = "User logged in successfully." });
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+            var authResponse = await _userService.AuthenticateUserAsync(loginDto, ipAddress);
+            
+            // If authentication fails (invalid credentials or client), return 401 Unauthorized
+            if (authResponse == null) return Unauthorized(new { message = "Invalid credentials or client." });
+            
+            return Ok(authResponse);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // Endpoint to obtain a new access token using a refresh token
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO refreshRequest)
+    {
+        try
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+            var authResponse = await _userService.RefreshTokenAsync(refreshRequest.RefreshToken, refreshRequest.ClientId, ipAddress);
+
+            // If refresh token or client is invalid, return 401 Unauthorized
+            if (authResponse == null) return Unauthorized(new { message = "Invalid refresh token or client." });
+
+            return Ok(authResponse);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
