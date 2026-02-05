@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace MovieManager.Migrations
 {
     /// <inheritdoc />
@@ -28,6 +30,25 @@ namespace MovieManager.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cast", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Clients",
+                schema: "app",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClientId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ClientSecret = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    ClientURL = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Clients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,8 +131,8 @@ namespace MovieManager.Migrations
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     FullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     RoleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
-                    PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
+                    EmailVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -125,6 +146,43 @@ namespace MovieManager.Migrations
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                schema: "app",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    JwtId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "boolean", nullable: false),
+                    RevokedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ClientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalSchema: "app",
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "app",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -158,11 +216,40 @@ namespace MovieManager.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                schema: "app",
+                table: "Clients",
+                columns: new[] { "Id", "ClientId", "ClientSecret", "ClientURL", "Created", "IsActive", "LastModified", "Name" },
+                values: new object[] { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "movie-manager-web", "bW92aWUtbWFuYWdlci1zZWNyZXQta2V5", "https://localhost:5176", new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 29, 204, DateTimeKind.Unspecified).AddTicks(1690), new TimeSpan(0, 0, 0, 0, 0)), true, new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 29, 204, DateTimeKind.Unspecified).AddTicks(1690), new TimeSpan(0, 0, 0, 0, 0)), "Movie Manager Web Application" });
+
+            migrationBuilder.InsertData(
+                schema: "app",
+                table: "Roles",
+                columns: new[] { "Id", "Created", "LastModified", "RoleValue" },
+                values: new object[,]
+                {
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)), 2 }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "app",
+                table: "Users",
+                columns: new[] { "Id", "Created", "Email", "EmailVerified", "FullName", "LastModified", "PasswordHash", "RoleId" },
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(4174), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", false, "System Administrator", new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(4174), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$07SVOi7SLc78umI.7cI0a.Ry0peKR.jSmJG94KKuZ75PnEcvaBGfu", new Guid("00000000-0000-0000-0000-000000000001") });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Cast_Name",
                 schema: "app",
                 table: "Cast",
                 column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_ClientId",
+                schema: "app",
+                table: "Clients",
+                column: "ClientId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MovieCasts_CastId",
@@ -207,6 +294,43 @@ namespace MovieManager.Migrations
                 column: "Verified");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_ClientId",
+                schema: "app",
+                table: "RefreshTokens",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_Expires",
+                schema: "app",
+                table: "RefreshTokens",
+                column: "Expires");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_IsRevoked",
+                schema: "app",
+                table: "RefreshTokens",
+                column: "IsRevoked");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_Token",
+                schema: "app",
+                table: "RefreshTokens",
+                column: "Token",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                schema: "app",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId_IsRevoked_Expires",
+                schema: "app",
+                table: "RefreshTokens",
+                columns: new[] { "UserId", "IsRevoked", "Expires" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reviews_MovieId",
                 schema: "app",
                 table: "Reviews",
@@ -247,11 +371,19 @@ namespace MovieManager.Migrations
                 schema: "app");
 
             migrationBuilder.DropTable(
+                name: "RefreshTokens",
+                schema: "app");
+
+            migrationBuilder.DropTable(
                 name: "Reviews",
                 schema: "app");
 
             migrationBuilder.DropTable(
                 name: "Cast",
+                schema: "app");
+
+            migrationBuilder.DropTable(
+                name: "Clients",
                 schema: "app");
 
             migrationBuilder.DropTable(

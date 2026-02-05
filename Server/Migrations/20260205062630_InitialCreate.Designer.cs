@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieManager.Migrations
 {
     [DbContext(typeof(MovieAppDbContext))]
-    [Migration("20260204133414_InitialCreate")]
+    [Migration("20260205062630_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -53,6 +53,64 @@ namespace MovieManager.Migrations
                     b.HasIndex("Name");
 
                     b.ToTable("Cast", "app");
+                });
+
+            modelBuilder.Entity("MovieManager.Models.Client", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ClientSecret")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ClientURL")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique();
+
+                    b.ToTable("Clients", "app");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            ClientId = "movie-manager-web",
+                            ClientSecret = "bW92aWUtbWFuYWdlci1zZWNyZXQta2V5",
+                            ClientURL = "https://localhost:5176",
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 29, 204, DateTimeKind.Unspecified).AddTicks(1690), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsActive = true,
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 29, 204, DateTimeKind.Unspecified).AddTicks(1690), new TimeSpan(0, 0, 0, 0, 0)),
+                            Name = "Movie Manager Web Application"
+                        });
                 });
 
             modelBuilder.Entity("MovieManager.Models.Movie", b =>
@@ -157,6 +215,68 @@ namespace MovieManager.Migrations
                     b.ToTable("MovieCasts", "app");
                 });
 
+            modelBuilder.Entity("MovieManager.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("Expires");
+
+                    b.HasIndex("IsRevoked");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "IsRevoked", "Expires");
+
+                    b.ToTable("RefreshTokens", "app");
+                });
+
             modelBuilder.Entity("MovieManager.Models.Review", b =>
                 {
                     b.Property<Guid>("Id")
@@ -210,6 +330,22 @@ namespace MovieManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles", "app");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)),
+                            RoleValue = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(3063), new TimeSpan(0, 0, 0, 0, 0)),
+                            RoleValue = 2
+                        });
                 });
 
             modelBuilder.Entity("MovieManager.Models.User", b =>
@@ -226,6 +362,9 @@ namespace MovieManager.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -234,13 +373,9 @@ namespace MovieManager.Migrations
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<byte[]>("PasswordHash")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
@@ -253,6 +388,19 @@ namespace MovieManager.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users", "app");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(4174), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "admin@system.com",
+                            EmailVerified = false,
+                            FullName = "System Administrator",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 5, 6, 26, 28, 827, DateTimeKind.Unspecified).AddTicks(4174), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$07SVOi7SLc78umI.7cI0a.Ry0peKR.jSmJG94KKuZ75PnEcvaBGfu",
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000001")
+                        });
                 });
 
             modelBuilder.Entity("MovieManager.Models.MovieCast", b =>
@@ -272,6 +420,25 @@ namespace MovieManager.Migrations
                     b.Navigation("Cast");
 
                     b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MovieManager.Models.RefreshToken", b =>
+                {
+                    b.HasOne("MovieManager.Models.Client", "Client")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MovieManager.Models.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MovieManager.Models.Review", b =>
@@ -309,6 +476,11 @@ namespace MovieManager.Migrations
                     b.Navigation("MovieCasts");
                 });
 
+            modelBuilder.Entity("MovieManager.Models.Client", b =>
+                {
+                    b.Navigation("RefreshTokens");
+                });
+
             modelBuilder.Entity("MovieManager.Models.Movie", b =>
                 {
                     b.Navigation("MovieCasts");
@@ -323,6 +495,8 @@ namespace MovieManager.Migrations
 
             modelBuilder.Entity("MovieManager.Models.User", b =>
                 {
+                    b.Navigation("RefreshTokens");
+
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
