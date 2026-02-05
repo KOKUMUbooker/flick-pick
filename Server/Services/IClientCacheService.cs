@@ -1,5 +1,5 @@
 using MovieManager.Models;
-namespace JWTDemo.Services;
+namespace MovieManager.Services;
 
 public interface IClientCacheService
 {

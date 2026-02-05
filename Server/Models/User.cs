@@ -15,11 +15,10 @@ public class User : EntityBase
     [Required]
     public Guid RoleId { get; set; }
 
+    public bool EmailVerified {get; set;} = false;
+
     [Required]
-    public required byte[] PasswordHash { get; set; }
-    
-    [Required]
-    public required byte[] PasswordSalt { get; set; }
+    public required string PasswordHash { get; set; }
     
     // Navigation properties
     public Role Role { get; set; } = null!;

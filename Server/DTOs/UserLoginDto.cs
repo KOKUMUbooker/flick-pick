@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MovieManager.DTOs;
 
-public class LoginUserDto
+public class UserLoginDto
 {
     [Required]
     [EmailAddress(ErrorMessage = "Invalid email provided")]
@@ -10,4 +10,7 @@ public class LoginUserDto
 
     [Required]
     public required string Password {get;set;}
+
+    [Required(ErrorMessage = "ClientId is required.")]
+    public string ClientId { get; set; } = null!;
 }

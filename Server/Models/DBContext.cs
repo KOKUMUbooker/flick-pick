@@ -116,9 +116,6 @@ public class MovieAppDbContext : DbContext
 
     private static void SeedAdminUser(ModelBuilder modelBuilder)
     {
-        // Create password hash for the admin password
-        PasswordHasher.CreatePasswordHash("Admin@123", out byte[] passwordHash, out byte[] passwordSalt);
-        
         var now = DateTimeOffset.UtcNow;
         
         modelBuilder.Entity<User>().HasData(
@@ -127,8 +124,7 @@ public class MovieAppDbContext : DbContext
                 Id = RoleConstants.AdminRoleId,
                 Email = "admin@system.com",
                 FullName = "System Administrator",
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
                 RoleId = RoleConstants.AdminRoleId, 
                 Created = now,
                 LastModified = now
