@@ -200,66 +200,6 @@
 					</div>
 				</div>
 
-				<!-- Desktop Header -->
-				<div class="mb-6 hidden items-center justify-between lg:flex">
-					<div>
-						<h2 class="text-2xl font-semibold">
-							{filteredMovies.length} Movie{filteredMovies.length !== 1 ? 's' : ''} Found
-						</h2>
-						{#if activeFilterCount > 0}
-							<p class="text-sm text-muted-foreground">
-								Filtered by {activeFilterCount} criteria
-							</p>
-						{/if}
-					</div>
-
-					<div class="flex items-center gap-4">
-						<!-- View Toggle -->
-						<div class="flex items-center gap-2 rounded-lg border p-1">
-							<Button
-								variant={viewMode === 'cards' ? 'default' : 'ghost'}
-								size="sm"
-								class="px-3"
-								onclick={() => (viewMode = 'cards')}
-							>
-								<Grid2x2 size={16} class="mr-2" />
-								Cards
-							</Button>
-							<Button
-								variant={viewMode === 'grid' ? 'default' : 'ghost'}
-								size="sm"
-								class="px-3"
-								onclick={() => (viewMode = 'grid')}
-							>
-								<Grid2x2 size={16} class="mr-2" />
-								Grid
-							</Button>
-							<Button
-								variant={viewMode === 'list' ? 'default' : 'ghost'}
-								size="sm"
-								class="px-3"
-								onclick={() => (viewMode = 'list')}
-							>
-								<List size={16} class="mr-2" />
-								List
-							</Button>
-						</div>
-
-						<!-- Sort Dropdown -->
-						<Select type="multiple">
-							<SelectTrigger class="w-45">
-								{sortBy}
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="rating">Rating (High to Low)</SelectItem>
-								<SelectItem value="title">Title (A-Z)</SelectItem>
-								<SelectItem value="releaseDate">Release Date (Newest)</SelectItem>
-								<SelectItem value="duration">Duration (Shortest)</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-				</div>
-
 				<!-- Active Filters Display -->
 				{#if activeFilterCount > 0}
 					<ActiveFilters

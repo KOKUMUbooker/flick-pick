@@ -37,7 +37,7 @@
 <div class="space-y-6">
 	<!-- View Controls -->
 	<div class="flex items-center justify-between">
-		<div class="text-sm text-muted-foreground">
+		<div class="text-md text-muted-foreground">
 			Showing <span class="font-semibold text-foreground">{movies.length}</span> movies
 		</div>
 		<div class="flex items-center gap-2">
@@ -51,15 +51,7 @@
 				<Grid2x2 size={16} class="mr-2" />
 				Cards
 			</Button>
-			<Button
-				variant={viewMode === 'grid' ? 'default' : 'outline'}
-				size="sm"
-				onclick={() => (viewMode = 'grid')}
-				class="px-3"
-			>
-				<Grid2x2 size={16} class="mr-2" />
-				Grid
-			</Button>
+
 			<Button
 				variant={viewMode === 'list' ? 'default' : 'outline'}
 				size="sm"
