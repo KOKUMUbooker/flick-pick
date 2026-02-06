@@ -35,11 +35,14 @@ public class Program
         {
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
-                policy
-                    // Only allow these origins
-                    .WithOrigins("https://localhost:5173", "https://prodUrl.com")
-                    // Only allow these HTTP methods
-                    .WithMethods("GET", "POST", "PUT", "DELETE");
+                policy.WithOrigins(
+                    "http://localhost:5173",  // Vite dev server
+                    "https://localhost:5173", // Vite with HTTPS
+                    "https://productiondomain.com"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials(); // If using cookies/auth headers
             });
         });
 
@@ -132,6 +135,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         
+        app.UseCors("AllowSpecificOrigin");
         app.MapControllers();
 
         app.Run();
