@@ -73,16 +73,8 @@
 			return;
 		}
 
-		// fully valid data
-		console.log('SUBMIT OK', result.data);
-
-		mutate({ ...formData, ClientId: CLIENT_ID }, {});
-
-		// continue: API call, navigation, etc.
+		mutate({ ...formData, ClientId: CLIENT_ID });
 	}
-	console.log('error : ', error);
-	console.log('isPending : ', isPending);
-	console.log('data : ', data);
 
 	const id = $props.id();
 </script>
