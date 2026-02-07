@@ -4,11 +4,10 @@
 	import mvImg from '$lib/assets/movie.jpg';
 	import { Alert, AlertDescription } from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowRight, Mail, RefreshCw } from '@lucide/svelte';
+	import { Mail, RefreshCw } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	let noTokenFoundMessage = false;
-	let emailVerified = false;
 	let token = '';
 	let isResending = false;
 	let isVerifyingEmail = false;
@@ -75,34 +74,24 @@
 
 				<!-- Actions -->
 				<div class="space-y-3">
-					{#if emailVerified}
-						<Button class="w-full" onclick={() => goto('/sign-in')}>
-							Go to Login
-							<ArrowRight class="ml-2 h-4 w-4" />
-						</Button>
-						<Button variant="outline" class="w-full" onclick={() => goto('/')}>
-							Explore Movies
-						</Button>
-					{:else if !emailVerified}
-						<Button
-							class="w-full"
-							onclick={resendVerification}
-							disabled={isResending || resendCooldown > 0}
-						>
-							{#if isResending}
-								<RefreshCw class="mr-2 h-4 w-4 animate-spin" />
-								Sending...
-							{:else if resendCooldown > 0}
-								Resend ({resendCooldown}s)
-							{:else}
-								<Mail class="mr-2 h-4 w-4" />
-								Resend Verification
-							{/if}
-						</Button>
-						<Button variant="outline" class="w-full" onclick={() => goto('/login')}>
-							Back to Login
-						</Button>
-					{/if}
+					<Button
+						class="w-full"
+						onclick={resendVerification}
+						disabled={isResending || resendCooldown > 0}
+					>
+						{#if isResending}
+							<RefreshCw class="mr-2 h-4 w-4 animate-spin" />
+							Sending...
+						{:else if resendCooldown > 0}
+							Resend ({resendCooldown}s)
+						{:else}
+							<Mail class="mr-2 h-4 w-4" />
+							Resend Verification
+						{/if}
+					</Button>
+					<Button variant="outline" class="w-full" onclick={() => goto('/login')}>
+						Back to Login
+					</Button>
 				</div>
 			</div>
 		</div>
