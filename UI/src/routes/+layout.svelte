@@ -5,6 +5,7 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import { queryClient } from '../api';
 	import './layout.css';
+	import { Toaster } from '@/components/ui/sonner';
 
 	let { children } = $props();
 </script>
@@ -15,5 +16,6 @@
 		<Header />
 	</div>
 	<ModeWatcher />
+	<Toaster />
 	{@render children()}
 </QueryClientProvider>
