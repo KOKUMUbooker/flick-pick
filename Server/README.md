@@ -14,6 +14,7 @@ A .NET 8 Web API for managing movies with CRUD operations, PostgreSQL, and Minim
 ## Quick Start
 
 ### Prerequisites
+
 - .NET 8 SDK
 - Docker
 - Git
@@ -21,41 +22,60 @@ A .NET 8 Web API for managing movies with CRUD operations, PostgreSQL, and Minim
 ### Installation
 
 1. **Clone and setup**
+
 ```bash
 git clone <repo-url>
 cd Movie-manager
 ```
 
 2. **Start PostgreSQL**
+
 ```bash
 docker compose up -d
 ```
+
 Database: `moviemanager` | User: `admin` | Password: `secret` | Port: `5480`
 
 3. **Install EF Core tools**
+
 ```bash
 dotnet tool restore
 ```
 
-4. **Apply migrations**
+4. **Create & Apply migrations**
+
 ```bash
+rm -r Migrations/
+```
+
+If database contained some data first (for local development)
+
+```bash
+docker exec -it postgres psql -U admin -d moviemanager -c "DROP SCHEMA app CASCADE;
+```
+
+```bash
+dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
 5. **Run the API**
+
 ```bash
 dotnet run
 ```
 
-API runs on `https://localhost:7189`
+API runs on `https://localhost:5167`
 
 ## API Documentation
 
 Once running, explore the API:
-- **Swagger UI**: `https://localhost:7189/swagger`
+
+- **Swagger UI**: `https://localhost:5167/swagger`
 - **Interactive docs** with full endpoint details
 
 ### Endpoints
+
 - `GET /api/movies` - List all movies
 - `GET /api/movies/{id}` - Get specific movie
 - `POST /api/movies` - Create new movie
@@ -65,6 +85,7 @@ Once running, explore the API:
 ## Development
 
 ### Useful Commands
+
 ```bash
 # Run with auto-reload
 dotnet watch run
@@ -80,6 +101,7 @@ docker-compose down
 ```
 
 ### Project Structure
+
 ```
 MovieManager/
 ├── Models/          # Domain entities & DB context
@@ -93,6 +115,7 @@ MovieManager/
 ## Configuration
 
 Connection string in `appsettings.json`:
+
 ```json
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Port=5480;Database=moviemanager;Username=admin;Password=secret;"
@@ -102,6 +125,7 @@ Connection string in `appsettings.json`:
 ## Troubleshooting
 
 **Can't connect to database?**
+
 ```bash
 # Check if PostgreSQL is running
 docker ps
@@ -112,6 +136,7 @@ docker-compose logs postgres
 ```
 
 **Migrations not working?**
+
 ```bash
 # Reset everything
 docker-compose down -v
@@ -122,6 +147,7 @@ dotnet ef database update
 ```
 
 **API won't start?**
+
 ```bash
 # Clean and rebuild
 dotnet clean

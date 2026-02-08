@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieManager.Migrations
 {
     [DbContext(typeof(MovieAppDbContext))]
-    [Migration("20260206141515_InitialCreate")]
+    [Migration("20260208180409_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -106,9 +106,9 @@ namespace MovieManager.Migrations
                             ClientId = "movie-manager-web",
                             ClientSecret = "bW92aWUtbWFuYWdlci1zZWNyZXQta2V5",
                             ClientURL = "https://localhost:5176",
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 831, DateTimeKind.Unspecified).AddTicks(8294), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 597, DateTimeKind.Unspecified).AddTicks(7098), new TimeSpan(0, 0, 0, 0, 0)),
                             IsActive = true,
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 831, DateTimeKind.Unspecified).AddTicks(8294), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 597, DateTimeKind.Unspecified).AddTicks(7098), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Movie Manager Web Application"
                         });
                 });
@@ -335,15 +335,15 @@ namespace MovieManager.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 1
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 2
                         });
                 });
@@ -361,6 +361,12 @@ namespace MovieManager.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EmailVerificationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailVerificationTokenExpiry")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("EmailVerified")
                         .HasColumnType("boolean");
@@ -396,13 +402,13 @@ namespace MovieManager.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(4071), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9964), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@system.com",
                             EmailVerified = false,
                             FullName = "System Administrator",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(4071), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9964), new TimeSpan(0, 0, 0, 0, 0)),
                             Movies = 0,
-                            PasswordHash = "$2a$11$qZlTUiK3PncZFtDrig83JuC3L6sxInW.wekrDnXTmrU9sGLbfKL0u",
+                            PasswordHash = "$2a$11$kPNtl5qB5n3DZEvadBONm.hc8iaXG2x6xdv.JhJseF0Shi5.4lJXe",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000001")
                         });
                 });

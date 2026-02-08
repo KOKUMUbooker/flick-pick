@@ -61,6 +61,11 @@ public class UserService : IUserService
         if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
             return null; // Invalid credentials
 
+        if (!user.EmailVerified)
+        {
+            throw new Exception("Email not verified, please login to ");
+        }
+
         var client = await _clientCacheService.GetClientByClientIdAsync(loginDto.ClientId);
         if (client == null)
         {

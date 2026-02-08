@@ -131,9 +131,11 @@ namespace MovieManager.Migrations
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     FullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     RoleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EmailVerified = table.Column<bool>(type: "boolean", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Movies = table.Column<int>(type: "integer", nullable: false),
+                    EmailVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    EmailVerificationToken = table.Column<string>(type: "text", nullable: true),
+                    EmailVerificationTokenExpiry = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -221,7 +223,7 @@ namespace MovieManager.Migrations
                 schema: "app",
                 table: "Clients",
                 columns: new[] { "Id", "ClientId", "ClientSecret", "ClientURL", "Created", "IsActive", "LastModified", "Name" },
-                values: new object[] { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "movie-manager-web", "bW92aWUtbWFuYWdlci1zZWNyZXQta2V5", "https://localhost:5176", new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 831, DateTimeKind.Unspecified).AddTicks(8294), new TimeSpan(0, 0, 0, 0, 0)), true, new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 831, DateTimeKind.Unspecified).AddTicks(8294), new TimeSpan(0, 0, 0, 0, 0)), "Movie Manager Web Application" });
+                values: new object[] { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "movie-manager-web", "bW92aWUtbWFuYWdlci1zZWNyZXQta2V5", "https://localhost:5176", new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 597, DateTimeKind.Unspecified).AddTicks(7098), new TimeSpan(0, 0, 0, 0, 0)), true, new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 597, DateTimeKind.Unspecified).AddTicks(7098), new TimeSpan(0, 0, 0, 0, 0)), "Movie Manager Web Application" });
 
             migrationBuilder.InsertData(
                 schema: "app",
@@ -229,15 +231,15 @@ namespace MovieManager.Migrations
                 columns: new[] { "Id", "Created", "LastModified", "RoleValue" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(3585), new TimeSpan(0, 0, 0, 0, 0)), 2 }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9402), new TimeSpan(0, 0, 0, 0, 0)), 2 }
                 });
 
             migrationBuilder.InsertData(
                 schema: "app",
                 table: "Users",
-                columns: new[] { "Id", "Created", "Email", "EmailVerified", "FullName", "LastModified", "Movies", "PasswordHash", "RoleId" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(4071), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", false, "System Administrator", new DateTimeOffset(new DateTime(2026, 2, 6, 14, 15, 14, 527, DateTimeKind.Unspecified).AddTicks(4071), new TimeSpan(0, 0, 0, 0, 0)), 0, "$2a$11$qZlTUiK3PncZFtDrig83JuC3L6sxInW.wekrDnXTmrU9sGLbfKL0u", new Guid("00000000-0000-0000-0000-000000000001") });
+                columns: new[] { "Id", "Created", "Email", "EmailVerificationToken", "EmailVerificationTokenExpiry", "EmailVerified", "FullName", "LastModified", "Movies", "PasswordHash", "RoleId" },
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9964), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", null, null, false, "System Administrator", new DateTimeOffset(new DateTime(2026, 2, 8, 18, 4, 8, 283, DateTimeKind.Unspecified).AddTicks(9964), new TimeSpan(0, 0, 0, 0, 0)), 0, "$2a$11$kPNtl5qB5n3DZEvadBONm.hc8iaXG2x6xdv.JhJseF0Shi5.4lJXe", new Guid("00000000-0000-0000-0000-000000000001") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cast_Name",

@@ -12,11 +12,15 @@ public class AuthController : ControllerBase
 {
     private readonly MovieAppDbContext _context;
     private readonly IUserService _userService;
+    private IEmailService _emailService;
+    private IEmailTemplateService _templateService;
 
-    public AuthController(MovieAppDbContext context, IUserService userService)
+    public AuthController(MovieAppDbContext context, IUserService userService,IEmailService emailService,IEmailTemplateService templateService)
     {
         _context = context;
         _userService = userService;
+        _emailService = emailService;
+        _templateService = templateService;
     }
 
     [HttpPost("sign-up")]
@@ -32,7 +36,11 @@ public class AuthController : ControllerBase
             var user = await _userService.CreateUserAsync(userDetails);
 
             // Send verification email
-            // await _emailService.SendVerificationEmail(user.Email, user.EmailVerificationToken);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var verificationUrl =  $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
+            string htmlBody =  await _templateService.GenerateVerificationEmail("Movie-Manager", user.FullName,verificationUrl);
+
+            await _emailService.SendEmail(user.Email,"Verify email",htmlBody);
             
             return Ok(new { message = "User registered successfully." ,emailVerificationToken = user.EmailVerificationToken });
         }
@@ -87,7 +95,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("verify-email")]
+    [HttpGet("verify-email")]
     public async Task<IActionResult> VerifyEmail([FromQuery] string token)
     {
         if (string.IsNullOrEmpty(token)) return BadRequest(new { message = "Token is required." });

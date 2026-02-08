@@ -31,9 +31,10 @@ public class HomeController : ControllerBase
             var appName = "Movie-Manager";
             var userName = "Booker";
             string recipientEmail = _configuration.GetValue("EmailConf:TestRecipient","test@example.com")!;
+            string clientUrl = _configuration.GetValue("UIClient:URL","http://localhost:5173")!;
 
-            var resetEmailUrl = "http://localhost:5173/reset-password";
-            var verifymailUrl = "http://localhost:5173/verify-email?tkn=abcd";
+            var resetEmailUrl = $"{clientUrl}/api/auth/reset-password";
+            var verifymailUrl = $"{clientUrl}/api/auth/verify-email?tkn=abcd";
 
             string htmlBody = false
                     ? await _templateService.GeneratePasswordResetEmail(appName, userName, resetEmailUrl)
