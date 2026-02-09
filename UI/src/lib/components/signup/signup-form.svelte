@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Field from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
@@ -10,7 +11,6 @@
 	import { apiFetch, type SignUpData, type SignUpRes } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
 	import HelperText from '../common/HelperText.svelte';
-	import { goto } from '$app/navigation';
 
 	let { class: className, ...restProps }: HTMLAttributes<HTMLFormElement> = $props();
 	let formData = $state({
@@ -34,19 +34,24 @@
 		}
 	}
 
-	const {  isPending, error, mutateAsync} = createMutation<
+	const { isPending,  mutateAsync} = createMutation<
 		SignUpRes, // response type
 		Error, // error type
 		SignUpData // variables type
 	>(() => ({
-		mutationFn: (data) =>
-			apiFetch(`${API_BASE_URL}/api/auth/sign-up`, {
+		mutationFn:async (data) =>
+		{
+			return apiFetch(`${API_BASE_URL}/api/auth/sign-up`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
-			})
+			});
+		},
+		onError: (error) => {
+			toast.error(error.message, { richColors: true });
+		}
 	}));
-
+	console.log("isPending : ",isPending);
 
 	function validatePasswords() {
 		const result = registerSchema.safeParse(formData);
@@ -67,16 +72,6 @@
 		validateField(field);
 	}
 
-	function onError(_: HTMLElement, error: Error | null) {
-		return {
-  		  update(newError: Error) {
-			if (newError){
-				toast.error(newError.message,{richColors:true})
-			}
-		  }
-		};
-	}
-
 	async function onSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
@@ -93,12 +88,13 @@
 		}
 
 		const res =  await mutateAsync(formData);
+		console.log("res : ",res)
 		toast.success(res.message,{richColors:true});
 		goto(`/verify-email?tkn=${res.emailVerificationToken}`);
 	}
 </script>
 
-<form use:onError={error} onsubmit={onSubmit} class={cn('flex flex-col gap-6', className)} {...restProps}>
+<form onsubmit={onSubmit} class={cn('flex flex-col gap-6', className)} {...restProps}>
 	<Field.Group>
 		<div class="flex flex-col items-center gap-1 text-center">
 			<h1 class="text-2xl font-bold">Create your account</h1>
@@ -166,7 +162,7 @@
 			></HelperText>
 		</Field.Field>
 		<Field.Field>
-			<Button disabled={isPending} type="submit">{isPending ? "Submitting..." :"Create Account"}</Button>
+			<Button disabled={isPending} type="submit">{isPending ? "Creating account..." :"Create Account"}</Button>
 		</Field.Field>
 		<Field.Field>
 			<Field.Description class="px-6 text-center">

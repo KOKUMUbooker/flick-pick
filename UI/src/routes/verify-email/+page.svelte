@@ -13,7 +13,6 @@
 	import { page } from '$app/stores';
 
 	let noTokenFoundMessage = false;
-	// let token = '';
  	let isVerifyingEmail = false;
 	let resendCooldown = 0;
 	let cooldownTimer: number | null = null;
@@ -54,7 +53,7 @@
 	}
 	
 
-	const { isPending, error, mutateAsync } = createMutation<
+	let { isPending, mutateAsync } = createMutation<
 		SignUpRes, // response type
 		Error, // error type
 		{Token: string} // variables type
@@ -64,19 +63,11 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
-			})
+			}),
+		onError: (error) => {
+			toast.error(error.message, { richColors: true });
+		}
 	}));
-
-	function onError(_: HTMLElement, error: Error | null) {
-		return {
-  		  update(newError: Error) {
-			console.log("Error : ",newError)
-			if (newError){
-				toast.error(newError.message,{richColors:true})
-			}
-		  }
-		};
-	}
 
 	// async function verifyEmail(token: string) {}
 
@@ -95,7 +86,7 @@
 
 </script>
 
-<div  use:onError={error} class="grid min-h-svh lg:grid-cols-2">
+<div class="grid min-h-svh lg:grid-cols-2">
 	<div class="flex flex-col gap-4 p-6 md:p-10">
 		<div class="flex flex-1 items-center justify-center">
 			<div class="w-full max-w-xs">

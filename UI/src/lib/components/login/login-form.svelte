@@ -8,7 +8,7 @@
 		Label
 	} from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import { cn, wait, type WithElementRef } from '$lib/utils.js';
 	import { loginSchema } from '@/forms';
 	import { createMutation } from '@tanstack/svelte-query';
 	import type { HTMLFormAttributes } from 'svelte/elements';
@@ -16,6 +16,8 @@
 	import { CLIENT_ID } from '../../../constants';
 	import HelperText from '../common/HelperText.svelte';
 	import { API_BASE_URL } from '../../../api/urls';
+	import { toast } from 'svelte-sonner';
+	import Spinner from '../ui/spinner/spinner.svelte';
 
 	let {
 		ref = $bindable(null),
@@ -29,19 +31,25 @@
 	let errors: Record<string, string> = $state({});
 	let touched: Record<string, boolean> = $state({});
 
-	const { mutate, isPending, error, data } = createMutation<
+	let loginMutation = createMutation<
 		unknown, // response type
 		Error, // error type
 		LoginData // variables type
 	>(() => ({
-		mutationFn: (data) =>
-			apiFetch(`${API_BASE_URL}/api/auth/login`, {
+		mutationFn: async (data) =>
+		{
+			await wait(10);
+			return apiFetch(`${API_BASE_URL}/api/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
 			})
+		},
+		onError: (error) => {
+			toast.error(error.message, { richColors: true });
+		}
 	}));
-
+ 
 	function validateField(field: keyof typeof formData) {
 		const partial = loginSchema.pick({ [field]: true } as any);
 		const result = partial.safeParse({ [field]: formData[field] });
@@ -73,7 +81,7 @@
 			return;
 		}
 
-		mutate({ ...formData, ClientId: CLIENT_ID });
+		await loginMutation.mutateAsync({ ...formData, ClientId: CLIENT_ID });
 	}
 
 	const id = $props.id();
@@ -127,7 +135,11 @@
 			></HelperText>
 		</Field>
 		<Field>
-			<Button type="submit">Login</Button>
+			<Button disabled={loginMutation.isPending} type="submit">
+				{#if loginMutation.isPending}
+				 <Spinner />
+				{/if}
+				{loginMutation.isPending? "Logging in..." :"Login"}</Button>
 		</Field>
 		<Field>
 			<FieldDescription class="text-center">

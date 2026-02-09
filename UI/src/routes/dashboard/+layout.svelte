@@ -3,12 +3,12 @@
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import { adminDashboardRoutes } from '@/components/dashboard/dashboard-routes';
+	import { adminDashboardRoutes, userDashboardRoutes } from '@/components/dashboard/dashboard-routes';
 	let { children } = $props();
 </script>
 
 <Sidebar.Provider>
-	<AppSidebar navItems={adminDashboardRoutes} />
+	<AppSidebar navItems={userDashboardRoutes} />
 	<Sidebar.Inset>
 		<header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
 			<Sidebar.Trigger class="-ms-1" />
