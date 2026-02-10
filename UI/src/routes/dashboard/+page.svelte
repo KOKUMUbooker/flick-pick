@@ -88,7 +88,7 @@
 						<div class="space-y-2">
 							{#each userGroups as group}
 								<a 
-									href={`/groups/${group.id}`}
+									href={`/dashboard/groups/${group.id}`}
 									class="group flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:border-primary/30 hover:bg-muted/50"
 								>
 									<div class="flex items-center gap-3">
