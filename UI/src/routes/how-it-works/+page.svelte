@@ -2,24 +2,24 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
 	import Footer from '@/components/common/Footer.svelte';
 	import {
 		ArrowRight,
 		Calendar,
-		CalendarDays,
 		CheckCircle,
+		Clock,
 		Film,
-		Globe,
-		Link,
-		Mail,
 		MessageSquare,
 		Play,
+		Plus,
+		Search,
 		Share2,
-		Smartphone,
 		Sparkles,
+		Star,
 		ThumbsDown,
 		ThumbsUp,
+		Timer,
+		TrendingUp,
 		Users,
 		Vote,
 		XCircle,
@@ -29,6 +29,7 @@
 	// Active step state
 	let activeStep = 0;
 
+	// UPDATED STEPS: Now 4-step focused process
 	const steps = [
 		{
 			id: 'create',
@@ -38,107 +39,127 @@
 			color: 'from-blue-500/20 to-blue-500/5',
 			details: [
 				'Create a group with a custom name and description',
-				'Set group preferences and rules',
-				'Invite friends via link, email, or social media',
-				'Friends join instantly—no account required to vote'
+				'Invite friends via shareable link or email',
+				'Friends can vote instantly—no sign-up required',
+				'Set group preferences for voting rules'
 			]
 		},
 		{
 			id: 'suggest',
-			title: 'Suggest Movies',
-			description: 'Add movies to your watchlist',
+			title: 'Suggest & Vote',
+			description: 'Add movies and vote together',
 			icon: Film,
-			color: 'from-purple-500/20 to-purple-500/5',
-			details: [
-				'Search from millions of movies in our database',
-				'Add movies with posters and streaming info',
-				'Include trailers and ratings',
-				'Add notes about why you want to watch'
-			]
-		},
-		{
-			id: 'vote',
-			title: 'Vote Together',
-			description: 'Vote and discuss options',
-			icon: Vote,
 			color: 'from-primary/20 to-primary/5',
 			details: [
-				'Real-time voting with live updates',
-				'Thumbs up/down voting system',
-				'One veto power per member',
-				'See voting results instantly'
+				'Search millions of movies from TMDB database',
+				'Add movies with posters and streaming availability',
+				'Vote thumbs up/down with real-time updates',
+				'One veto power per person to rule out absolute no-gos'
 			]
 		},
 		{
-			id: 'schedule',
-			title: 'Find Time',
-			description: 'Schedule your movie night',
-			icon: Calendar,
+			id: 'decide',
+			title: 'Make The Call',
+			description: 'Pick the winner and schedule',
+			icon: TrendingUp,
 			color: 'from-green-500/20 to-green-500/5',
 			details: [
-				'Check member availability with timezone support',
-				'Calendar integration (Google, Outlook, Apple)',
-				'Auto-suggest optimal times',
-				'Set reminders and notifications'
+				'See automatic winner based on votes and vetoes',
+				'Check what streaming services everyone has access to',
+				'Schedule a time that works for the group',
+				'Send calendar invites with one click'
 			]
 		},
 		{
-			id: 'watch',
-			title: 'Watch Together',
-			description: 'Sync up and enjoy',
-			icon: Play,
-			color: 'from-orange-500/20 to-orange-500/5',
+			id: 'connect',
+			title: 'Watch & Discuss',
+			description: 'Track and chat about your movie',
+			icon: MessageSquare,
+			color: 'from-purple-500/20 to-purple-500/5',
 			details: [
-				'Get streaming links for everyone',
-				'Sync playback across services',
-				'In-watch chat and reactions',
-				'Post-watch discussions and ratings'
+				'Mark when you actually start watching',
+				'Post-watch discussion threads with spoiler tags',
+				'Rate the movie together (group average shown)',
+				'Save your watch history and plan the next one'
 			]
 		}
 	];
 
+	// UPDATED voting system - simpler, more focused
 	const votingSystem = {
 		upvote: {
 			icon: ThumbsUp,
 			title: 'Thumbs Up',
 			description: 'Show you want to watch it',
-			color: 'text-green-500 bg-green-500/10'
+			color: 'text-green-500 bg-green-500/10',
+			note:""
 		},
 		downvote: {
 			icon: ThumbsDown,
 			title: 'Thumbs Down',
 			description: 'Prefer other options',
-			color: 'text-red-500 bg-red-500/10'
+			color: 'text-red-500 bg-red-500/10',
+			note:""
 		},
 		veto: {
 			icon: XCircle,
 			title: 'Veto Power',
 			description: 'Absolute no for one movie',
-			color: 'text-orange-500 bg-orange-500/10'
+			color: 'text-orange-500 bg-orange-500/10',
+			note: 'Each member gets one veto per voting session'
 		}
 	};
 
+	// UPDATED FAQs - focused on decision-making only
 	const faqs = [
 		{
 			question: 'Do friends need an account to vote?',
 			answer:
-				'No! Friends can vote via invite link without creating an account. Only group creators need accounts.'
+				'No! Friends can vote via invite link without creating an account. Only the group creator needs an account to manage the group.'
 		},
 		{
-			question: 'How many people can join a group?',
-			answer: 'Free groups support up to 10 members. Pro plans allow unlimited members.'
+			question: 'How does the veto system work?',
+			answer: 'Each member gets one veto per voting session. A vetoed movie is immediately removed from consideration, ensuring nobody has to watch something they absolutely dislike.'
 		},
 		{
-			question: 'Does it work with all streaming services?',
-			answer: 'Yes! We support Netflix, Hulu, Amazon Prime, Disney+, HBO Max, Apple TV+, and more.'
+			question: 'Can we see what streaming services everyone has?',
+			answer: 'Yes! Members can indicate which services they have (Netflix, Hulu, Prime, etc.), and you can filter movies to show only those available to everyone in the group.'
 		},
 		{
-			question: 'Can I use it for virtual watch parties?',
-			answer: 'Absolutely! We integrate with Teleparty and Scener for synchronized viewing.'
+			question: 'What happens after we pick a movie?',
+			answer: 'You can schedule a watch time, mark when you actually start watching, and then come back for post-movie discussions and ratings. We track your group\'s watch history over time.'
 		},
 		{
-			question: 'Is there a mobile app?',
-			answer: 'Our web app works great on mobile browsers. Native apps are coming soon!'
+			question: 'Is there a limit to group size?',
+			answer: 'Free groups support up to 15 members. Larger groups and advanced features are available in our Pro plan.'
+		},
+		{
+			question: 'How do post-movie discussions work?',
+			answer: 'After marking a movie as watched, a discussion thread opens automatically with spoiler/non-spoiler sections. Everyone can share thoughts and rate the movie.'
+		}
+	];
+
+	// UPDATED post-watch features
+	const postWatchFeatures = [
+		{
+			icon: Timer,
+			title: 'Track Your Watch',
+			description: 'Simple "We\'re watching now!" button records start time and estimates end based on movie runtime.'
+		},
+		{
+			icon: MessageSquare,
+			title: 'Spoiler-Safe Discussions',
+			description: 'Separate threads for spoiler and non-spoiler conversations. Tag spoilers to protect those who haven\'t watched yet.'
+		},
+		{
+			icon: Star,
+			title: 'Group Ratings',
+			description: 'Rate movies 1-10 individually, see group average, and track how your tastes align over time.'
+		},
+		{
+			icon: Clock,
+			title: 'Watch History',
+			description: 'See all movies your group has watched together, with ratings and discussion highlights.'
 		}
 	];
 
@@ -152,7 +173,7 @@
 </script>
 
 <div class="min-h-screen bg-background">
-	<!-- Hero Section -->
+	<!-- Hero Section - UPDATED messaging -->
 	<section class="relative px-4 pt-16 pb-24">
 		<div class="absolute inset-0 -z-10 overflow-hidden">
 			<div class="absolute -top-40 right-1/4 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
@@ -166,13 +187,13 @@
 			</Badge>
 
 			<h1 class="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-				From "What should we watch?" <br />
-				<span class="text-primary">to "Let's press play!"</span>
+				From endless debates <br />
+				<span class="text-primary">to "Let's watch!" in 5 minutes</span>
 			</h1>
 
 			<p class="mx-auto mb-10 max-w-3xl text-xl text-muted-foreground">
-				Planning group movie nights doesn't have to be painful. Here's how GroupWatch makes it easy,
-				fair, and fun for everyone.
+				GroupWatch solves the hardest part of movie nights: deciding what to watch. 
+				Our smart voting system gets your group from planning to watching—fast.
 			</p>
 
 			<div class="flex justify-center gap-4">
@@ -184,18 +205,17 @@
 		</div>
 	</section>
 
-	<!-- Interactive Steps -->
+	<!--  Simpler 4-Step Process -->
 	<section class="px-4 py-12">
 		<div class="container mx-auto max-w-6xl">
 			<div class="mb-12 text-center">
-				<h2 class="mb-4 text-3xl font-bold">The 5-Step Process</h2>
+				<h2 class="mb-4 text-3xl font-bold">The 4-Step Solution</h2>
 				<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-					Follow these simple steps to go from planning to watching
+					No complex sync, no legal headaches—just smart coordination for real movie nights
 				</p>
 			</div>
 
-			<!-- Step Navigation -->
-			<div class="mb-12">
+ 			<div class="mb-12">
 				<div class="flex flex-wrap justify-center gap-4">
 					{#each steps as step, i}
 						<button
@@ -252,183 +272,150 @@
 						{#if activeStep === 0}
 							<!-- Create Group Mockup -->
 							<div class="space-y-6">
-								<div class="rounded-lg border border-border p-6">
-									<div class="mb-4">
-										<div class="mb-1 text-sm text-muted-foreground">Group Name</div>
-										<div class="text-xl font-bold">Friday Film Club</div>
+								<div class="text-center">
+									<div class="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+										<Users class="h-8 w-8 text-primary" />
 									</div>
-									<div class="flex gap-4">
-										<div class="flex-1">
-											<div class="mb-1 text-sm text-muted-foreground">Invite Link</div>
-											<div
-												class="flex items-center gap-2 rounded-lg border border-border bg-muted px-4 py-2"
-											>
-												<Link class="h-4 w-4" />
-												<span class="font-mono text-sm">groupwatch.app/fridayclub</span>
+									<h4 class="mb-2 text-xl font-bold">Friday Film Club</h4>
+									<p class="text-sm text-muted-foreground">3 members • Created just now</p>
+								</div>
+								
+								<div class="space-y-3">
+									<div class="flex items-center justify-between rounded-lg border border-border p-4">
+										<div class="flex items-center gap-3">
+											<div class="h-10 w-10 rounded-full bg-primary/20"></div>
+											<div>
+												<div class="font-medium">Alex (You)</div>
+												<div class="text-xs text-muted-foreground">Group Admin</div>
 											</div>
 										</div>
-										<Button size="sm">
+									</div>
+									
+									<div class="rounded-lg border border-dashed border-primary/30 p-4 text-center">
+										<Plus class="mx-auto mb-2 h-6 w-6 text-primary" />
+										<div class="mb-2 font-medium">Invite Friends</div>
+										<Button size="sm" class="w-full">
 											<Share2 class="mr-2 h-4 w-4" />
-											Share
+											Copy Invite Link
 										</Button>
 									</div>
-								</div>
-								<div class="grid grid-cols-2 gap-4">
-									<Button variant="outline" class="h-auto py-4">
-										<Mail class="mr-2 h-5 w-5" />
-										Invite via Email
-									</Button>
-									<Button variant="outline" class="h-auto py-4">
-										<Smartphone class="mr-2 h-5 w-5" />
-										Share to Group Chat
-									</Button>
 								</div>
 							</div>
 						{:else if activeStep === 1}
-							<!-- Suggest Movies Mockup -->
+							<!-- Suggest & Vote Mockup -->
 							<div class="space-y-4">
-								<div class="rounded-lg border border-border p-4">
-									<div class="flex items-center gap-4">
-										<div
-											class="h-16 w-12 rounded bg-gradient-to-b from-primary/20 to-secondary/20"
+								<!-- Search bar -->
+								<div class="flex gap-2">
+									<div class="relative flex-1">
+										<Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+										<input 
+											type="text" 
+											placeholder="Search movies..." 
+											class="w-full rounded-lg border border-border bg-background pl-10 pr-4 py-2 text-sm"
 										/>
-										<div class="flex-1">
-											<div class="font-semibold">Dune: Part Two</div>
-											<div class="text-sm text-muted-foreground">2024 • Sci-Fi • 2h 46m</div>
-											<div class="mt-2 flex gap-2">
-												<Badge class="text-xs">Netflix</Badge>
-												<Badge class="text-xs">Prime</Badge>
-											</div>
-										</div>
-										<Button size="sm">Add</Button>
 									</div>
+									<Button size="sm">Search</Button>
 								</div>
-								<div class="rounded-lg border border-border p-4 opacity-60">
-									<div class="flex items-center gap-4">
-										<div
-											class="h-16 w-12 rounded bg-gradient-to-b from-primary/20 to-secondary/20"
-										/>
-										<div class="flex-1">
-											<div class="font-semibold">Poor Things</div>
-											<div class="text-sm text-muted-foreground">2023 • Comedy • 2h 21m</div>
-											<div class="mt-2 flex gap-2">
-												<Badge class="text-xs">Hulu</Badge>
-											</div>
-										</div>
-										<Button size="sm" variant="outline">Added</Button>
-									</div>
-								</div>
-							</div>
-						{:else if activeStep === 2}
-							<!-- Voting Mockup -->
-							{#each [{ title: 'Dune: Part Two', votes: 5, userVote: 'up' }, { title: 'Poor Things', votes: 3, userVote: null }, { title: 'The Holdovers', votes: 2, userVote: 'down' }, { title: 'Past Lives', votes: 0, userVote: null, vetoed: true }] as movie}
-								<div
-									class={`rounded-lg border p-4 ${movie.vetoed ? 'border-destructive/30 bg-destructive/5' : 'border-border'}`}
-								>
-									<div class="mb-3 flex items-center justify-between">
-										<span class="font-medium">{movie.title}</span>
-										<div class="flex items-center gap-2">
-											{#if movie.vetoed}
-												<Badge variant="destructive">Vetoed</Badge>
-											{:else}
-												<div class="flex items-center gap-1">
-													<ThumbsUp class="h-4 w-4 text-green-500" />
-													<span class="font-semibold">{movie.votes}</span>
-												</div>
-											{/if}
-										</div>
-									</div>
-									<div class="flex gap-2">
-										<Button
-											size="sm"
-											variant={movie.userVote === 'up' ? 'default' : 'outline'}
-											class="flex-1"
-										>
-											<ThumbsUp class="mr-2 h-4 w-4" />
-											Up
-										</Button>
-										<Button
-											size="sm"
-											variant={movie.userVote === 'down' ? 'default' : 'outline'}
-											class="flex-1"
-										>
-											<ThumbsDown class="mr-2 h-4 w-4" />
-											Down
-										</Button>
-										<Button
-											size="sm"
-											variant={movie.vetoed ? 'destructive' : 'outline'}
-											class="flex-1"
-										>
-											<XCircle class="mr-2 h-4 w-4" />
-											Veto
-										</Button>
-									</div>
-								</div>
-							{/each}
-						{:else if activeStep === 3}
-							<!-- Scheduling Mockup -->
-							<div class="space-y-6">
-								<div class="flex items-center justify-between">
-									<div>
-										<div class="font-semibold">This Week</div>
-										<div class="text-sm text-muted-foreground">Feb 12 - 18</div>
-									</div>
-									<div class="flex items-center gap-2">
-										<CalendarDays class="h-4 w-4" />
-										<span class="text-sm font-medium">Time Zones: EST, PST, GMT</span>
-									</div>
-								</div>
-								<div class="grid grid-cols-3 gap-2">
-									{#each ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon'] as day, i}
-										<div class="text-center">
-											<div class="mb-2 text-sm font-medium">{day}</div>
-											<div class="space-y-1">
-												{#each ['6pm', '8pm', '9:30pm'] as time}
-													<div
-														class={`rounded-lg border px-3 py-2 text-xs ${i === 3 && time === '8pm' ? 'border-primary bg-primary/10' : 'border-border'}`}
-													>
-														{time}
+								
+								<!-- Voting cards -->
+								<div class="space-y-3">
+									{#each [{ title: 'Dune: Part Two', votes: 5, vetoed: false, streaming: ['Netflix', 'Prime'] }, { title: 'Poor Things', votes: 3, vetoed: false, streaming: ['Hulu'] }, { title: 'Past Lives', votes: 1, vetoed: true, streaming: ['Netflix', 'Hulu'] }] as movie}
+										<div class={`rounded-lg border p-4 ${movie.vetoed ? 'border-destructive/30 bg-destructive/5' : 'border-border'}`}>
+											<div class="flex items-center justify-between mb-3">
+												<span class="font-medium">{movie.title}</span>
+												{#if movie.vetoed}
+													<Badge variant="destructive">Vetoed</Badge>
+												{:else}
+													<div class="flex items-center gap-2">
+														<ThumbsUp class="h-4 w-4 text-green-500" />
+														<span class="font-semibold">{movie.votes}</span>
 													</div>
-												{/each}
+												{/if}
+											</div>
+											<div class="flex items-center justify-between">
+												<div class="flex gap-1">
+													{#each movie.streaming as service}
+														<Badge variant="outline">{service}</Badge>
+													{/each}
+												</div>
+												<div class="flex gap-1">
+													<Button size="sm" variant="outline" class="h-8 w-8 p-0">
+														<ThumbsUp class="h-4 w-4" />
+													</Button>
+													<Button size="sm" variant="outline" class="h-8 w-8 p-0">
+														<ThumbsDown class="h-4 w-4" />
+													</Button>
+													<Button size="sm" variant="outline" class="h-8 w-8 p-0">
+														<XCircle class="h-4 w-4" />
+													</Button>
+												</div>
 											</div>
 										</div>
 									{/each}
 								</div>
 							</div>
-						{:else}
-							<!-- Watch Together Mockup -->
+						{:else if activeStep === 2}
+							<!-- Make The Call Mockup -->
 							<div class="space-y-6">
-								<div
-									class="rounded-lg bg-gradient-to-r from-primary/20 to-secondary/20 p-6 text-center"
-								>
-									<div class="mb-2 text-3xl font-bold">8:00 PM</div>
-									<div class="text-muted-foreground">Tonight's Movie Time</div>
-								</div>
-								<div class="grid grid-cols-2 gap-4">
-									<div class="rounded-lg border border-border p-4">
-										<div class="flex items-center gap-3">
-											<Globe class="h-5 w-5 text-primary" />
-											<div>
-												<div class="font-semibold">Streaming On</div>
-												<div class="text-sm text-muted-foreground">Netflix, Prime</div>
-											</div>
-										</div>
+								<!-- Winner announcement -->
+								<div class="rounded-lg border border-primary/30 bg-primary/5 p-6 text-center">
+									<div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary">
+										<TrendingUp class="h-6 w-6 text-primary-foreground" />
 									</div>
-									<div class="rounded-lg border border-border p-4">
-										<div class="flex items-center gap-3">
-											<MessageSquare class="h-5 w-5 text-primary" />
-											<div>
-												<div class="font-semibold">Live Chat</div>
-												<div class="text-sm text-muted-foreground">Ready to go</div>
-											</div>
-										</div>
+									<h4 class="mb-2 text-xl font-bold">Winner Selected!</h4>
+									<p class="text-muted-foreground">Dune: Part Two</p>
+									<div class="mt-4 text-sm">
+										<div class="text-muted-foreground">Available on: <span class="font-medium">Netflix, Prime</span></div>
+										<div class="text-muted-foreground">Runtime: <span class="font-medium">2h 46m</span></div>
 									</div>
 								</div>
-								<Button class="w-full" size="lg">
-									<Play class="mr-2 h-5 w-5" />
-									Start Watch Party
-								</Button>
+								
+								<!-- Schedule options -->
+								<div class="space-y-4">
+									<h5 class="font-semibold">Pick a Time</h5>
+									<div class="grid grid-cols-3 gap-2">
+										{#each ['Fri 8 PM', 'Sat 3 PM', 'Sun 7 PM'] as time}
+											<Button variant="outline" class="h-auto py-3">
+												<Calendar class="mr-2 h-4 w-4" />
+												{time}
+											</Button>
+										{/each}
+									</div>
+									
+									<Button class="w-full">
+										<Calendar class="mr-2 h-4 w-4" />
+										Send Calendar Invites
+									</Button>
+								</div>
+							</div>
+						{:else}
+							<!-- Watch & Discuss Mockup -->
+							<div class="space-y-6">
+								<!-- Watch tracking -->
+								<div class="rounded-lg border border-border p-6 text-center">
+									<div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
+										<Timer class="h-6 w-6 text-green-500" />
+									</div>
+									<h4 class="mb-2 text-xl font-bold">We're Watching!</h4>
+									<p class="text-sm text-muted-foreground">Started at 8:05 PM • Ends ~10:51 PM</p>
+									<Button variant="outline" class="mt-4">Movie Finished</Button>
+								</div>
+								
+								<!-- Post-watch features -->
+								<div class="grid gap-3">
+									<Button variant="outline" class="justify-start">
+										<MessageSquare class="mr-3 h-4 w-4" />
+										Start Discussion
+									</Button>
+									<Button variant="outline" class="justify-start">
+										<Star class="mr-3 h-4 w-4" />
+										Rate This Movie
+									</Button>
+									<Button variant="outline" class="justify-start">
+										<Calendar class="mr-3 h-4 w-4" />
+										Plan Next Movie Night
+									</Button>
+								</div>
 							</div>
 						{/if}
 					</div>
@@ -437,13 +424,13 @@
 		</div>
 	</section>
 
-	<!-- Voting System Deep Dive -->
+	<!-- Voting System -->
 	<section id="voting" class="bg-muted/30 px-4 py-20">
 		<div class="container mx-auto max-w-6xl">
 			<div class="mb-12 text-center">
-				<h2 class="mb-4 text-3xl font-bold">Fair Voting System</h2>
+				<h2 class="mb-4 text-3xl font-bold">Fair & Fast Decision Making</h2>
 				<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-					Designed to respect everyone's opinion while making decisions easy
+					Our voting system is designed to respect everyone's opinion while getting to a decision quickly
 				</p>
 			</div>
 
@@ -459,65 +446,42 @@
 							<CardTitle>{system.title}</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p class="text-sm text-muted-foreground">{system.description}</p>
+							<p class="mb-2 text-sm text-muted-foreground">{system.description}</p>
+							{#if system.note}
+								<p class="text-xs text-muted-foreground">{system.note}</p>
+							{/if}
 						</CardContent>
 					</Card>
 				{/each}
 			</div>
 
-			<div class="rounded-2xl border border-border bg-card p-8">
-				<div class="grid items-center gap-8 lg:grid-cols-2">
-					<div>
-						<h3 class="mb-4 text-2xl font-bold">How We Calculate Winners</h3>
-						<p class="mb-6 text-muted-foreground">
-							Our algorithm balances majority preference with individual veto power to ensure nobody
-							has to watch something they hate.
-						</p>
-						<ul class="space-y-3">
-							{#each ['Movies with vetoes are automatically removed', 'Movies sorted by net votes (upvotes - downvotes)', 'Ties broken by number of upvotes', 'If no consensus, we suggest top 3 for group chat discussion'] as item}
-								<li class="flex items-center gap-3">
-									<CheckCircle class="h-5 w-5 text-primary" />
-									<span>{item}</span>
-								</li>
-							{/each}
-						</ul>
-					</div>
-					<div class="rounded-lg bg-muted p-6">
-						<div class="mb-4 font-semibold">Live Voting Results</div>
-						<div class="space-y-4">
-							{#each [{ movie: 'Dune: Part Two', up: 5, down: 1, veto: false, percent: 85 }, { movie: 'Poor Things', up: 3, down: 0, veto: false, percent: 60 }, { movie: 'The Holdovers', up: 2, down: 2, veto: false, percent: 40 }, { movie: 'Past Lives', up: 1, down: 0, veto: true, percent: 0 }] as result}
-								<div>
-									<div class="mb-1 flex justify-between">
-										<span
-											class={`text-sm ${result.veto ? 'text-muted-foreground line-through' : ''}`}
-										>
-											{result.movie}
-										</span>
-										<span class="text-sm font-medium">{result.percent}%</span>
-									</div>
-									<Progress value={result.percent} class="h-2" />
-									<div class="mt-1 flex justify-between text-xs text-muted-foreground">
-										<span>↑ {result.up} • ↓ {result.down}</span>
-										{#if result.veto}
-											<span class="text-destructive">Vetoed</span>
-										{/if}
-									</div>
+			<!-- UPDATED: Added post-watch features -->
+			<div class="mb-12 text-center">
+				<h3 class="mb-8 text-2xl font-bold">More Than Just Voting</h3>
+				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+					{#each postWatchFeatures as feature}
+						<Card>
+							<CardContent class="p-6">
+								<div class="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+									<feature.icon class="h-6 w-6 text-primary" />
 								</div>
-							{/each}
-						</div>
-					</div>
+								<h4 class="mb-2 font-semibold">{feature.title}</h4>
+								<p class="text-sm text-muted-foreground">{feature.description}</p>
+							</CardContent>
+						</Card>
+					{/each}
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- FAQ Section -->
+	<!-- FAQ Section - UPDATED questions -->
 	<section id="faq" class="px-4 py-20">
 		<div class="container mx-auto max-w-4xl">
 			<div class="mb-12 text-center">
 				<h2 class="mb-4 text-3xl font-bold">Frequently Asked Questions</h2>
 				<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-					Everything you need to know about GroupWatch
+					Everything you need to know about GroupWatch's focused approach
 				</p>
 			</div>
 
@@ -543,7 +507,7 @@
 		</div>
 	</section>
 
-	<!-- Final CTA -->
+	<!-- Final CTA - UPDATED messaging -->
 	<section class="px-4 py-20">
 		<div class="container mx-auto max-w-4xl text-center">
 			<Card class="border-primary/20 bg-gradient-to-b from-background to-primary/5">
@@ -551,21 +515,23 @@
 					<div
 						class="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary"
 					>
-						<Play class="h-8 w-8 text-primary-foreground" />
+						<Vote class="h-8 w-8 text-primary-foreground" />
 					</div>
-					<h2 class="mb-4 text-3xl font-bold">Ready to simplify your movie nights?</h2>
+					<h2 class="mb-4 text-3xl font-bold">Ready to end the "What should we watch?" debate?</h2>
 					<p class="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-						Join thousands of groups using GroupWatch to plan perfect movie nights.
+						Join thousands of groups using GroupWatch to make movie night decisions fast and fair.
 					</p>
 					<div class="flex flex-col justify-center gap-4 sm:flex-row">
 						<Button size="lg" class="h-14 px-8 text-base">
 							Create Your First Group
 							<ArrowRight class="ml-2 h-5 w-5" />
 						</Button>
-						<Button size="lg" variant="outline" class="h-14 px-8">Contact Sales (Teams)</Button>
+						<Button size="lg" variant="outline" class="h-14 px-8">
+							See Example Group
+						</Button>
 					</div>
 					<p class="mt-6 text-sm text-muted-foreground">
-						No credit card required • Free forever for personal use
+						No credit card required • Free forever for small groups
 					</p>
 				</CardContent>
 			</Card>

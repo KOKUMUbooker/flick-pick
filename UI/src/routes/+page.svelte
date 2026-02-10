@@ -13,7 +13,13 @@
 		Shield,
 		MessageSquare,
 		ChevronRight,
-		Star
+		Star,
+
+		TrendingUp,
+
+		Timer
+
+
 	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent } from '$lib/components/ui/card';
@@ -28,72 +34,79 @@
 	];
 
 	// Features
+
 	const features = [
 		{
 			icon: Vote,
 			title: 'Smart Voting',
-			description: 'Vote thumbs up/down with veto power. See real-time results.',
+			description: 'Vote thumbs up/down with veto power. See real-time results and rankings.',
 			color: 'from-primary/20 to-primary/5'
 		},
 		{
-			icon: Calendar,
-			title: 'Auto Scheduling',
-			description: 'Find perfect times across time zones. Calendar integration.',
-			color: 'from-secondary/20 to-secondary/5'
-		},
-		{
 			icon: Film,
-			title: 'Streaming Check',
-			description: "See what's available on Netflix, Hulu, Prime, and more.",
-			color: 'from-accent/20 to-accent/5'
-		},
-		{
-			icon: MessageSquare,
-			title: 'Group Chat',
-			description: 'Built-in chat for planning and post-watch discussions.',
+			title: 'Movie Discovery',
+			description: 'Search millions of movies with streaming availability and ratings.',
 			color: 'from-purple-500/20 to-purple-500/5'
 		},
 		{
-			icon: Shield,
-			title: 'Fair System',
-			description: 'Majority rules with veto protection. Everyone gets a say.',
+			icon: Calendar,
+			title: 'Easy Scheduling',
+			description: 'Find times that work for everyone and send calendar invites.',
 			color: 'from-green-500/20 to-green-500/5'
 		},
 		{
-			icon: Zap,
-			title: 'Quick Setup',
-			description: 'Create a group and invite friends in under 60 seconds.',
+			icon: MessageSquare,
+			title: 'Post-Watch Chat',
+			description: 'Discuss movies after watching with spoiler-safe threads.',
+			color: 'from-blue-500/20 to-blue-500/5'
+		},
+		{
+			icon: Star,
+			title: 'Group Ratings',
+			description: 'Rate movies together and see how your tastes align over time.',
+			color: 'from-yellow-500/20 to-yellow-500/5'
+		},
+		{
+			icon: Timer,
+			title: 'Watch Tracking',
+			description: 'Mark when you start watching and build a group watch history.',
 			color: 'from-orange-500/20 to-orange-500/5'
 		}
 	];
+	
 
 	// How it works steps
 	const steps = [
 		{
 			number: '01',
-			title: 'Create a Group',
-			description: 'Name your group and invite friends via link or email.',
-			icon: Users
+			title: 'Create & Invite',
+			description: 'Start a group and invite friends in seconds.',
+			icon: Users,
+			details: 'No sign-up needed for friends to vote'
 		},
 		{
 			number: '02',
 			title: 'Suggest & Vote',
-			description: 'Add movie options and vote together in real-time.',
-			icon: Vote
+			description: 'Add movies and vote together in real-time.',
+			icon: Vote,
+			details: 'Veto power ensures no bad choices'
 		},
 		{
 			number: '03',
-			title: 'Find Time',
-			description: 'Check availability and schedule the perfect watch time.',
-			icon: Calendar
+			title: 'Pick & Schedule',
+			description: 'See the winner and schedule your movie night.',
+			icon: TrendingUp,
+			details: 'Check streaming availability for everyone'
 		},
 		{
 			number: '04',
-			title: 'Watch Together',
-			description: 'Sync playback and chat during your movie night.',
-			icon: Play
+			title: 'Watch & Discuss',
+			description: 'Track your watch and chat about it after.',
+			icon: MessageSquare,
+			details: 'Spoiler-safe discussions and group ratings'
 		}
 	];
+ 
 </script>
 
 <div class="min-h-screen overflow-hidden bg-background">
@@ -215,76 +228,6 @@
 						</div>
 					</div>
 				{/each}
-			</div>
-		</div>
-	</section>
-
-	<!-- Demo Preview -->
-	<section class="px-4 py-20">
-		<div class="container mx-auto max-w-6xl">
-			<div class="grid items-center gap-12 lg:grid-cols-2">
-				<div>
-					<h2 class="mb-4 text-3xl font-bold sm:text-4xl">See It In Action</h2>
-					<p class="mb-6 text-lg text-muted-foreground">
-						Watch how GroupWatch turns chaotic group chats into organized movie plans.
-					</p>
-					<ul class="space-y-4">
-						{#each ['Real-time voting with live updates', 'Calendar integration across time zones', 'Streaming service compatibility check', 'Built-in chat and discussion threads', 'Mobile-friendly for on-the-go planning'] as item}
-							<li class="flex items-center gap-3">
-								<CheckCircle class="h-5 w-5 flex-shrink-0 text-primary" />
-								<span>{item}</span>
-							</li>
-						{/each}
-					</ul>
-				</div>
-
-				<div class="relative">
-					<div class="relative rounded-2xl border border-border bg-card p-8 shadow-2xl">
-						<div class="mb-6 flex items-center justify-between">
-							<div>
-								<div class="text-sm font-medium text-muted-foreground">Movie Night</div>
-								<div class="text-xl font-bold">Friday Film Club</div>
-							</div>
-							<div class="flex -space-x-2">
-								{#each [1, 2, 3] as i}
-									<div class="h-8 w-8 rounded-full border-2 border-card bg-primary/20" />
-								{/each}
-								<div
-									class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-card bg-muted text-xs"
-								>
-									+3
-								</div>
-							</div>
-						</div>
-
-						<div class="space-y-4">
-							{#each [{ title: 'Dune: Part Two', votes: 5, leading: true }, { title: 'Poor Things', votes: 3 }, { title: 'The Holdovers', votes: 2 }] as movie}
-								<div
-									class={`rounded-lg border p-4 ${movie.leading ? 'border-primary/30 bg-primary/5' : 'border-border'}`}
-								>
-									<div class="mb-2 flex items-center justify-between">
-										<span class="font-medium">{movie.title}</span>
-										<div class="flex items-center gap-2">
-											<Vote class="h-4 w-4 text-primary" />
-											<span class="font-semibold">{movie.votes}</span>
-										</div>
-									</div>
-									<div class="h-2 overflow-hidden rounded-full bg-muted">
-										<div
-											class="h-full rounded-full bg-primary"
-											style={`width: ${(movie.votes / 5) * 100}%`}
-										/>
-									</div>
-								</div>
-							{/each}
-						</div>
-
-						<div class="mt-6 flex gap-3">
-							<Button class="flex-1">Add Movie</Button>
-							<Button class="flex-1" variant="outline">Invite Friends</Button>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</section>
