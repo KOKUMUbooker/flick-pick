@@ -820,7 +820,7 @@
 			<div class="flex h-full items-center justify-center p-8">
 				<div class="max-w-md text-center">
 					<Users class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-					<h2 class="mb-2 text-2xl font-semibold">Welcome to GroupWatch</h2>
+					<h2 class="mb-2 text-2xl font-semibold">Welcome to FlickPick</h2>
 					<p class="mb-6 text-muted-foreground">
 						Select a group from the sidebar or create your first group to start planning movie nights.
 					</p>

@@ -192,7 +192,7 @@
 			</h1>
 
 			<p class="mx-auto mb-10 max-w-3xl text-xl text-muted-foreground">
-				GroupWatch solves the hardest part of movie nights: deciding what to watch. 
+				FlickPick solves the hardest part of movie nights: deciding what to watch. 
 				Our smart voting system gets your group from planning to watching—fast.
 			</p>
 
@@ -481,7 +481,7 @@
 			<div class="mb-12 text-center">
 				<h2 class="mb-4 text-3xl font-bold">Frequently Asked Questions</h2>
 				<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-					Everything you need to know about GroupWatch's focused approach
+					Everything you need to know about FlickPick's focused approach
 				</p>
 			</div>
 
@@ -519,7 +519,7 @@
 					</div>
 					<h2 class="mb-4 text-3xl font-bold">Ready to end the "What should we watch?" debate?</h2>
 					<p class="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-						Join thousands of groups using GroupWatch to make movie night decisions fast and fair.
+						Join thousands of groups using FlickPick to make movie night decisions fast and fair.
 					</p>
 					<div class="flex flex-col justify-center gap-4 sm:flex-row">
 						<Button size="lg" class="h-14 px-8 text-base">
