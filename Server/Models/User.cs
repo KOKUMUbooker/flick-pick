@@ -22,6 +22,9 @@ public class User : EntityBase
     public string? EmailVerificationToken { get; set; }
     public DateTime? EmailVerificationTokenExpiry { get; set; }
 
+    public string? PasswordResetTokenHash { get; set; }
+    public DateTime? PasswordResetTokenExpiry { get; set; }
+
     // Navigation properties
     public Role Role { get; set; } = null!;
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();

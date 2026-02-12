@@ -43,7 +43,7 @@ public class AuthController : ControllerBase
             // Send verification email
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
             var verificationUrl =  $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
-            string htmlBody =  await _templateService.GenerateVerificationEmail("Movie-Manager", user.FullName,verificationUrl);
+            string htmlBody =  await _templateService.GenerateVerificationEmail("FlickPick", user.FullName,verificationUrl);
 
             await _emailService.SendEmail(user.Email,"Verify email",htmlBody);
             
@@ -146,8 +146,7 @@ public class AuthController : ControllerBase
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.EmailVerificationToken == dto.Token);
         
-        if (user == null)
-            return BadRequest(new CustomError{ Message = "Invalid token." });
+        if (user == null) return BadRequest(new CustomError{ Message = "Invalid token." });
         
         // Generate new token
         user.EmailVerificationToken = _userService.GenerateVerificationToken();
@@ -157,10 +156,70 @@ public class AuthController : ControllerBase
         // Send verification email
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var verificationUrl =  $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
-        string htmlBody =  await _templateService.GenerateVerificationEmail("Movie-Manager", user.FullName,verificationUrl);
+        string htmlBody =  await _templateService.GenerateVerificationEmail("FlickPick", user.FullName,verificationUrl);
 
         await _emailService.SendEmail(user.Email,"Verify email",htmlBody);
         
         return Ok(new { Message = "Verification email sent." ,EmailVerificationToken = user.EmailVerificationToken });
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (user != null)
+        {
+            var rawToken = _userService.GenerateVerificationToken();
+
+            var hashedToken = Convert.ToBase64String(
+                SHA256.HashData(Encoding.UTF8.GetBytes(rawToken))
+            );
+
+            user.PasswordResetTokenHash = hashedToken;
+            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(30);
+
+            await _context.SaveChangesAsync();
+
+            string clientUrl = _configuration.GetValue<string>("UIClient:URL") ?? "http://localhost:5173";
+            var resetUrl = $"{clientUrl}/reset-password?tkn={rawToken}";
+
+            var htmlBody = await _templateService
+                .GeneratePasswordResetEmail("FlickPick", user.FullName, resetUrl);
+
+            await _emailService.SendEmail(user.Email, "Password reset", htmlBody);
+        }
+
+        return Ok(new { Message = "If an account exists, a reset link has been sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto dto)
+    {
+        var hashedToken = Convert.ToBase64String(
+            SHA256.HashData(Encoding.UTF8.GetBytes(dto.Token))
+        );
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.PasswordResetTokenHash == hashedToken);
+
+        if (user == null)
+            return BadRequest(new CustomError { Message = "Invalid or expired token." });
+
+        if (user.PasswordResetTokenExpiry < DateTime.UtcNow)
+            return BadRequest(new CustomError { Message = "Invalid or expired token." });
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        user.PasswordResetTokenHash = null;
+        user.PasswordResetTokenExpiry = null;
+
+        await _context.SaveChangesAsync();
+
+        await _context.RefreshTokens
+            .Where(rt => rt.UserId == user.Id)
+            .ExecuteDeleteAsync();
+
+        return Ok(new { Message = "Password reset successfully." });
+    }
+
 }

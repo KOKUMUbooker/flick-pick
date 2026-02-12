@@ -37,5 +37,4 @@ public class RefreshToken : EntityBase
     public Guid ClientId { get; set; }
 
     public Client Client { get; set; } = null!;
-
 }

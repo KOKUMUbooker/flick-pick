@@ -74,23 +74,6 @@
 		<div class="flex flex-col items-center gap-1 text-center">
 			<h1 class="text-2xl font-bold">Reset password</h1>
 		</div>
-
-		<Field.Field>
-			<Field.Label for="OldPassword">Old Password</Field.Label>
-			<Input
-				id="OldPassword"
-				bind:value={formData.OldPassword}
-				onblur={onBlur.bind(null, 'OldPassword')}
-				oninput={() => touched.OldPassword && validateField('OldPassword')}
-				class={`${errors?.['OldPassword'] ? 'border-destructive' : ''}`}
-				type="Oldpassword"
-			/>
-			<HelperText
-				variant={errors?.['OldPassword'] ? 'error' : 'info'}
-				message={'Must be at least 8 characters long.'}
-			></HelperText>
-		</Field.Field>
-
 		<Field.Field>
 			<Field.Label for="NewPassword">New</Field.Label>
 			<Input

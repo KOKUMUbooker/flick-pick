@@ -12,6 +12,6 @@
     - If any other error UI should just display the error message to user
 
 ## Forgot password Flow
-1. User enters email that he should get the password reset link & sends it to server which will send email to it if it exists
+1. User enters email that he should get the password reset link containing a token & sends it to server which will send email to it if it exists
 2. User goes to their email clicks on the link & gets taken to the /reset-password page on the UI where, he provides new & old password then submits.
    - If everything goes on well, take user to login page
