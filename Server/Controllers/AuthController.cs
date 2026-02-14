@@ -66,12 +66,7 @@ public class AuthController : ControllerBase
 
         var result = await _userService.AuthenticateUserAsync(loginDto, ipAddress);
 
-        if (result.EmailVerificationToken != null) // Send details for the email verification so that UI can use it 
-        {
-            return Ok(result.Data);
-        }
-
-        if (result.ErrorType != AuthErrorType.None)
+        if (result.ErrorType != AuthErrorType.None || result.Data == null)
         {
             return result.ErrorType switch
             {
@@ -86,8 +81,15 @@ public class AuthController : ControllerBase
         }
 
         // Set refresh token in HTTP-only cookie
-        SetRefreshTokenCookie(
+        SetAuthTokenCookie(
+            "refreshToken",
             result.Data.RefreshToken,
+            result.Data.AccessTokenExpiresAt
+        );
+
+        SetAuthTokenCookie(
+            "accessToken",
+            result.Data.AccessToken,
             result.Data.AccessTokenExpiresAt
         );
 
@@ -147,7 +149,7 @@ public class AuthController : ControllerBase
         
         // return Ok(new { message = "Email verified successfully." });
         string clientUrl = _configuration.GetValue<string>("UIClient:URL") ?? "http://localhost:5173";
-        return Redirect($"{clientUrl}/email-verified?email=${user.Email}");
+        return Redirect($"{clientUrl}/email-verified?email={user.Email}");
     }
 
     [HttpPost("resend-verification")]
@@ -232,16 +234,16 @@ public class AuthController : ControllerBase
         return Ok(new { Message = "Password reset successfully." });
     }
 
-    private void SetRefreshTokenCookie(string refreshToken, DateTime expiresAt)
+    private void SetAuthTokenCookie(string cookieName,string refreshToken, DateTime expiresAt)
     {
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
             Secure = true,               // MUST be true in production
-            SameSite = SameSiteMode.Strict, // or Lax depending on frontend
+            SameSite = SameSiteMode.None, // TODO: Once figured how to serve UI from backend update this to SameSiteMode.Strict
             Expires = expiresAt
         };
 
-        Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+        Response.Cookies.Append(cookieName, refreshToken, cookieOptions);
     }
 }

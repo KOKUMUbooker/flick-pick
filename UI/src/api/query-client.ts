@@ -1,4 +1,4 @@
-import { handleApiError } from '@/error/error-handler';
+import { handleApiError } from '../utils/error-handler';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/svelte-query'
 
 export const queryClient = new QueryClient({
@@ -11,5 +11,5 @@ export const queryClient = new QueryClient({
         onError: (error) => {
             handleApiError(error);
         }
-    })
+    }),
 });

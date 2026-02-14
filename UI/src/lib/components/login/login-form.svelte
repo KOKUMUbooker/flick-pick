@@ -20,9 +20,8 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 
-    const searchParams = page.url.searchParams;
-
-    const paramEmail = searchParams.get('email') || '';
+	const searchParams = page.url.searchParams;
+	const paramEmail = searchParams.get('email') || '';
 
 	let {
 		ref = $bindable(null),
@@ -41,16 +40,15 @@
 		Error, // error type
 		LoginData // variables type
 	>(() => ({
-		mutationFn: async (data) =>
-		{
+		mutationFn: async (data) => {
 			return apiFetch(`${API_BASE_URL}/api/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
-			})
+			});
 		}
 	}));
- 
+
 	function validateField(field: keyof typeof formData) {
 		const partial = loginSchema.pick({ [field]: true } as any);
 		const result = partial.safeParse({ [field]: formData[field] });
@@ -88,7 +86,7 @@
 			return;
 		}
 
-		goto('/dashboard')
+		goto('/dashboard');
 	}
 
 	const id = $props.id();
@@ -144,9 +142,10 @@
 		<Field>
 			<Button disabled={loginMutation.isPending} type="submit">
 				{#if loginMutation.isPending}
-				 <Spinner />
+					<Spinner />
 				{/if}
-				{loginMutation.isPending? "Logging in..." :"Login"}</Button>
+				{loginMutation.isPending ? 'Logging in...' : 'Login'}</Button
+			>
 		</Field>
 		<Field>
 			<FieldDescription class="text-center">

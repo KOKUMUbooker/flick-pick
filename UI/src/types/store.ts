@@ -1,6 +1,15 @@
-import type { User } from "@lucide/svelte";
+export interface User {
+    id : string;
+    email : string;
+    role : string;
+}
 
-export interface Store {
-    user?: User;
-    accessToken?: string
+export interface IAuthData {
+  accessToken :string,
+  user: User
+}
+
+export interface IAuthState {
+  accessToken? :string,
+  user?: User
 }

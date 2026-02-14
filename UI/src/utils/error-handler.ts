@@ -1,5 +1,5 @@
  import { toast } from "svelte-sonner";
-import type { ApiError } from "../../types/error";
+import type { ApiError } from "../types/error";
 
 export function handleApiError(error: unknown) {
     if (!(error instanceof Error)) {

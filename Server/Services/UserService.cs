@@ -86,8 +86,11 @@ public class UserService : IUserService
             };
         }
 
+        Console.WriteLine("Starting to genrate ACC Token ======================================================");
         var accessToken = _tokenService.GenerateAccessToken(user, user.Role.RoleValue, out string jwtId, client);
+        Console.WriteLine("++++++++++++++ Access token : ",accessToken);
         var refreshToken = _tokenService.GenerateRefreshToken(ipAddress, jwtId, client, user.Id);
+        Console.WriteLine("############# Refresh token : ",refreshToken);
 
         _dbContext.RefreshTokens.Add(refreshToken);
         await _dbContext.SaveChangesAsync();

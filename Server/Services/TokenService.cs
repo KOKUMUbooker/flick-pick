@@ -29,7 +29,7 @@ public class TokenService : ITokenService
         jwtId = Guid.NewGuid().ToString();
 
         // Read issuer and token expiration from configuration, with default fallback values
-        var issuer = _configuration["JwtSettings:Issuer"] ?? "DefaultIssuer";
+        var issuer = _configuration["JwtSettings:Issuer"] ?? "FlickPick";
         var accessTokenExpirationMinutes = int.TryParse(_configuration["JwtSettings:AccessTokenExpirationMinutes"], out var val) ? val : 15;
 
         // Claims to be embedded in the JWT token
@@ -40,8 +40,9 @@ public class TokenService : ITokenService
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Iss, issuer),
             new Claim(JwtRegisteredClaimNames.Aud, client.ClientURL),
-            new Claim("client_id", client.ClientId),
-            new Claim("role",role.ToString())
+            new Claim("clientId", client.ClientId),
+            new Claim("role", role.ToString()),
+            new Claim("userId", user.Id.ToString())
         };
 
         // Create signing credentials with the symmetric security key and HMAC SHA256 algorithm

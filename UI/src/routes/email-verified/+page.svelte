@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import mvImg from '$lib/assets/movie.jpg';
 	import Button from '@/components/ui/button/button.svelte';
 	import { ArrowRight, MailCheck } from '@lucide/svelte';
-	import { page } from '$app/stores';
 
-	$: email = $page.url.searchParams.get('email');
-	let loginRoute = "/login"
-	if (email)  loginRoute += `${email}`
+	// Extract 'email' from URL query params
+	let email = page.url.searchParams.get('email');
+
+	let loginRoute = '/login';
+	if (email) loginRoute += `?email=${email}`;
 </script>
 
 <div class="grid min-h-svh lg:grid-cols-2">
