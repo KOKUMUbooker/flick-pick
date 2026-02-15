@@ -23,4 +23,5 @@ public class UIAuthState
     public string Id { get; set; } = String.Empty;
     public string Email { get; set; } = String.Empty;
     public string Role { get; set; } = String.Empty;
+    public string FullName { get; set; } = String.Empty;
 }

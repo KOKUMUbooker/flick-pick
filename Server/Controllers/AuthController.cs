@@ -241,6 +241,24 @@ public class AuthController : ControllerBase
         return Ok(new { Message = "Password reset successfully." });
     }
 
+     [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var refreshToken = Request.Cookies["refreshToken"];
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        if (refreshToken != null)
+        {
+            await _userService.RevokeRefreshTokenAsync(refreshToken,ipAddress);
+        }
+
+        Response.Cookies.Delete("accessToken");
+        Response.Cookies.Delete("refreshToken");
+
+        return Ok();
+    }
+
+
     private void SetAuthTokenCookie(string cookieName,string refreshToken, DateTime expiresAt)
     {
         var cookieOptions = new CookieOptions

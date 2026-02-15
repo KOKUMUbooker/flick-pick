@@ -75,7 +75,6 @@ public class UserService : IUserService
                 EmailVerificationToken = user.EmailVerificationToken,
                 ErrorType = AuthErrorType.EmailNotVerified,
                 ErrorMessage = "Email not verified.",
-
             };
         }
 
@@ -105,6 +104,7 @@ public class UserService : IUserService
                 UserDetails = new UIAuthState { 
                     Id = user.Id.ToString(), 
                     Email = user.Email,
+                    FullName = user.FullName,
                     Role = ((int)user.Role.RoleValue).ToString() // To get the numeric value & not the key
                 }
             }
