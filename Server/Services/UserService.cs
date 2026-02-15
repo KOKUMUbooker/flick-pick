@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using FlickPickApp.DTOs;
 using FlickPickApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlickPickApp.Services;
 
@@ -71,8 +72,9 @@ public class UserService : IUserService
         {
             return new AuthResult
             {
+                EmailVerificationToken = user.EmailVerificationToken,
                 ErrorType = AuthErrorType.EmailNotVerified,
-                ErrorMessage = "Email not verified."
+                ErrorMessage = "Email not verified.",
             };
         }
 
@@ -98,7 +100,13 @@ public class UserService : IUserService
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.Token,
-                AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15)
+                AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15),
+                UserDetails = new UIAuthState { 
+                    Id = user.Id.ToString(), 
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    Role = ((int)user.Role.RoleValue).ToString() // To get the numeric value & not the key
+                }
             }
         };
     }

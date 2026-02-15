@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import mvImg from '$lib/assets/movie.jpg';
 	import Button from '@/components/ui/button/button.svelte';
 	import { ArrowRight, MailCheck } from '@lucide/svelte';
+
+	// Extract 'email' from URL query params
+	let email = page.url.searchParams.get('email');
+
+	let loginRoute = '/login';
+	if (email) loginRoute += `?email=${email}`;
 </script>
 
 <div class="grid min-h-svh lg:grid-cols-2">
@@ -20,7 +27,7 @@
 					<p class="mt-2 text-muted-foreground">
 						Thanks for verifying your email — your account is now fully active.
 					</p>
-					<Button class="mt-4 w-full" onclick={() => goto('/login')}>
+					<Button class="mt-4 w-full" onclick={() => goto(loginRoute)}>
 						Go to Login
 						<ArrowRight class="ml-2 h-4 w-4" />
 					</Button>

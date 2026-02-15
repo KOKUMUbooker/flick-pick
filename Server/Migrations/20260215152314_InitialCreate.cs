@@ -121,7 +121,7 @@ namespace FlickPick.Migrations
                 schema: "app",
                 table: "Clients",
                 columns: new[] { "Id", "ClientId", "ClientSecret", "ClientURL", "Created", "IsActive", "LastModified", "Name" },
-                values: new object[] { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "movie-manager-web", "bW92aWUtbWFuYWdlci1zZWNyZXQta2V5", "https://localhost:5176", new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 619, DateTimeKind.Unspecified).AddTicks(1891), new TimeSpan(0, 0, 0, 0, 0)), true, new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 619, DateTimeKind.Unspecified).AddTicks(1891), new TimeSpan(0, 0, 0, 0, 0)), "Movie Manager Web Application" });
+                values: new object[] { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "movie-manager-web", "TXlTdXBlclNlY3VyZUFuZFJhbmRvbUtleVRoYXRMb29rc0p1c3RBd2Vzb21lQW5kTmVlZHNUb0JlVmVyeVZlcnlMb25nISEhMTExb25lZWxldmVu", "https://localhost:5173", new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 638, DateTimeKind.Unspecified).AddTicks(7312), new TimeSpan(0, 0, 0, 0, 0)), true, new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 638, DateTimeKind.Unspecified).AddTicks(7312), new TimeSpan(0, 0, 0, 0, 0)), "Movie Manager Web Application" });
 
             migrationBuilder.InsertData(
                 schema: "app",
@@ -129,15 +129,15 @@ namespace FlickPick.Migrations
                 columns: new[] { "Id", "Created", "LastModified", "RoleValue" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 493, DateTimeKind.Unspecified).AddTicks(2157), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 493, DateTimeKind.Unspecified).AddTicks(2157), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 493, DateTimeKind.Unspecified).AddTicks(2157), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 493, DateTimeKind.Unspecified).AddTicks(2157), new TimeSpan(0, 0, 0, 0, 0)), 2 }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 369, DateTimeKind.Unspecified).AddTicks(8811), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 369, DateTimeKind.Unspecified).AddTicks(8811), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 369, DateTimeKind.Unspecified).AddTicks(8811), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 369, DateTimeKind.Unspecified).AddTicks(8811), new TimeSpan(0, 0, 0, 0, 0)), 2 }
                 });
 
             migrationBuilder.InsertData(
                 schema: "app",
                 table: "Users",
                 columns: new[] { "Id", "Created", "Email", "EmailVerificationToken", "EmailVerificationTokenExpiry", "EmailVerified", "FullName", "LastModified", "PasswordHash", "PasswordResetTokenExpiry", "PasswordResetTokenHash", "RoleId" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 493, DateTimeKind.Unspecified).AddTicks(2361), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", null, null, false, "System Administrator", new DateTimeOffset(new DateTime(2026, 2, 12, 15, 43, 7, 493, DateTimeKind.Unspecified).AddTicks(2361), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$g3rjeTAQjGfznPyxE7Uw6.vQh5H3GYGTHJkjeiD43MPXiZ4KXRSyO", null, null, new Guid("00000000-0000-0000-0000-000000000001") });
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 369, DateTimeKind.Unspecified).AddTicks(9278), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", null, null, false, "System Administrator", new DateTimeOffset(new DateTime(2026, 2, 15, 15, 23, 13, 369, DateTimeKind.Unspecified).AddTicks(9278), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$llRxVTn6/RSX.HCx2SaITu..tA0I4Qe.gF2WfplwsDFe3z5WZIMNq", null, null, new Guid("00000000-0000-0000-0000-000000000001") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clients_ClientId",

@@ -1,6 +1,7 @@
 <!-- src/lib/components/ui/loading-overlay.svelte -->
 <script lang="ts">
-	import { Spinner } from '$lib/components/ui/spinner';
+	// import { Spinner } from '$lib/components/ui/spinner';
+	import { Loader2 } from '@lucide/svelte';
 	// import { Loader2 } from '@lucide/svelte';
 
 	export let show: boolean = false;
@@ -53,12 +54,12 @@
 			<!-- Spinner -->
 			<div class="relative">
 				<!-- Option 1: Using shadcn Spinner component -->
-				<Spinner size={spinnerSize} class={spinnerColorMap[spinnerColor]} />
+				<!-- <Spinner size={spinnerSize} class={spinnerColorMap[spinnerColor]} /> -->
 
 				<!-- Option 2: Using lucide icon -->
-				<!--
+				
                 <Loader2 class={`${spinnerSizeMap[spinnerSize]} ${spinnerColorMap[spinnerColor]} animate-spin`} />
-                -->
+               
 			</div>
 
 			<!-- Message -->

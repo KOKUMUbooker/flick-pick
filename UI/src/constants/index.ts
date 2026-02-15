@@ -1,1 +1,1 @@
-export const CLIENT_ID = "cccccccc-cccc-cccc-cccc-cccccccccccc";
+export const CLIENT_ID = "movie-manager-web";

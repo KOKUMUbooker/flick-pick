@@ -6,10 +6,20 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { resetPasswordBaseSchema, resetPasswordSchema } from '@/forms';
 	import HelperText from '../common/HelperText.svelte';
+	import { page } from '$app/state';
+	import { createMutation } from '@tanstack/svelte-query';
+	import { API_BASE_URL } from '../../../api/urls';
+	import { apiFetch, type PasswordResetData } from '../../../api';
+	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
+	import Spinner from '../ui/spinner/spinner.svelte';
 	let { class: className, ...restProps }: HTMLAttributes<HTMLFormElement> = $props();
+	
+	let searchParams = page.url.searchParams;
+	let token = $derived(searchParams.get('tkn'));
+	let email = $derived(searchParams.get('email'));
 
 	let formData = $state({
-		OldPassword: '',
 		NewPassword: '',
 		PasswordConfirm: ''
 	});
@@ -47,8 +57,27 @@
 		validateField(field);
 	}
 
-	function onSubmit(event: SubmitEvent) {
+	let resetPasswordMutation = createMutation<
+		{ message : string }, // response type
+		Error, // error type
+		PasswordResetData // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/auth/reset-password`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		}
+	}));
+
+	async function onSubmit(event: SubmitEvent) {
 		event.preventDefault();
+
+		if (!token) {
+			toast.error("No token found",{richColors:true})
+			return
+		}
 
 		// mark everything touched
 		Object.keys(formData).forEach((key) => (touched[key] = true));
@@ -62,10 +91,13 @@
 			return;
 		}
 
-		// fully valid data
-		console.log('SUBMIT OK', result.data);
+		const data : PasswordResetData = {NewPassword : result.data.NewPassword, PasswordVerificationToken :token} 
+		const res = await resetPasswordMutation.mutateAsync(data)
+		toast.success(res.message, {richColors: true})
 
-		// continue: API call, navigation, etc.
+		let url = '/login'
+		if (email) url += `?email=${email}`
+		goto(url)
 	}
 </script>
 
@@ -75,14 +107,14 @@
 			<h1 class="text-2xl font-bold">Reset password</h1>
 		</div>
 		<Field.Field>
-			<Field.Label for="NewPassword">New</Field.Label>
+			<Field.Label for="NewPassword">New password</Field.Label>
 			<Input
 				id="NewPassword"
 				bind:value={formData.NewPassword}
 				onblur={onBlur.bind(null, 'NewPassword')}
 				oninput={() => touched.NewPassword && validateField('NewPassword')}
 				class={`${errors?.['NewPassword'] ? 'border-destructive' : ''}`}
-				type="NewPassword"
+				type="password"
 			/>
 			<HelperText
 				variant={errors?.['NewPassword'] ? 'error' : 'info'}
@@ -91,7 +123,7 @@
 		</Field.Field>
 
 		<Field.Field>
-			<Field.Label for="passwordConfirm">Confirm Password</Field.Label>
+			<Field.Label for="passwordConfirm">Confirm password</Field.Label>
 			<Input
 				id="passwordConfirm"
 				class={`${errors?.['PasswordConfirm'] ? 'border-destructive' : ''}`}
@@ -108,7 +140,13 @@
 		</Field.Field>
 
 		<Field.Field>
-			<Button type="submit">Reset password</Button>
+			<Button disabled={resetPasswordMutation.isPending} type="submit">
+				{#if resetPasswordMutation.isPending}
+					<Spinner />
+				{/if}
+				{resetPasswordMutation.isPending ? 'Resetting password...' : 'Reset password'} 
+				
+			</Button>
 		</Field.Field>
 		<Field.Field>
 			<Field.Description class="px-6 text-center">

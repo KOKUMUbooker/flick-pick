@@ -17,5 +17,5 @@ public class UserLoginDto
 
 public class ResendVerificationDto
 {
-    public string Token { get; set; } = string.Empty;
+    public string EmailVerificationToken { get; set; } = string.Empty;
 }

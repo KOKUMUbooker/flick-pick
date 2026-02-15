@@ -1,9 +1,9 @@
 ## Sign Up Flow
 1. UI sends details & if valid user sends server sends a verification email to user
-   - Once email is sent, server sends succes msg & emailVerification token & UI navigates to /verify-email?tkn=${res.emailVerificationToken}?from="sign" - [TODO] - On verify-email page anticipate the from param & render proper message
+   - Once email is sent, server sends succes msg & emailVerification token & UI navigates to /verify-email?tkn=${res.emailVerificationToken}
   
 2. User checks his email, clicks on verification link which makes GET /verify-email?tkn=<emailToken> on the server which validates token & if valid redirects user to client on route "/email-verified?email={}" to show success message. 
-    - [TODO] : Link to login should navigate to login with the email & prefill the email field with it
+    -  Link to login should navigate to login with the email & prefill the email field with it
 3. User can then proceed to login again
 
 ## Login Flow

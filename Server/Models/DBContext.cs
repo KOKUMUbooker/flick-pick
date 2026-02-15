@@ -99,7 +99,8 @@ public class MovieAppDbContext : DbContext
 
         // Generate a client secret (in production, use a secure random generator)
         var clientId = "movie-manager-web";
-        var clientSecret = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("movie-manager-secret-key"));
+        
+        var clientSecret = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("MySuperSecureAndRandomKeyThatLooksJustAwesomeAndNeedsToBeVeryVeryLong!!!111oneeleven"));
 
         modelBuilder.Entity<Client>().HasData(
             new Client
@@ -108,7 +109,7 @@ public class MovieAppDbContext : DbContext
                 ClientId = clientId,
                 Name = "Movie Manager Web Application",
                 ClientSecret = clientSecret,
-                ClientURL = "https://localhost:5176",  
+                ClientURL = "https://localhost:5173",  
                 IsActive = true,
                 Created = now,
                 LastModified = now

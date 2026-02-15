@@ -1,36 +1,58 @@
 <!-- src/lib/components/layout/Header.svelte -->
 <script lang="ts">
-	import SunIcon from '@lucide/svelte/icons/sun';
-	import MoonIcon from '@lucide/svelte/icons/moon';
-	import Film from '@lucide/svelte/icons/film';
 	import {
 		Home,
-		LogIn,
 		LayoutDashboard,
-		User,
+		LogIn,
+		MessageCircleQuestionMark,
 		Play,
-		MessageCircleQuestionMark
+		User
 	} from '@lucide/svelte';
-
-	import { toggleMode } from 'mode-watcher';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import MoonIcon from '@lucide/svelte/icons/moon';
+	import SunIcon from '@lucide/svelte/icons/sun';
 	import { page } from '$app/stores';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { toggleMode } from 'mode-watcher';
+	import { authState, logOut } from '../../../store';
+	import { createMutation } from '@tanstack/svelte-query';
+	import { apiFetch } from '../../../api';
+	import { API_BASE_URL } from '../../../api/urls';
+	import { goto } from '$app/navigation';
+	import LoadingOverlay from './LoadingOverlay.svelte';
 
 	// Authentication state (in real app, this would come from a store)
-	export let isAuthenticated = false;
-	export let user: { name: string; email: string } | null = null;
+	let isAuthenticated = $derived(authState.user != undefined);
+	let user = $derived(authState.user);
 
 	// Navigation items
 	const navItems = [
 		{ name: 'Home', href: '/', icon: Home },
 		{ name: 'How it works', href: '/how-it-works', icon: MessageCircleQuestionMark }
-		// { name: 'Movies', href: '/movies', icon: Film }
 	];
 
+	let logoutMutation = createMutation<
+		{message:string}, // response type
+		Error, // error type
+		void // variables type
+	>(() => ({
+		mutationFn: async () => {
+			return apiFetch(`${API_BASE_URL}/api/auth/logout`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+ 			});
+		}
+	}));
+
 	// Mobile menu state
-	let mobileMenuOpen = false;
+	let mobileMenuOpen = $state(false);
+	const handleLogout = async () => { 
+		await logoutMutation.mutateAsync();
+		logOut(); // Clear local user state
+		goto("/login")
+	}
 </script>
 
+<LoadingOverlay show={logoutMutation.isPending} message={"Logging you out..."} spinnerSize="md"/>
 <header class="fixed top-0 z-10 w-full border-b border-border bg-background/80 backdrop-blur-sm">
 	<div class="container mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex h-16 items-center justify-between">
@@ -38,7 +60,7 @@
 			<div class="flex items-center">
 				<a href="/" class="flex items-center gap-3">
 					<div
-						class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80"
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-primary to-primary/80"
 					>
 						<Play class="h-4 w-4 text-primary-foreground" />
 					</div>
@@ -52,7 +74,7 @@
 					{#each navItems as item}
 						<a
 							href={item.href}
-							class="text-sm font-medium transition-colors hover:text-primary data-[current]:text-primary"
+							class="text-sm font-medium transition-colors hover:text-primary data-current:text-primary"
 							data-current={$page.url.pathname === item.href}
 						>
 							<div class="flex items-center gap-2">
@@ -78,7 +100,7 @@
 									<div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
 										<User class="h-4 w-4 text-primary" />
 									</div>
-									<span class="text-sm font-medium">{user.name}</span>
+									<span class="text-sm font-medium">{user.fullName}</span>
 								</div>
 
 								<!-- Dashboard Button -->
@@ -93,11 +115,7 @@
 								<Button
 									variant="ghost"
 									size="sm"
-									onclick={() => {
-										// Handle logout
-										isAuthenticated = false;
-										user = null;
-									}}
+									onclick={handleLogout}
 								>
 									Logout
 								</Button>
@@ -172,7 +190,7 @@
 					{#each navItems as item}
 						<a
 							href={item.href}
-							class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium hover:bg-accent hover:text-accent-foreground data-[current]:bg-accent data-[current]:text-accent-foreground"
+							class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium hover:bg-accent hover:text-accent-foreground data-current:bg-accent data-current:text-accent-foreground"
 							data-current={$page.url.pathname === item.href}
 							onclick={() => (mobileMenuOpen = false)}
 						>
@@ -208,7 +226,7 @@
 									<User class="h-5 w-5 text-primary" />
 								</div>
 								<div>
-									<p class="text-sm font-medium">{user.name}</p>
+									<p class="text-sm font-medium">{user.fullName}</p>
 									<p class="text-xs text-muted-foreground">{user.email}</p>
 								</div>
 							</div>
@@ -223,11 +241,7 @@
 							</a>
 
 							<button
-								onclick={() => {
-									isAuthenticated = false;
-									user = null;
-									mobileMenuOpen = false;
-								}}
+								onclick={handleLogout}
 								class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-base font-medium hover:bg-destructive/10 hover:text-destructive"
 							>
 								<LogIn class="h-5 w-5 rotate-180" />

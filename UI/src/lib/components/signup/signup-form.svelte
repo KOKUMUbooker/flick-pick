@@ -11,6 +11,7 @@
 	import { apiFetch, type SignUpData, type SignUpRes } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
 	import HelperText from '../common/HelperText.svelte';
+	import { Spinner } from '../ui/spinner';
 
 	let { class: className, ...restProps }: HTMLAttributes<HTMLFormElement> = $props();
 	let formData = $state({
@@ -34,7 +35,7 @@
 		}
 	}
 
-	const { isPending,  mutateAsync} = createMutation<
+	const signInMutation = createMutation<
 		SignUpRes, // response type
 		Error, // error type
 		SignUpData // variables type
@@ -47,9 +48,6 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onError: (error) => {
-			toast.error(error.message, { richColors: true });
-		}
 	}));
 
 	function validatePasswords() {
@@ -86,7 +84,7 @@
 			return;
 		}
 
-		const res =  await mutateAsync(formData);
+		const res =  await signInMutation.mutateAsync(formData);
 		toast.success(res.message,{richColors:true});
 		goto(`/verify-email?tkn=${res.emailVerificationToken}`);
 	}
@@ -160,7 +158,13 @@
 			></HelperText>
 		</Field.Field>
 		<Field.Field>
-			<Button disabled={isPending} type="submit">{isPending ? "Creating account..." :"Create Account"}</Button>
+			
+			<Button disabled={signInMutation.isPending} type="submit">
+				{#if signInMutation.isPending}
+				 <Spinner />
+				{/if}
+				{signInMutation.isPending ? "Creating account..." :"Create Account"}
+			</Button>
 		</Field.Field>
 		<Field.Field>
 			<Field.Description class="px-6 text-center">

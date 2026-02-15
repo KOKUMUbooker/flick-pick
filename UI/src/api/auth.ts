@@ -1,3 +1,4 @@
+import type { User } from "../types";
 import { API_BASE_URL } from "./urls";
 
 export const AUTH_CACHE_KEY = "auth" as const;
@@ -7,8 +8,9 @@ export interface SignUpData {
     Email: string;
     Password: string
 }
+
 export interface SignUpRes {
-    message :string;
+    message: string;
     emailVerificationToken: string;
 }
 export async function signUp(data: SignUpData): Promise<{ message: string }> {
@@ -30,9 +32,9 @@ export interface LoginData {
     Password: string
     ClientId: string;
 }
-interface LoginRes {
-    AccessToken: string;
-    AccessTokenExpiresAt: Date;
+export interface LoginRes {
+    userDetails: User;
+    emailVerificationToken: string
 }
 export async function logIn(data: LoginData): Promise<LoginRes> {
     const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -48,3 +50,7 @@ export async function logIn(data: LoginData): Promise<LoginRes> {
     return res.json();
 }
 
+export interface PasswordResetData {
+    PasswordVerificationToken: string;
+    NewPassword: string
+}
