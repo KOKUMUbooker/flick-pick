@@ -1,22 +1,24 @@
 <!-- src/routes/verify-email/+page.svelte -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import mvImg from '$lib/assets/movie.jpg';
 	import { Alert, AlertDescription } from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
-	import { Mail, RefreshCw } from '@lucide/svelte';
+	import Spinner from '@/components/ui/spinner/spinner.svelte';
+	import { Mail } from '@lucide/svelte';
 	import { createMutation } from '@tanstack/svelte-query';
 	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, type SignUpRes } from '../../api';
 	import { API_BASE_URL } from '../../api/urls';
 
-	let noTokenFound = false;
+	let noTokenFound = $state(false);
  	let isVerifyingEmail = false;
-	let resendCooldown = 0;
+	let resendCooldown = $state(0);
 	let cooldownTimer: number | null = null;
-	$: token = $page.url.searchParams.get('tkn');
+	let searchParams = page.url.searchParams;
+	let token = $derived(searchParams.get('tkn'));
 
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
@@ -58,27 +60,28 @@
 		Error, // error type
 		{EmailVerificationToken: string} // variables type
 	>(() => ({
-		mutationFn: (data) =>
-			apiFetch(`${API_BASE_URL}/api/auth/resend-verification`, {
+		mutationFn: async (data) =>{
+			return apiFetch(`${API_BASE_URL}/api/auth/resend-verification`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
-			}),
+			});
+		}
 	}));
 
-	// async function verifyEmail(token: string) {}
 
 	async function resendVerification() {
 		if (!token) {
 			toast.error("Verification token missing",{richColors:true});
 			return
 		}
+		
 		const res = await resendVerificationMutation.mutateAsync({EmailVerificationToken: token})
 		toast.success(res.message, {richColors: true})
 
  		startCooldown(60);
 
-    	goto(`/verify-email?tkn=${res.emailVerificationToken}`, { replaceState: true });
+    	goto(`/verify-email?tkn=${res.emailVerificationToken}`, { replaceState: true, });
 	}
 
 </script>
@@ -132,8 +135,8 @@
 						onclick={resendVerification}
 						disabled={resendVerificationMutation.isPending || resendCooldown > 0 || !token }
 					>
-						{#if resendVerificationMutation.isPending}
-							<RefreshCw class="mr-2 h-4 w-4 animate-spin" />
+ 						{#if resendVerificationMutation.isPending}
+							<Spinner />
 							Sending...
 						{:else if resendCooldown > 0}
 							Resend ({resendCooldown}s)

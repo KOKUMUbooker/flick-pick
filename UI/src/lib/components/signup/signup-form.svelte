@@ -48,9 +48,6 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onError: (error) => {
-			toast.error(error.message, { richColors: true });
-		}
 	}));
 
 	function validatePasswords() {

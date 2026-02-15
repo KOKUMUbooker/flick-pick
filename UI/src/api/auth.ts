@@ -1,3 +1,4 @@
+import type { User } from "../types";
 import { API_BASE_URL } from "./urls";
 
 export const AUTH_CACHE_KEY = "auth" as const;
@@ -9,7 +10,7 @@ export interface SignUpData {
 }
 
 export interface SignUpRes {
-    message :string;
+    message: string;
     emailVerificationToken: string;
 }
 export async function signUp(data: SignUpData): Promise<{ message: string }> {
@@ -32,8 +33,7 @@ export interface LoginData {
     ClientId: string;
 }
 export interface LoginRes {
-    accessToken: string;
-    accessTokenExpiresAt: string;
+    userDetails: User;
     emailVerificationToken: string
 }
 export async function logIn(data: LoginData): Promise<LoginRes> {

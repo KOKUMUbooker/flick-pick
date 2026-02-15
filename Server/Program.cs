@@ -68,7 +68,7 @@ public class Program
                     {
                         // Parse the incoming JWT token to extract claims
                         var jwtToken = new JwtSecurityToken(token);
-                        var clientId = jwtToken.Claims.FirstOrDefault(c => c.Type == "client_id")?.Value;
+                        var clientId = jwtToken.Claims.FirstOrDefault(c => c.Type == "clientId")?.Value;
 
                         if (string.IsNullOrEmpty(clientId) || clientCacheInstance == null)
                             return Enumerable.Empty<SecurityKey>();
@@ -88,7 +88,7 @@ public class Program
                     OnTokenValidated = async context =>
                     {
                         // Extract client_id claim from the validated token
-                        var clientId = context.Principal?.FindFirst("client_id")?.Value;
+                        var clientId = context.Principal?.FindFirst("clientId")?.Value;
                         if (string.IsNullOrEmpty(clientId))
                         {
                             // Fail if claim is missing

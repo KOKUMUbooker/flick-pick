@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import {
 		Field,
@@ -17,8 +19,7 @@
 	import { CLIENT_ID } from '../../../constants';
 	import HelperText from '../common/HelperText.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
-	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { logIn } from '../../../store';
 
 	const searchParams = page.url.searchParams;
 	const paramEmail = searchParams.get('email') || '';
@@ -86,6 +87,7 @@
 			return;
 		}
 
+		logIn({user:res.userDetails})
 		goto('/dashboard');
 	}
 

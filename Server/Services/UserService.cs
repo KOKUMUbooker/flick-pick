@@ -72,8 +72,10 @@ public class UserService : IUserService
         {
             return new AuthResult
             {
+                EmailVerificationToken = user.EmailVerificationToken,
                 ErrorType = AuthErrorType.EmailNotVerified,
-                ErrorMessage = "Email not verified."
+                ErrorMessage = "Email not verified.",
+
             };
         }
 
@@ -100,7 +102,6 @@ public class UserService : IUserService
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.Token,
                 AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15),
-                EmailVerificationToken = user.EmailVerificationToken,
                 UserDetails = new UIAuthState { 
                     Id = user.Id.ToString(), 
                     Email = user.Email,
