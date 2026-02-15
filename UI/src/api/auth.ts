@@ -50,3 +50,7 @@ export async function logIn(data: LoginData): Promise<LoginRes> {
     return res.json();
 }
 
+export interface PasswordResetData {
+    PasswordVerificationToken: string;
+    NewPassword: string
+}

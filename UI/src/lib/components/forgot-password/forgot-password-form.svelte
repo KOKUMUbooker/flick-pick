@@ -103,7 +103,7 @@
 			></HelperText>
 		</Field>
 		<Field>
-			<Button type="submit">
+			<Button type="submit" disabled={forgotPasswordMutation.isPending}>
 				{#if forgotPasswordMutation.isPending}
 					<Spinner />
 				{/if}

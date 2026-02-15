@@ -201,7 +201,7 @@ public class AuthController : ControllerBase
             await _context.SaveChangesAsync();
 
             string clientUrl = _configuration.GetValue<string>("UIClient:URL") ?? "http://localhost:5173";
-            var resetUrl = $"{clientUrl}/reset-password?tkn={rawToken}";
+            var resetUrl = $"{clientUrl}/reset-password?tkn={rawToken}&email={user.Email}";
 
             var htmlBody = await _templateService
                 .GeneratePasswordResetEmail("FlickPick", user.FullName, resetUrl);
@@ -237,6 +237,9 @@ public class AuthController : ControllerBase
         await _context.RefreshTokens
             .Where(rt => rt.UserId == user.Id)
             .ExecuteDeleteAsync();
+        
+        Response.Cookies.Delete("accessToken");
+        Response.Cookies.Delete("refreshToken");
 
         return Ok(new { Message = "Password reset successfully." });
     }
