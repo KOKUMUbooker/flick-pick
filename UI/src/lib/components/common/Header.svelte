@@ -31,7 +31,7 @@
 	];
 
 	let logoutMutation = createMutation<
-		void, // response type
+		{message:string}, // response type
 		Error, // error type
 		void // variables type
 	>(() => ({

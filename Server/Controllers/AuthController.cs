@@ -258,7 +258,7 @@ public class AuthController : ControllerBase
         Response.Cookies.Delete("accessToken");
         Response.Cookies.Delete("refreshToken");
 
-        return Ok();
+        return Ok(new {message = "Logged out successfully"});
     }
 
 
