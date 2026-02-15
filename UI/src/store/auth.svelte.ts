@@ -8,6 +8,10 @@ export function logIn({ user }: IAuthData) {
     authState.user = user
 }
 
-export function logOut() {
+export async function logOut() {
     authState.user = undefined
+}
+
+export function isLoggedIn() {
+    return authState.user != undefined
 }

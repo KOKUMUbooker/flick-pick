@@ -6,6 +6,11 @@
 	import { forgotPasswordSchema } from '@/forms';
 	import type { HTMLFormAttributes } from 'svelte/elements';
 	import HelperText from '../common/HelperText.svelte';
+	import { createMutation } from '@tanstack/svelte-query';
+	import { apiFetch } from '../../../api';
+	import { API_BASE_URL } from '../../../api/urls';
+	import { toast } from 'svelte-sonner';
+	import Spinner from '../ui/spinner/spinner.svelte';
 	let {
 		ref = $bindable(null),
 		class: className,
@@ -35,7 +40,22 @@
 		validateField(field);
 	}
 
-	function onSubmit(event: SubmitEvent) {
+
+	let forgotPasswordMutation = createMutation<
+		{message:string}, // response type
+		Error, // error type
+		{Email:string} // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		}
+	}));
+
+	async function onSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
 		// mark everything touched
@@ -50,10 +70,8 @@
 			return;
 		}
 
-		// fully valid data
-		console.log('SUBMIT OK', result.data);
-
-		// continue: API call, navigation, etc.
+		const res = await forgotPasswordMutation.mutateAsync(result.data)
+		toast.success(res.message,{richColors:true})
 	}
 </script>
 
@@ -85,7 +103,12 @@
 			></HelperText>
 		</Field>
 		<Field>
-			<Button type="submit">Submit</Button>
+			<Button type="submit">
+				{#if forgotPasswordMutation.isPending}
+					<Spinner />
+				{/if}
+				{forgotPasswordMutation.isPending ? 'Submitting...' : 'Submit'} 
+			</Button>
 		</Field>
 		<Field>
 			<FieldDescription class="text-center">
