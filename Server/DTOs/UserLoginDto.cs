@@ -9,7 +9,7 @@ public class UserLoginDto
     public required string Email { get; set; }
 
     [Required]
-    public required string Password {get;set;}
+    public required string Password { get; set; }
 
     [Required(ErrorMessage = "ClientId is required.")]
     public required string ClientId { get; set; } = null!;

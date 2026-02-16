@@ -9,7 +9,8 @@ public enum AuthErrorType
 }
 
 
-public class CustomError {
-    public string? Error {get; set;} = "ERROR";
-    public required string Message {get; set;} = String.Empty;
+public class CustomError
+{
+    public string? Error { get; set; } = "ERROR";
+    public required string Message { get; set; } = String.Empty;
 }

@@ -22,9 +22,9 @@ public class Program
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
-        builder.Services.AddScoped<IEmailTemplateService,EmailTemplateService>();
+        builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
         builder.Services.AddSingleton<IClientCacheService, ClientCacheService>();
- 
+
         builder.Services.AddDbContext<MovieAppDbContext>(options =>
         {
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -57,11 +57,11 @@ public class Program
                 // Setup token validation parameters
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,  
-                    ValidIssuer = builder.Configuration["JwtSettings:Issuer"], 
-                    ValidateAudience = false, 
-                    ValidateIssuerSigningKey = true, 
-                    ValidateLifetime = true,  
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                    ValidateAudience = false,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
 
                     // fetching the corresponding client’s secret key from cache.
                     IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
@@ -95,7 +95,7 @@ public class Program
                             context.Fail("ClientId claim missing.");
                             return;
                         }
-                        if(clientCacheInstance == null)
+                        if (clientCacheInstance == null)
                         {
                             context.Fail("Client Cache Instance is null");
                             return;
@@ -136,7 +136,7 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         app.UseCors("AllowSpecificOrigin");
         app.MapControllers();
 

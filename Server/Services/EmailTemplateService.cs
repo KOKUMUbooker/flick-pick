@@ -1,11 +1,9 @@
-using System.Threading.Tasks;
-
 namespace FlickPickApp.Services;
 
 public class EmailTemplateService : IEmailTemplateService
 {
     private readonly IWebHostEnvironment _environment;
-    
+
     public EmailTemplateService(IWebHostEnvironment environment)
     {
         _environment = environment;
@@ -32,7 +30,7 @@ public class EmailTemplateService : IEmailTemplateService
     public async Task<string> GenerateVerificationEmail(string appName, string userName, string verificationUrl)
     {
         var template = await LoadTemplateAsync("EmailVerificationTemplate.html");
-        
+
         return template
             .Replace("{{AppName}}", appName)
             .Replace("{{UserName}}", userName)
@@ -43,7 +41,7 @@ public class EmailTemplateService : IEmailTemplateService
     public async Task<string> GeneratePasswordResetEmail(string appName, string userName, string resetUrl)
     {
         var template = await LoadTemplateAsync("PasswordResetTemplate.html");
-        
+
         return template
             .Replace("{{AppName}}", appName)
             .Replace("{{UserName}}", userName)

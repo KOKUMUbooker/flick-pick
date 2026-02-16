@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using FlickPickApp.Services;
 using System.Security.Cryptography;
 using System.Text;
-using System.Data.Common;
 
 namespace FlickPickApp.Controllers;
 
@@ -19,7 +18,7 @@ public class AuthController : ControllerBase
     private IEmailTemplateService _templateService;
     private IConfiguration _configuration;
 
-    public AuthController(MovieAppDbContext context, IUserService userService,IEmailService emailService,IEmailTemplateService templateService,IConfiguration configuration)
+    public AuthController(MovieAppDbContext context, IUserService userService, IEmailService emailService, IEmailTemplateService templateService, IConfiguration configuration)
     {
         _context = context;
         _userService = userService;
@@ -36,7 +35,7 @@ public class AuthController : ControllerBase
         var userExists = await _context.Users.AnyAsync(u => u.Email == userDetails.Email);
         if (userExists)
         {
-             return BadRequest("Email is already in use, please log in");
+            return BadRequest("Email is already in use, please log in");
         }
 
         try
@@ -45,16 +44,16 @@ public class AuthController : ControllerBase
 
             // Send verification email
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var verificationUrl =  $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
-            string htmlBody =  await _templateService.GenerateVerificationEmail("FlickPick", user.FullName,verificationUrl);
+            var verificationUrl = $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
+            string htmlBody = await _templateService.GenerateVerificationEmail("FlickPick", user.FullName, verificationUrl);
 
-            await _emailService.SendEmail(user.Email,"Verify email",htmlBody);
+            await _emailService.SendEmail(user.Email, "Verify email", htmlBody);
 
-            return Ok(new { Message = "User registered successfully." ,EmailVerificationToken = user.EmailVerificationToken });
+            return Ok(new { Message = "User registered successfully.", EmailVerificationToken = user.EmailVerificationToken });
         }
         catch (Exception ex)
         {
-            return BadRequest(new CustomError{Message = ex.Message});
+            return BadRequest(new CustomError { Message = ex.Message });
         }
     }
 
@@ -101,7 +100,7 @@ public class AuthController : ControllerBase
             );
         }
 
-        return Ok(new {  UserDetails = result?.Data?.UserDetails });
+        return Ok(new { UserDetails = result?.Data?.UserDetails });
     }
 
     // Endpoint to obtain a new access token using a refresh token
@@ -123,7 +122,7 @@ public class AuthController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new CustomError{Message = ex.Message});
+            return BadRequest(new CustomError { Message = ex.Message });
         }
     }
 
@@ -134,18 +133,20 @@ public class AuthController : ControllerBase
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
 
-        if (user == null) return BadRequest(new CustomError{ Message = "Invalid verification token." });
+        if (user == null) return BadRequest(new CustomError { Message = "Invalid verification token." });
 
         // Email already verified
         if (user.EmailVerified)
         {
-            return  BadRequest(new CustomError{
+            return BadRequest(new CustomError
+            {
                 Message = "Email has already been verified, please proceed to login",
-             });
+            });
         }
 
         if (user.EmailVerificationTokenExpiry < DateTime.UtcNow)
-            return BadRequest(new CustomError{
+            return BadRequest(new CustomError
+            {
                 Message = "Verification link has expired.",
                 Error = "TOKEN_EXPIRED"
             });
@@ -165,7 +166,7 @@ public class AuthController : ControllerBase
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.EmailVerificationToken == dto.EmailVerificationToken);
 
-        if (user == null) return BadRequest(new CustomError{ Message = "Invalid token provided." });
+        if (user == null) return BadRequest(new CustomError { Message = "Invalid token provided." });
 
         // Generate new token
         user.EmailVerificationToken = _userService.GenerateVerificationToken();
@@ -174,12 +175,12 @@ public class AuthController : ControllerBase
 
         // Send verification email
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var verificationUrl =  $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
-        string htmlBody =  await _templateService.GenerateVerificationEmail("FlickPick", user.FullName,verificationUrl);
+        var verificationUrl = $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
+        string htmlBody = await _templateService.GenerateVerificationEmail("FlickPick", user.FullName, verificationUrl);
 
-        await _emailService.SendEmail(user.Email,"Verify email",htmlBody);
+        await _emailService.SendEmail(user.Email, "Verify email", htmlBody);
 
-        return Ok(new { Message = "Verification email sent." ,EmailVerificationToken = user.EmailVerificationToken });
+        return Ok(new { Message = "Verification email sent.", EmailVerificationToken = user.EmailVerificationToken });
     }
 
     [HttpPost("forgot-password")]
@@ -237,14 +238,14 @@ public class AuthController : ControllerBase
         await _context.RefreshTokens
             .Where(rt => rt.UserId == user.Id)
             .ExecuteDeleteAsync();
-        
+
         Response.Cookies.Delete("accessToken");
         Response.Cookies.Delete("refreshToken");
 
         return Ok(new { Message = "Password reset successfully." });
     }
 
-     [HttpPost("logout")]
+    [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         var refreshToken = Request.Cookies["refreshToken"];
@@ -252,17 +253,17 @@ public class AuthController : ControllerBase
 
         if (refreshToken != null)
         {
-            await _userService.RevokeRefreshTokenAsync(refreshToken,ipAddress);
+            await _userService.RevokeRefreshTokenAsync(refreshToken, ipAddress);
         }
 
         Response.Cookies.Delete("accessToken");
         Response.Cookies.Delete("refreshToken");
 
-        return Ok(new {message = "Logged out successfully"});
+        return Ok(new { message = "Logged out successfully" });
     }
 
 
-    private void SetAuthTokenCookie(string cookieName,string refreshToken, DateTime expiresAt)
+    private void SetAuthTokenCookie(string cookieName, string refreshToken, DateTime expiresAt)
     {
         var cookieOptions = new CookieOptions
         {

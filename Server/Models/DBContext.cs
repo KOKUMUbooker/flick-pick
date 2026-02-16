@@ -1,16 +1,17 @@
-using  Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlickPickApp.Models;
 
 public class MovieAppDbContext : DbContext
 {
-    public MovieAppDbContext(DbContextOptions<MovieAppDbContext> options) : base(options) {
+    public MovieAppDbContext(DbContextOptions<MovieAppDbContext> options) : base(options)
+    {
     }
 
-    public DbSet<User> Users {get; set;} = null!;
-    public DbSet<Role> Roles {get; set;}
-    public DbSet<Client> Clients {get; set;}
-    public DbSet<RefreshToken> RefreshTokens {get; set;}
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Role> Roles { get; set; } = null!;
+    public DbSet<Client> Clients { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,15 +31,15 @@ public class MovieAppDbContext : DbContext
             .HasOne(rt => rt.User)
             .WithMany(u => u.RefreshTokens)
             .HasForeignKey(rt => rt.UserId)
-            .OnDelete(DeleteBehavior.Cascade); 
-        
+            .OnDelete(DeleteBehavior.Cascade);
+
         // 5. RefreshToken -> Client (Many-to-One)
         // One Client can have many RefreshTokens
         modelBuilder.Entity<RefreshToken>()
             .HasOne(rt => rt.Client)
             .WithMany(c => c.RefreshTokens)
             .HasForeignKey(rt => rt.ClientId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
 
         base.OnModelCreating(modelBuilder);
 
@@ -48,15 +49,15 @@ public class MovieAppDbContext : DbContext
 
         // Configure required properties and constraints
         ConfigureEntityConstraints(modelBuilder);
-        
+
         // Configure indexes for performance
-        ConfigureIndexes(modelBuilder); 
+        ConfigureIndexes(modelBuilder);
     }
 
     private static void SeedRoles(ModelBuilder modelBuilder)
     {
         var now = DateTimeOffset.UtcNow;
-        
+
         modelBuilder.Entity<Role>().HasData(
             new Role
             {
@@ -78,7 +79,7 @@ public class MovieAppDbContext : DbContext
     private static void SeedAdminUser(ModelBuilder modelBuilder)
     {
         var now = DateTimeOffset.UtcNow;
-        
+
         modelBuilder.Entity<User>().HasData(
             new User
             {
@@ -86,7 +87,7 @@ public class MovieAppDbContext : DbContext
                 Email = "admin@system.com",
                 FullName = "System Administrator",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
-                RoleId = RoleConstants.AdminRoleId, 
+                RoleId = RoleConstants.AdminRoleId,
                 Created = now,
                 LastModified = now
             }
@@ -99,7 +100,7 @@ public class MovieAppDbContext : DbContext
 
         // Generate a client secret (in production, use a secure random generator)
         var clientId = "movie-manager-web";
-        
+
         var clientSecret = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("MySuperSecureAndRandomKeyThatLooksJustAwesomeAndNeedsToBeVeryVeryLong!!!111oneeleven"));
 
         modelBuilder.Entity<Client>().HasData(
@@ -109,7 +110,7 @@ public class MovieAppDbContext : DbContext
                 ClientId = clientId,
                 Name = "Movie Manager Web Application",
                 ClientSecret = clientSecret,
-                ClientURL = "https://localhost:5173",  
+                ClientURL = "https://localhost:5173",
                 IsActive = true,
                 Created = now,
                 LastModified = now
@@ -124,52 +125,52 @@ public class MovieAppDbContext : DbContext
             .Property(u => u.Email)
             .IsRequired()
             .HasMaxLength(100);
-            
+
         modelBuilder.Entity<User>()
             .Property(u => u.FullName)
             .IsRequired()
             .HasMaxLength(100);
-            
+
         // CLIENT constraints
         modelBuilder.Entity<Client>(entity =>
         {
             entity.Property(c => c.ClientId)
                 .IsRequired()
                 .HasMaxLength(100);
-                
+
             entity.HasIndex(c => c.ClientId)
                 .IsUnique(); // ClientId should be unique
-                
+
             entity.Property(c => c.Name)
                 .IsRequired()
                 .HasMaxLength(100);
-                
+
             entity.Property(c => c.ClientSecret)
                 .IsRequired()
                 .HasMaxLength(500);
-                
+
             entity.Property(c => c.ClientURL)
                 .IsRequired()
                 .HasMaxLength(500);
-                
+
             entity.Property(c => c.IsActive)
                 .HasDefaultValue(true);
         });
 
-          // REFRESH TOKENS constraints
+        // REFRESH TOKENS constraints
         modelBuilder.Entity<RefreshToken>(entity =>
         {
             entity.Property(rt => rt.Token)
                 .IsRequired()
                 .HasMaxLength(500);
-                
+
             entity.HasIndex(rt => rt.Token)
                 .IsUnique(); // Token should be unique
-                
+
             entity.Property(rt => rt.JwtId)
                 .IsRequired()
                 .HasMaxLength(100);
-                
+
             entity.Property(rt => rt.CreatedByIp)
                 .HasMaxLength(50);
         });
@@ -181,24 +182,24 @@ public class MovieAppDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
-            
+
         modelBuilder.Entity<User>()
             .HasIndex(u => u.RoleId);
 
         // RefreshTokens indexes
         modelBuilder.Entity<RefreshToken>()
-            .HasIndex(r=>r.UserId);
+            .HasIndex(r => r.UserId);
 
         modelBuilder.Entity<RefreshToken>()
-            .HasIndex(r=>r.ClientId);
+            .HasIndex(r => r.ClientId);
 
         modelBuilder.Entity<RefreshToken>()
-            .HasIndex(r=>r.Expires);
-        
-        modelBuilder.Entity<RefreshToken>()
-            .HasIndex(r=>r.IsRevoked);
+            .HasIndex(r => r.Expires);
 
         modelBuilder.Entity<RefreshToken>()
-            .HasIndex(r=>new { r.UserId, r.IsRevoked, r.Expires });
+            .HasIndex(r => r.IsRevoked);
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasIndex(r => new { r.UserId, r.IsRevoked, r.Expires });
     }
 }

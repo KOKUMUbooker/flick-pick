@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using FlickPickApp.DTOs;
 using FlickPickApp.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace FlickPickApp.Services;
 
@@ -19,12 +18,12 @@ public class UserService : IUserService
         _configuration = configuration;
         _clientCacheService = clientCacheService;
     }
-    
+
     public async Task<User> CreateUserAsync(RegisterUserDto userDto, Guid? roleId = null)
     {
         // Get role
         Guid finalRoleId;
-        
+
         if (roleId.HasValue)
         {
             finalRoleId = roleId.Value;
@@ -35,7 +34,7 @@ public class UserService : IUserService
                 .FirstOrDefaultAsync(r => r.RoleValue == RoleEnum.User);
             finalRoleId = defaultRole?.Id ?? throw new Exception("Default role not found");
         }
-        
+
         // Create user
         var user = new User
         {
@@ -46,10 +45,10 @@ public class UserService : IUserService
             EmailVerificationToken = GenerateVerificationToken(),
             EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24)
         };
-        
+
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
-        
+
         return user;
     }
 
@@ -101,8 +100,9 @@ public class UserService : IUserService
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.Token,
                 AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15),
-                UserDetails = new UIAuthState { 
-                    Id = user.Id.ToString(), 
+                UserDetails = new UIAuthState
+                {
+                    Id = user.Id.ToString(),
                     Email = user.Email,
                     FullName = user.FullName,
                     Role = ((int)user.Role.RoleValue).ToString() // To get the numeric value & not the key
@@ -111,7 +111,7 @@ public class UserService : IUserService
         };
     }
 
-    
+
     // Refreshes an expired access token using a valid refresh token and client ID
     public async Task<AuthResponseDTO?> RefreshTokenAsync(string refreshToken, string clientId, string ipAddress)
     {
@@ -135,17 +135,17 @@ public class UserService : IUserService
         // Revoke old refresh token immediately to prevent reuse
         existingToken.IsRevoked = true;
         existingToken.RevokedAt = DateTime.UtcNow;
-        
+
         var user = existingToken.User;
         // Generate a new access token with fresh JWT ID and client info
         var accessToken = _tokenService.GenerateAccessToken(user, user.Role.RoleValue, out string newJwtId, client);
         // Generate a new refresh token linked to the new JWT ID
         var newRefreshToken = _tokenService.GenerateRefreshToken(ipAddress, newJwtId, client, user.Id);
-        
+
         // Store the new refresh token in the database
         _dbContext.RefreshTokens.Add(newRefreshToken);
         await _dbContext.SaveChangesAsync();
-        
+
         // Read access token expiration duration from config or default to 15 minutes
         var accessTokenExpiryMinutes = int.TryParse(_configuration["JwtSettings:AccessTokenExpirationMinutes"], out var val) ? val : 15;
 
@@ -157,7 +157,7 @@ public class UserService : IUserService
             AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(accessTokenExpiryMinutes)
         };
     }
-    
+
     // Revokes an existing refresh token to prevent further use
     public async Task<bool> RevokeRefreshTokenAsync(string refreshToken, string ipAddress)
     {
@@ -167,7 +167,7 @@ public class UserService : IUserService
         // Return false if token not found or already revoked
         if (existingToken == null || existingToken.IsRevoked)
             return false;
-            
+
         // Mark token as revoked and record revocation time
         existingToken.IsRevoked = true;
         existingToken.RevokedAt = DateTime.UtcNow;

@@ -1,9 +1,9 @@
 namespace FlickPickApp.Models;
 
-public class Role : EntityBase 
+public class Role : EntityBase
 {
     public RoleEnum RoleValue { get; set; }
-    
+
     // Navigation property
     public List<User> Users { get; set; } = new List<User>();
 }

@@ -11,4 +11,3 @@ public interface IEmailService
 // {
 //     Task SendEmail(string senderName,string senderEmail, string toName, string toEmail,string subject, string textContext);
 // }
-

@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace FlickPickApp.Models;
 
 public class Client : EntityBase
