@@ -12,6 +12,15 @@ public class MovieAppDbContext : DbContext
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<Client> Clients { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+    public DbSet<Group> Groups { get; set; } = null!;
+    public DbSet<UserGroup> UserGroups { get; set; } = null!;
+    public DbSet<MovieNightEvent> MovieNightEvents { get; set; } = null!;
+    public DbSet<MovieSuggestion> MovieSuggestions { get; set; } = null!;
+    public DbSet<Vote> Votes { get; set; } = null!;
+    public DbSet<MovieNightRating> MovieNightRatings { get; set; } = null!;
+    public DbSet<MoviePreference> MoviePreferences { get; set; } = null!;
+    public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,6 +49,86 @@ public class MovieAppDbContext : DbContext
             .WithMany(c => c.RefreshTokens)
             .HasForeignKey(rt => rt.ClientId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // 6. USER -> USERGROUP (Many-to-Many)
+        modelBuilder.Entity<UserGroup>()
+            .HasKey(ug => new { ug.UserId, ug.GroupId });
+
+        modelBuilder.Entity<UserGroup>()
+            .HasOne(ug => ug.User)
+            .WithMany()
+            .HasForeignKey(ug => ug.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserGroup>()
+            .HasOne(ug => ug.Group)
+            .WithMany(g => g.Members)
+            .HasForeignKey(ug => ug.GroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // 7. GROUP → MOVIENIGHTEVENT (1–Many)
+        modelBuilder.Entity<MovieNightEvent>()
+            .HasOne(e => e.Group)
+            .WithMany(g => g.MovieNightEvents)
+            .HasForeignKey(e => e.GroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // 8. EVENT → MOVIESUGGESTION (1–Many)
+        modelBuilder.Entity<MovieSuggestion>()
+            .HasOne(s => s.MovieNightEvent)
+            .WithMany(e => e.Suggestions)
+            .HasForeignKey(s => s.MovieNightEventId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // 9. SUGGESTION → VOTE (1–Many)
+        modelBuilder.Entity<Vote>()
+            .HasOne(v => v.MovieSuggestion)
+            .WithMany(s => s.Votes)
+            .HasForeignKey(v => v.MovieSuggestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // 10. USER → VOTE
+        modelBuilder.Entity<Vote>()
+            .HasOne(v => v.User)
+            .WithMany()
+            .HasForeignKey(v => v.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 11. EVENT → RATING
+        modelBuilder.Entity<MovieNightRating>()
+            .HasOne(r => r.MovieNightEvent)
+            .WithMany(e => e.Ratings)
+            .HasForeignKey(r => r.MovieNightEventId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // 12. USER → RATING
+        modelBuilder.Entity<MovieNightRating>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 13. EVENT → CHATMESSAGE
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(c => c.MovieNightEvent)
+            .WithMany(e => e.ChatMessages)
+            .HasForeignKey(c => c.MovieNightEventId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // 14. USER → CHATMESSAGE
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(c => c.User)
+            .WithMany()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 15. USER → MOVIEPREFERENCE
+        modelBuilder.Entity<MoviePreference>()
+            .HasOne(mp => mp.User)
+            .WithMany()
+            .HasForeignKey(mp => mp.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
 
         base.OnModelCreating(modelBuilder);
 
@@ -201,5 +290,17 @@ public class MovieAppDbContext : DbContext
 
         modelBuilder.Entity<RefreshToken>()
             .HasIndex(r => new { r.UserId, r.IsRevoked, r.Expires });
+
+        modelBuilder.Entity<Vote>()
+            .HasIndex(v => new { v.UserId, v.MovieSuggestionId })
+            .IsUnique();
+
+        modelBuilder.Entity<MovieNightRating>()
+            .HasIndex(r => new { r.UserId, r.MovieNightEventId })
+            .IsUnique();
+
+        modelBuilder.Entity<UserGroup>()
+            .HasIndex(ug => new { ug.UserId, ug.GroupId })
+            .IsUnique();
     }
 }
