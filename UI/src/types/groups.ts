@@ -42,11 +42,13 @@ export interface MovieSuggestion {
     score: number;
 }
 
+export type VoteType = 'Upvote' | 'Downvote' | 'Veto';
+
 export interface Vote {
     id: number;
     userId: number;
     user: UserInfo;
-    voteType: 'Upvote' | 'Downvote' | 'Veto';
+    voteType: VoteType;
 }
 
 export interface ChatMessage {
@@ -81,3 +83,14 @@ export interface UserInfo {
 }
 
 export type BadgeVariants = 'default' | 'outline' | 'destructive' | 'secondary';
+
+export type EventItem = {
+    upcoming: MovieNightEvent[];
+    past: MovieNightEvent[];
+}
+export type StatsItem = {
+    moviesWatched: number;
+    totalVotes: number;
+    averageRating: number;
+    streak: number;
+}

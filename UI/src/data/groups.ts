@@ -1,4 +1,4 @@
-import type { Group, MovieNightEvent } from "../types";
+import type { EventItem, Group, MovieNightEvent, StatsItem } from "../types";
 
 export const mockGroups: Group[] = [
     {
@@ -63,16 +63,7 @@ export const mockGroups: Group[] = [
     }
 ];
 
-type EventItem = {
-    upcoming: MovieNightEvent[];
-    past: MovieNightEvent[];
-}
-type StatsItem = {
-    moviesWatched: number;
-    totalVotes: number;
-    averageRating: number;
-    streak: number;
-}
+
 interface LoadGroupDataInput {
     groupId: number;
     eventCb: (data: EventItem) => void;
