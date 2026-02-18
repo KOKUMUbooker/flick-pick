@@ -47,6 +47,8 @@
 	import { onMount } from 'svelte';
 	import { loadGroupData, mockGroups } from '../../../data';
 	import type { Group, MovieNightEvent } from '../../../types';
+	import DesktopHeader from '@/components/groups/desktop-header.svelte';
+	import MainContentArea from '@/components/groups/main-content-area.svelte';
 
 	// State management
 	let activeGroup = $state<Group | null>(null);
@@ -211,158 +213,14 @@
 
 		{#if activeGroup}
 			<!-- Desktop Group Header -->
-			<header
-				class="sticky top-0 z-30 hidden border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 md:block"
-			>
-				<div class="flex h-16 items-center justify-between px-6">
-					<div>
-						<h1 class="text-xl font-semibold">{activeGroup.name}</h1>
-						<p class="text-sm text-muted-foreground">
-							{activeGroup.members.length} members • {activeGroup.description}
-						</p>
-					</div>
-
-					<div class="flex items-center gap-2">
-						<Button size="sm" variant="outline" onclick={inviteToGroup}>
-							<Users class="mr-2 h-4 w-4" />
-							Invite
-						</Button>
-						<Button size="sm" onclick={createNewEvent}>
-							<Plus class="mr-2 h-4 w-4" />
-							New Event
-						</Button>
-						<DropdownMenu>
-							<DropdownMenuTrigger>
-								<Button size="sm" variant="ghost">
-									<MoreVertical class="h-4 w-4" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuItem onclick={() => console.log('Settings')}>
-									<Settings class="mr-2 h-4 w-4" />
-									Group Settings
-								</DropdownMenuItem>
-								<DropdownMenuItem onclick={inviteToGroup}>
-									<Share2 class="mr-2 h-4 w-4" />
-									Share Invite Link
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<Bell class="mr-2 h-4 w-4" />
-									Notification Settings
-								</DropdownMenuItem>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem class="text-destructive">
-									<Trash2 class="mr-2 h-4 w-4" />
-									Leave Group
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</div>
-				</div>
-			</header>
+			<DesktopHeader {activeGroup} {createNewEvent} {inviteToGroup} />
 
 			<!-- Main Content Area -->
 			<div class="p-4 md:p-6">
 				<!-- Conditionally show event chat or group tabs -->
 				{#if showEventChat && selectedEvent}
 					<!-- Event-Specific Chat View -->
-					<div class="space-y-4">
-						<Button variant="ghost" size="sm" onclick={closeEventChat} class="mb-2">
-							<ChevronLeft class="mr-2 h-4 w-4" />
-							Back to {selectedEvent.title}
-						</Button>
-
-						<Card>
-							<CardHeader class="border-b border-border bg-muted/30">
-								<div class="flex items-center justify-between">
-									<div>
-										<CardTitle class="flex items-center gap-2">
-											<MessageCircle class="h-5 w-5" />
-											Event Chat: {selectedEvent.title}
-										</CardTitle>
-										<CardDescription>
-											{new Date(selectedEvent.scheduledAt).toLocaleDateString('en-US', {
-												weekday: 'long',
-												month: 'long',
-												day: 'numeric',
-												hour: 'numeric',
-												minute: 'numeric'
-											})}
-										</CardDescription>
-									</div>
-									<Badge variant={getEventStatus(selectedEvent).variant}>
-										{getEventStatus(selectedEvent).label}
-									</Badge>
-								</div>
-							</CardHeader>
-
-							<CardContent class="p-0">
-								<!-- Chat Messages -->
-								<div class="max-h-[500px] space-y-4 overflow-y-auto p-6">
-									{#each selectedEvent.chatMessages as message}
-										<div class="flex gap-3">
-											<Avatar class="h-8 w-8">
-												<AvatarFallback>{message.user.name.charAt(0)}</AvatarFallback>
-											</Avatar>
-											<div class="flex-1">
-												<div class="mb-1 flex items-center gap-2">
-													<span class="font-medium">{message.user.name}</span>
-													<span class="text-xs text-muted-foreground">{message.createdAt}</span>
-												</div>
-												<p class="rounded-lg bg-muted p-3">{message.message}</p>
-											</div>
-										</div>
-									{/each}
-
-									{#if selectedEvent.chatMessages.length === 0}
-										<div class="py-12 text-center">
-											<MessageCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-											<h3 class="mb-2 text-lg font-semibold">No messages yet</h3>
-											<p class="text-sm text-muted-foreground">
-												Be the first to start the conversation about this movie night
-											</p>
-										</div>
-									{/if}
-								</div>
-
-								<!-- Message Input -->
-								{#if !selectedEvent.isLocked && new Date(selectedEvent.scheduledAt) > new Date()}
-									<div class="border-t border-border p-4">
-										<form
-											class="flex gap-2"
-											onsubmit={(e) => {
-												e.preventDefault();
-												const form = e.target as HTMLFormElement;
-												const input = form.elements.namedItem('message') as HTMLInputElement;
-												// if (input.value.trim()) {
-												// 	sendEventChatMessage(selectedEvent.id, input.value);
-												// 	input.value = '';
-												// }
-											}}
-										>
-											<input
-												name="message"
-												type="text"
-												placeholder="Type your message..."
-												class="flex-1 rounded-lg border border-border bg-background px-4 py-2"
-											/>
-											<Button type="submit">Send</Button>
-										</form>
-									</div>
-								{/if}
-
-								<!-- Read-only for past events -->
-								{#if selectedEvent.isLocked || new Date(selectedEvent.scheduledAt) < new Date()}
-									<div class="border-t border-border bg-muted/30 p-4 text-center">
-										<p class="text-sm text-muted-foreground">
-											<Lock class="mr-2 inline h-4 w-4" />
-											This event has ended. Chat is now read-only.
-										</p>
-									</div>
-								{/if}
-							</CardContent>
-						</Card>
-					</div>
+					<MainContentArea {closeEventChat} {showEventChat} {selectedEvent} {getEventStatus} />
 				{:else}
 					<!-- Tabs -->
 					<Tabs value={activeTab} onValueChange={(value) => (activeTab = value)} class="mb-8">

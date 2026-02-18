@@ -79,3 +79,5 @@ export interface UserInfo {
     name: string;
     avatar?: string;
 }
+
+export type BadgeVariants = 'default' | 'outline' | 'destructive' | 'secondary';
