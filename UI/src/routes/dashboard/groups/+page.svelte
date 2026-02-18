@@ -17,24 +17,24 @@
 		DropdownMenuSeparator,
 		DropdownMenuTrigger
 	} from '$lib/components/ui/dropdown-menu';
-	import { Progress } from '$lib/components/ui/progress';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
+	import GroupsSideBar from '@/components/groups/groups-side-bar.svelte';
 	import {
 		Bell,
 		Calendar,
-		ChevronRight,
 		ChevronLeft,
 		Clock,
 		Edit,
 		Film,
 		Link,
+		Lock,
 		Mail,
+		Menu,
+		MessageCircle,
 		MessageSquare,
 		MoreVertical,
-		Play,
 		Plus,
-		Search,
 		Settings,
 		Share2,
 		Star,
@@ -42,13 +42,11 @@
 		ThumbsUp,
 		Trash2,
 		Users,
-		Vote,
-		XCircle,
-		MessageCircle,
-		Lock,
-		Menu // Added for mobile menu toggle
+		XCircle
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import { loadGroupData, mockGroups } from '../../../data';
+	import type { Group, MovieNightEvent } from '../../../types';
 
 	// State management
 	let activeGroup = $state<Group | null>(null);
@@ -60,153 +58,6 @@
 	// Track selected event for chat view
 	let selectedEvent = $state<MovieNightEvent | null>(null);
 	let showEventChat = $state(false);
-
-	// Types
-	interface Group {
-		id: number;
-		name: string;
-		description: string;
-		createdById: number;
-		members: Member[];
-		unreadCount: number;
-		lastActivity: string;
-		isActive?: boolean;
-		upcomingEventsCount: number;
-	}
-
-	interface Member {
-		id: number;
-		name: string;
-		isAdmin: boolean;
-		avatar: string;
-		joinedAt: string;
-	}
-
-	interface MovieNightEvent {
-		id: number;
-		groupId: number;
-		scheduledAt: string;
-		isLocked: boolean;
-		selectedMovieTmdbId?: number;
-		selectedMovie?: MovieDetails;
-		title?: string;
-		suggestions: MovieSuggestion[];
-		chatMessages: ChatMessage[];
-		ratings: MovieRating[];
-		participants: number;
-	}
-
-	interface MovieSuggestion {
-		id: number;
-		tmdbId: number;
-		movieDetails?: MovieDetails;
-		suggestedBy: UserInfo;
-		votes: Vote[];
-		isDisqualified: boolean;
-		score: number;
-	}
-
-	interface Vote {
-		id: number;
-		userId: number;
-		user: UserInfo;
-		voteType: 'Upvote' | 'Downvote' | 'Veto';
-	}
-
-	interface ChatMessage {
-		id: number;
-		userId: number;
-		user: UserInfo;
-		message: string;
-		createdAt: string;
-	}
-
-	interface MovieRating {
-		id: number;
-		userId: number;
-		user: UserInfo;
-		rating: number;
-		comment?: string;
-	}
-
-	interface MovieDetails {
-		tmdbId: number;
-		title: string;
-		overview: string;
-		posterPath: string;
-		runtime: number;
-		releaseDate: string;
-	}
-
-	interface UserInfo {
-		id: number;
-		name: string;
-		avatar?: string;
-	}
-
-	// Mock data
-	const mockGroups: Group[] = [
-		{
-			id: 1,
-			name: 'Friday Film Club',
-			description: 'Weekly movie nights with close friends',
-			createdById: 1,
-			members: [
-				{ id: 1, name: 'Alex Johnson', isAdmin: true, avatar: '', joinedAt: '2024-01-15' },
-				{ id: 2, name: 'Sam Taylor', isAdmin: false, avatar: '', joinedAt: '2024-01-15' },
-				{ id: 3, name: 'Jordan Lee', isAdmin: false, avatar: '', joinedAt: '2024-01-20' },
-				{ id: 4, name: 'Taylor Smith', isAdmin: false, avatar: '', joinedAt: '2024-02-01' },
-				{ id: 5, name: 'Morgan Wells', isAdmin: false, avatar: '', joinedAt: '2024-02-10' }
-			],
-			unreadCount: 3,
-			upcomingEventsCount: 2,
-			lastActivity: '10 min ago'
-		},
-		{
-			id: 2,
-			name: 'Horror Nights',
-			description: 'Monthly scary movie sessions',
-			createdById: 1,
-			members: [
-				{ id: 1, name: 'Alex Johnson', isAdmin: true, avatar: '', joinedAt: '2024-01-15' },
-				{ id: 6, name: 'Casey Kim', isAdmin: false, avatar: '', joinedAt: '2024-02-05' },
-				{ id: 7, name: 'Riley Chen', isAdmin: false, avatar: '', joinedAt: '2024-02-05' }
-			],
-			unreadCount: 0,
-			upcomingEventsCount: 0,
-			lastActivity: '2 days ago'
-		},
-		{
-			id: 3,
-			name: 'Family Movie Night',
-			description: 'Kid-friendly weekend movies',
-			createdById: 1,
-			members: [
-				{ id: 1, name: 'Alex Johnson', isAdmin: true, avatar: '', joinedAt: '2024-01-15' },
-				{ id: 8, name: 'Jamie Wilson', isAdmin: false, avatar: '', joinedAt: '2024-02-10' },
-				{ id: 9, name: 'Taylor Jr', isAdmin: false, avatar: '', joinedAt: '2024-02-10' },
-				{ id: 10, name: 'Morgan Jr', isAdmin: false, avatar: '', joinedAt: '2024-02-10' }
-			],
-			unreadCount: 1,
-			upcomingEventsCount: 1,
-			lastActivity: '1 hour ago'
-		},
-		{
-			id: 4,
-			name: 'Oscar Watch Party',
-			description: 'Annual Academy Awards viewing',
-			createdById: 1,
-			members: [
-				{ id: 1, name: 'Alex Johnson', isAdmin: true, avatar: '', joinedAt: '2024-01-15' },
-				{ id: 2, name: 'Sam Taylor', isAdmin: false, avatar: '', joinedAt: '2024-01-15' },
-				{ id: 3, name: 'Jordan Lee', isAdmin: false, avatar: '', joinedAt: '2024-01-20' },
-				{ id: 11, name: 'Drew Patel', isAdmin: false, avatar: '', joinedAt: '2024-02-15' }
-			],
-			unreadCount: 0,
-			upcomingEventsCount: 0,
-			lastActivity: '3 weeks ago'
-		}
-	];
 
 	let events = $state<{
 		upcoming: MovieNightEvent[];
@@ -262,203 +113,11 @@
 		// Close sidebar on mobile after selection
 		sidebarOpen = false;
 
-		loadGroupData(group.id);
-	}
-
-	function loadGroupData(groupId: number) {
-		if (groupId === 1) {
-			const now = new Date();
-			const tomorrow = new Date(now);
-			tomorrow.setDate(tomorrow.getDate() + 1);
-			const saturday = new Date(now);
-			saturday.setDate(saturday.getDate() + (6 - now.getDay()));
-
-			events = {
-				upcoming: [
-					{
-						id: 101,
-						groupId: 1,
-						scheduledAt: tomorrow.toISOString(),
-						isLocked: false,
-						title: 'Sci-Fi Night',
-						suggestions: [
-							{
-								id: 1001,
-								tmdbId: 693134,
-								movieDetails: {
-									tmdbId: 693134,
-									title: 'Dune: Part Two',
-									overview: 'Follow the mythic journey of Paul Atreides...',
-									posterPath: '/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg',
-									runtime: 166,
-									releaseDate: '2024-02-28'
-								},
-								suggestedBy: { id: 1, name: 'Alex' },
-								votes: [
-									{ id: 1, userId: 1, user: { id: 1, name: 'Alex' }, voteType: 'Upvote' },
-									{ id: 2, userId: 2, user: { id: 2, name: 'Sam' }, voteType: 'Upvote' },
-									{ id: 3, userId: 3, user: { id: 3, name: 'Jordan' }, voteType: 'Downvote' }
-								],
-								isDisqualified: false,
-								score: 1
-							},
-							{
-								id: 1002,
-								tmdbId: 157336,
-								movieDetails: {
-									tmdbId: 157336,
-									title: 'Interstellar',
-									overview: 'A team of explorers travel through a wormhole...',
-									posterPath: '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-									runtime: 169,
-									releaseDate: '2014-11-05'
-								},
-								suggestedBy: { id: 2, name: 'Sam' },
-								votes: [
-									{ id: 4, userId: 2, user: { id: 2, name: 'Sam' }, voteType: 'Upvote' },
-									{ id: 5, userId: 4, user: { id: 4, name: 'Taylor' }, voteType: 'Upvote' }
-								],
-								isDisqualified: false,
-								score: 2
-							},
-							{
-								id: 1003,
-								tmdbId: 329865,
-								movieDetails: {
-									tmdbId: 329865,
-									title: 'Arrival',
-									overview: 'A linguist works with the military to communicate...',
-									posterPath: '/x2FJsf1ElRukx0iPdXitrBrGBlq.jpg',
-									runtime: 116,
-									releaseDate: '2016-11-10'
-								},
-								suggestedBy: { id: 3, name: 'Jordan' },
-								votes: [{ id: 6, userId: 5, user: { id: 5, name: 'Morgan' }, voteType: 'Veto' }],
-								isDisqualified: true,
-								score: -1000
-							}
-						],
-						chatMessages: [
-							{
-								id: 1,
-								userId: 1,
-								user: { id: 1, name: 'Alex', avatar: '' },
-								message: "I'm really excited for Dune part 2! Anyone else?",
-								createdAt: '2 hours ago'
-							},
-							{
-								id: 2,
-								userId: 2,
-								user: { id: 2, name: 'Sam', avatar: '' },
-								message: 'Yes! The first one was amazing. Hope it wins the vote.',
-								createdAt: '1 hour ago'
-							},
-							{
-								id: 3,
-								userId: 3,
-								user: { id: 3, name: 'Jordan', avatar: '' },
-								message: 'Just a heads up - Arrival is 2 hours, hope that works for everyone',
-								createdAt: '45 min ago'
-							}
-						],
-						ratings: [],
-						participants: 4
-					},
-					{
-						id: 102,
-						groupId: 1,
-						scheduledAt: saturday.toISOString(),
-						isLocked: false,
-						title: 'Comedy Special',
-						suggestions: [
-							{
-								id: 1004,
-								tmdbId: 153987,
-								movieDetails: {
-									tmdbId: 153987,
-									title: 'The Holdovers',
-									overview: 'A cranky history teacher at a prep school...',
-									posterPath: '/aIQF7H44uCLw0eQxHLR6Sxg3k5l.jpg',
-									runtime: 133,
-									releaseDate: '2023-10-27'
-								},
-								suggestedBy: { id: 1, name: 'Alex' },
-								votes: [],
-								isDisqualified: false,
-								score: 0
-							}
-						],
-						chatMessages: [],
-						ratings: [],
-						participants: 5
-					}
-				],
-				past: [
-					{
-						id: 103,
-						groupId: 1,
-						scheduledAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-						isLocked: true,
-						selectedMovieTmdbId: 4935,
-						selectedMovie: {
-							tmdbId: 4935,
-							title: 'Hereditary',
-							overview: 'A grieving family is haunted...',
-							posterPath: '/lHV3oVwM4rCQh7ajK7MZvL3gk3j.jpg',
-							runtime: 127,
-							releaseDate: '2018-06-07'
-						},
-						title: 'Horror Night',
-						suggestions: [],
-						chatMessages: [
-							{
-								id: 10,
-								userId: 1,
-								user: { id: 1, name: 'Alex', avatar: '' },
-								message: 'That was intense! What did everyone think?',
-								createdAt: '1 week ago'
-							},
-							{
-								id: 11,
-								userId: 3,
-								user: { id: 3, name: 'Jordan', avatar: '' },
-								message: 'Still processing it... 😱',
-								createdAt: '1 week ago'
-							}
-						],
-						ratings: [
-							{
-								id: 1,
-								userId: 1,
-								user: { id: 1, name: 'Alex' },
-								rating: 5,
-								comment: 'Masterpiece'
-							},
-							{
-								id: 2,
-								userId: 2,
-								user: { id: 2, name: 'Sam' },
-								rating: 4,
-								comment: 'Too scary for me!'
-							},
-							{ id: 3, userId: 3, user: { id: 3, name: 'Jordan' }, rating: 5 }
-						],
-						participants: 3
-					}
-				]
-			};
-
-			stats = {
-				moviesWatched: 8,
-				totalVotes: 42,
-				averageRating: 4.2,
-				streak: 3
-			};
-		} else {
-			// Load different data for other groups
-			events = { upcoming: [], past: [] };
-			stats = { moviesWatched: 0, totalVotes: 0, averageRating: 0, streak: 0 };
-		}
+		loadGroupData({
+			groupId: group.id,
+			eventCb: (data) => (events = data),
+			statsCb: (data) => (stats = data)
+		});
 	}
 
 	function openEventChat(event: MovieNightEvent) {
@@ -517,98 +176,28 @@
 <div class="flex min-h-screen bg-background">
 	<!-- Mobile Sidebar Overlay -->
 	{#if sidebarOpen}
-		<div class="fixed inset-0 z-40 bg-black/50 md:hidden" onclick={toggleSidebar}></div>
+		<button
+			class="fixed inset-0 z-40 bg-black/50"
+			aria-label="Sidbar button"
+			onclick={toggleSidebar}
+		></button>
 	{/if}
 
 	<!-- Sidebar -->
-	<aside
-		class={`
-			fixed inset-y-0 left-0 z-50 flex
-			w-80 flex-col border-r border-border bg-card
-			transition-transform duration-300 ease-in-out
-			md:static
-			${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-		`}
-	>
-		<!-- Sidebar Header -->
-		<div class="flex h-16 items-center justify-between border-b border-border px-4">
-			<h2 class="text-lg font-semibold">Your Groups</h2>
-			<Button size="sm" variant="ghost" onclick={toggleSidebar} class="md:hidden">
-				<ChevronLeft class="h-4 w-4" />
-			</Button>
-		</div>
-
-		<!-- Search -->
-		<div class="border-b border-border p-4">
-			<div class="relative">
-				<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-				<input
-					bind:value={searchQuery}
-					type="text"
-					placeholder="Search groups..."
-					class="w-full rounded-lg border border-border bg-background py-2 pr-4 pl-10 text-sm"
-				/>
-			</div>
-		</div>
-
-		<!-- Groups List -->
-		<div class="flex-1 overflow-y-auto p-2">
-			{#if filteredGroups.length === 0}
-				<div class="p-4 text-center">
-					<p class="text-sm text-muted-foreground">No groups found</p>
-				</div>
-			{:else}
-				<div class="space-y-1">
-					{#each filteredGroups as group}
-						<button
-							onclick={() => setActiveGroup(group)}
-							class={`flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors ${
-								group.isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-							}`}
-						>
-							<div class="flex items-center gap-3 overflow-hidden">
-								<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-									<Users class="h-5 w-5" />
-								</div>
-								<div class="min-w-0 flex-1">
-									<div class="truncate font-medium">{group.name}</div>
-									<div class="truncate text-xs opacity-80">
-										{group.members.length} members • {group.lastActivity}
-									</div>
-								</div>
-							</div>
-							<div class="flex items-center gap-1">
-								{#if group.unreadCount > 0}
-									<Badge variant="default" class="h-5 min-w-5 px-1 text-xs">
-										{group.unreadCount}
-									</Badge>
-								{/if}
-								{#if group.upcomingEventsCount > 0}
-									<Badge variant="outline" class="h-5 text-xs">
-										{group.upcomingEventsCount}
-									</Badge>
-								{/if}
-							</div>
-						</button>
-					{/each}
-				</div>
-			{/if}
-		</div>
-
-		<!-- Create Group Button -->
-		<div class="border-t border-border p-4">
-			<Button class="w-full" onclick={createNewGroup}>
-				<Plus class="mr-2 h-4 w-4" />
-				Create New Group
-			</Button>
-		</div>
-	</aside>
+	<GroupsSideBar
+		{createNewGroup}
+		{filteredGroups}
+		{searchQuery}
+		{setActiveGroup}
+		{toggleSidebar}
+		{sidebarOpen}
+	/>
 
 	<!-- Main Content -->
 	<main class="flex-1 md:ml-0">
 		<!-- Mobile Header -->
 		<header
-			class="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden"
+			class="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 md:hidden"
 		>
 			<div class="flex h-16 items-center px-4">
 				<Button size="sm" variant="ghost" onclick={toggleSidebar} class="mr-2">
@@ -623,7 +212,7 @@
 		{#if activeGroup}
 			<!-- Desktop Group Header -->
 			<header
-				class="sticky top-0 z-30 hidden border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:block"
+				class="sticky top-0 z-30 hidden border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 md:block"
 			>
 				<div class="flex h-16 items-center justify-between px-6">
 					<div>
