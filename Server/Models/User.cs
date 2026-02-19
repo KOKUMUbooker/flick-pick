@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FlickPickApp.Models;
 
-
 public class User : EntityBase
 {
     [Required(ErrorMessage = "Email is required.")]
