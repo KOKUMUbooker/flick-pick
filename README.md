@@ -4,7 +4,7 @@ WatchHive is a decision-making platform that helps friends, couples, and familie
 
 ---
 
-##  The Problem
+## The Problem
 
 ### The Movie Night Planning Nightmare:
 
@@ -30,6 +30,7 @@ WatchHive transforms chaotic planning into a **simple 4-step process:**
 **We don't stream movies—we help you decide which ones to watch.**
 
 ---
+
 ## Core Features
 
 ### Smart Voting System
@@ -101,12 +102,10 @@ cd watch-hive
 2. **Start PostgreSQL**
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose-db.yaml up -d
 ```
 
-Database: `watchHive` | User: `admin` | Password: `secret` | Port: `5480`
-
-3. **Install EF Core tools**
+1. **Install EF Core tools**
 
 ```bash
 dotnet tool restore

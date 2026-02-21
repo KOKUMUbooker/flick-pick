@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using dotenv.net;
 using WatchHive.Models;
 using WatchHive.Services;
 
@@ -15,6 +16,13 @@ public class Program
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        if (builder.Environment.IsDevelopment())
+        {
+            DotEnv.Load();
+        }
+
+        builder.Configuration.AddEnvironmentVariables();
 
         // Register services
         builder.Services.AddControllers();
@@ -46,8 +54,8 @@ public class Program
                 .AllowAnyMethod()
                 .AllowCredentials(); // If using cookies/auth headers
             });
-        });
-
+        });        
+        
         Lazy<IClientCacheService>? clientCacheInstance = null;
 
         // Configure JWT Bearer Authentication
