@@ -1,4 +1,5 @@
 namespace FlickPickApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 public class MovieSuggestion : EntityBase
 {
@@ -7,11 +8,12 @@ public class MovieSuggestion : EntityBase
 
     [Required]
     public Guid SuggestedById { get; set; }
-    public User SuggestedBy { get; set; } = null!;
 
     [Required]
     public Guid MovieNightEventId { get; set; }
-    public MovieNightEvent MovieNightEvent { get; set; } = null!;
 
+    // Navigation properties
+    public MovieNightEvent MovieNightEvent { get; set; } = null!;
     public ICollection<Vote> Votes { get; set; } = new List<Vote>();
+    public User SuggestedBy { get; set; } = null!;
 }

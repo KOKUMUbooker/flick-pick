@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace FlickPickApp.Models;
 
 // Relationship
@@ -10,9 +12,9 @@ public class Group : EntityBase
     public string Name { get; set; } = null!;
 
     public Guid CreatedById { get; set; }
-    public User CreatedBy { get; set; } = null!;
 
     // Navigational fields
+    public User CreatedBy { get; set; } = null!;
     public ICollection<UserGroup> Members { get; set; } = new List<UserGroup>();
     public ICollection<MovieNightEvent> MovieNightEvents { get; set; } = new List<MovieNightEvent>();
 }

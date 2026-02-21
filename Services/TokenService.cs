@@ -80,7 +80,6 @@ public class TokenService : ITokenService
             Token = Convert.ToBase64String(randomBytes),
             JwtId = jwtId,
             Expires = DateTime.UtcNow.AddDays(refreshTokenExpirationDays),
-            CreatedAt = DateTime.UtcNow,
             UserId = userId,
             ClientId = client.Id,
             IsRevoked = false,

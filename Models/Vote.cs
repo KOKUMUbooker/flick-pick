@@ -1,14 +1,20 @@
 namespace FlickPickApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 public class Vote : EntityBase
 {
+    [Required]
     public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
 
+    [Required]
     public Guid MovieSuggestionId { get; set; }
-    public MovieSuggestion MovieSuggestion { get; set; } = null!;
 
+    [Required]
     public VoteType VoteType { get; set; }
+
+   // Navigational properties
+    public MovieSuggestion MovieSuggestion { get; set; } = null!;
+    public User User { get; set; } = null!;
 }
 
 public enum VoteType
