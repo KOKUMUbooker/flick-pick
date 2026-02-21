@@ -1,15 +1,85 @@
-# WatchHive API
+# 🎬 WatchHive - Stop Debating, Start Watching
 
-A .NET 8 Web API for managing movies with CRUD operations, PostgreSQL, and Minimal APIs.
+WatchHive is a decision-making platform that helps friends, couples, and families choose movies together—without the endless group chat debates. We solve the coordination problem so you can focus on the fun part: actually watching.
 
-## Features
+---
 
-- Full CRUD operations for movie management
-- PostgreSQL database with Docker
-- Entity Framework Core with code-first migrations
-- Minimal API endpoints
-- Automatic data seeding
-- OpenAPI documentation
+##  The Problem
+
+### The Movie Night Planning Nightmare:
+
+- **30+ minutes** lost debating in group chats
+- **No fair system** - someone always compromises
+- **Scheduling headaches** across time zones and busy lives
+- **Streaming confusion** - "Who has Netflix? Does anyone have Hulu?"
+- **Lost conversations** - Great discussions disappear in chat history
+
+**Result:** Decision fatigue, frustration, or movie night never happens.
+
+---
+
+## The Solution
+
+WatchHive transforms chaotic planning into a **simple 4-step process:**
+
+1. **Create** a group for your movie nights
+2. **Suggest & Vote** on movies with fair voting (up/down + veto power)
+3. **Schedule** a time that works for everyone
+4. **Watch & Discuss** with post-movie ratings and conversations
+
+**We don't stream movies—we help you decide which ones to watch.**
+
+---
+## Core Features
+
+### Smart Voting System
+
+- **Upvote/downvote** movies in real-time
+- **One veto per person** to prevent absolute no-gos
+- **Live results** so everyone sees what's winning
+- **Streaming availability check** before voting
+
+### Group Coordination
+
+- **Persistent groups** for your friend circles
+- **Anonymous voting** - friends can vote without accounts
+- **Easy invites** with shareable links
+- **Member management** with admin controls
+
+### Decision & Scheduling
+
+- **Calendar integration** to find mutual availability
+- **Time zone support** for long-distance friends
+- **Reminders & notifications** for upcoming movie nights
+- **Watch tracking** - mark when you actually start watching
+
+### Post-Movie Experience
+
+- **Group ratings** (1-10 with averages)
+- **Watch history** - see all movies your group has watched
+
+## Tech Stack
+
+### Frontend
+
+- **Svelte** + **SvelteKit** - Reactive, fast UI
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** + **shadcn-svelte** - Beautiful, consistent components
+- **Lucide Icons** - Clean iconography
+
+### Backend
+
+- **ASP.NET Core** - Robust API framework
+- **Entity Framework Core** - Database ORM
+- **PostgreSQL** - Relational database with JSONB support
+- **SignalR** - Real-time voting and chat
+
+### APIs & Services
+
+- **TMDB API** - Movie metadata and details
+- **JWT Authentication** - Secure user sessions
+
+---
 
 ## Quick Start
 
@@ -112,7 +182,7 @@ Connection string in `appsettings.json`:
 
 ```json
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5480;Database=WatchHive;Username=admin;Password=secret;"
+    "DefaultConnection": "Host=localhost;Port=5480;Database=watchhive;Username=admin;Password=secret;"
   }
 ```
 
