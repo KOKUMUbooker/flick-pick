@@ -1,7 +1,10 @@
 namespace FlickPickApp.Models;
 
+using System.ComponentModel.DataAnnotations;
+
 public class Role : EntityBase
 {
+    [Required]
     public RoleEnum RoleValue { get; set; }
 
     // Navigation property

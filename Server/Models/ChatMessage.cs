@@ -10,6 +10,7 @@ public class ChatMessage : EntityBase
     [Required]
     [MaxLength(1000)]
     public string Message { get; set; } = null!;
+    public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
     // Navigational properties
     public User User { get; set; } = null!;

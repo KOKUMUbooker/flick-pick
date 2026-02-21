@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 public class MoviePreference : EntityBase
 {
+    [Required]
     public Guid UserId { get; set; }
 
     [Required]

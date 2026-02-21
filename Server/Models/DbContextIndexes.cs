@@ -31,7 +31,7 @@ public partial class MovieAppDbContext : DbContext {
 
         modelBuilder.Entity<Vote>()
             .HasIndex(v => new { v.UserId, v.MovieSuggestionId })
-            .IsUnique();
+            .IsUnique(); // Ensure one vote on a MovieSuggestion per user
 
         modelBuilder.Entity<MovieNightRating>()
             .HasIndex(r => new { r.UserId, r.MovieNightEventId })

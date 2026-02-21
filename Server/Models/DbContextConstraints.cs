@@ -59,5 +59,33 @@ public partial class MovieAppDbContext : DbContext {
             entity.Property(rt => rt.CreatedByIp)
                 .HasMaxLength(50);
         });
+
+        // CHATMESSAGES constraints
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.Property(cm => cm.Message)
+                .IsRequired()
+                .HasMaxLength(1000);
+
+            entity.Property(cm => cm.SentAt)
+                .HasDefaultValue(DateTime.UtcNow);
+
+            entity.Property(cm => cm.UserId)
+                .IsRequired();
+
+            entity.Property(cm => cm.MovieNightEventId)
+                .IsRequired();
+        });
+
+        // GROUP constraints
+        modelBuilder.Entity<Group>(entity =>
+        {
+            entity.Property(g => g.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(g => g.CreatedById)
+                .IsRequired();
+        });
     }
 }

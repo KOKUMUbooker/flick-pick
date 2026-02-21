@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FlickPickApp.Models;
 
 public partial class MovieAppDbContext : DbContext {
-       private static void SeedRoles(ModelBuilder modelBuilder)
+    private static void SeedRoles(ModelBuilder modelBuilder)
     {
         var now = DateTimeOffset.UtcNow;
 

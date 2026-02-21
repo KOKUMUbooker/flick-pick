@@ -10,9 +10,11 @@ public class MovieNightEvent : EntityBase
     [Required]
     public DateTime ScheduledAt { get; set; }
 
-    public bool IsLocked { get; set; } = false; 
-    // Lock voting when event starts
+    [Required]
     public Guid CreatedById {get; set;}
+
+    // Lock voting when event starts
+    public bool IsLocked { get; set; } = false;
 
     public int? SelectedMovieTmdbId { get; set; }
 

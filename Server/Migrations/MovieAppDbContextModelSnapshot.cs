@@ -43,6 +43,11 @@ namespace FlickPick.Migrations
                     b.Property<Guid>("MovieNightEventId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("SentAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValue(new DateTime(2026, 2, 21, 10, 13, 57, 220, DateTimeKind.Utc).AddTicks(9718));
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -106,9 +111,9 @@ namespace FlickPick.Migrations
                             ClientId = "movie-manager-web",
                             ClientSecret = "TXlTdXBlclNlY3VyZUFuZFJhbmRvbUtleVRoYXRMb29rc0p1c3RBd2Vzb21lQW5kTmVlZHNUb0JlVmVyeVZlcnlMb25nISEhMTExb25lZWxldmVu",
                             ClientURL = "https://localhost:5173",
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 828, DateTimeKind.Unspecified).AddTicks(1828), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 220, DateTimeKind.Unspecified).AddTicks(76), new TimeSpan(0, 0, 0, 0, 0)),
                             IsActive = true,
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 828, DateTimeKind.Unspecified).AddTicks(1828), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 220, DateTimeKind.Unspecified).AddTicks(76), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Movie Manager Web Application"
                         });
                 });
@@ -350,15 +355,15 @@ namespace FlickPick.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 695, DateTimeKind.Unspecified).AddTicks(6962), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 695, DateTimeKind.Unspecified).AddTicks(6962), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 50, DateTimeKind.Unspecified).AddTicks(2891), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 50, DateTimeKind.Unspecified).AddTicks(2891), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 1
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 695, DateTimeKind.Unspecified).AddTicks(6962), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 695, DateTimeKind.Unspecified).AddTicks(6962), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 50, DateTimeKind.Unspecified).AddTicks(2891), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 50, DateTimeKind.Unspecified).AddTicks(2891), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 2
                         });
                 });
@@ -420,12 +425,12 @@ namespace FlickPick.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 695, DateTimeKind.Unspecified).AddTicks(7169), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 50, DateTimeKind.Unspecified).AddTicks(3140), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@system.com",
                             EmailVerified = false,
                             FullName = "System Administrator",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 9, 29, 14, 695, DateTimeKind.Unspecified).AddTicks(7169), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$wxKJuWPWN0fBKxge6XmrP.P2DfWpnLo77x9fAJksb03tDc7vlrGJu",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 10, 13, 57, 50, DateTimeKind.Unspecified).AddTicks(3140), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$hnKUxV9fS75FVi8KmBdZre4adCOzt.jDrF1XTX7nR4C0.j6bTC/uq",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000001")
                         });
                 });

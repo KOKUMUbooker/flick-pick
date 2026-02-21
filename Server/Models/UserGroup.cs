@@ -1,9 +1,12 @@
 namespace FlickPickApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 public class UserGroup
 {
+    [Required]
     public Guid UserId { get; set; }
 
+    [Required]
     public Guid GroupId { get; set; }
 
     public bool IsAdmin { get; set; } = false;
