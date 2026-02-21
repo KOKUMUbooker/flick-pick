@@ -1,7 +1,7 @@
-using FlickPickApp.DTOs;
-using FlickPickApp.Models;
+using WatchHive.DTOs;
+using WatchHive.Models;
 
-namespace FlickPickApp.Services;
+namespace WatchHive.Services;
 
 public interface IUserService
 {

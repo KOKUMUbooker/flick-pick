@@ -2,10 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FlickPickApp.Models;
-using FlickPickApp.Services;
+using WatchHive.Models;
+using WatchHive.Services;
 
-namespace FlickPickApp;
+namespace WatchHive;
 
 public class Program
 {
@@ -25,7 +25,7 @@ public class Program
         builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
         builder.Services.AddSingleton<IClientCacheService, ClientCacheService>();
 
-        builder.Services.AddDbContext<MovieAppDbContext>(options =>
+        builder.Services.AddDbContext<WatchHiveDbContext>(options =>
         {
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             // var dbURL = builder.Configuration["Movies:ConnectionStrings"];

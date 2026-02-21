@@ -1,9 +1,9 @@
-using FlickPickApp.Models;
+using WatchHive.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace FlickPickApp.Services;
+namespace WatchHive.Services;
 
 public class TokenService : ITokenService
 {
@@ -29,7 +29,7 @@ public class TokenService : ITokenService
         jwtId = Guid.NewGuid().ToString();
 
         // Read issuer and token expiration from configuration, with default fallback values
-        var issuer = _configuration["JwtSettings:Issuer"] ?? "FlickPick";
+        var issuer = _configuration["JwtSettings:Issuer"] ?? "WatchHive";
         var accessTokenExpirationMinutes = int.TryParse(_configuration["JwtSettings:AccessTokenExpirationMinutes"], out var val) ? val : 15;
 
         // Claims to be embedded in the JWT token

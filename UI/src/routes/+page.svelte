@@ -133,7 +133,7 @@
 				</h1>
 
 				<p class="mx-auto mb-10 max-w-2xl text-xl text-muted-foreground">
-					Stop debating what to watch. FlickPick helps friends plan movie nights with voting,
+					Stop debating what to watch. WatchHive helps friends plan movie nights with voting,
 					scheduling, and streaming checks—all in one place.
 				</p>
 
@@ -165,7 +165,7 @@
 	<section id="how-it-works" class="px-4 py-20">
 		<div class="container mx-auto max-w-6xl">
 			<div class="mb-16 text-center">
-				<h2 class="mb-4 text-3xl font-bold sm:text-4xl">How FlickPick Works</h2>
+				<h2 class="mb-4 text-3xl font-bold sm:text-4xl">How WatchHive Works</h2>
 				<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
 					Four simple steps from planning to pressing play
 				</p>

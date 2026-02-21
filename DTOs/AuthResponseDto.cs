@@ -1,5 +1,5 @@
 
-namespace FlickPickApp.DTOs;
+namespace WatchHive.DTOs;
 
 public class AuthResponseDTO
 {

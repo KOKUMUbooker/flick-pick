@@ -1,17 +1,17 @@
 using Microsoft.EntityFrameworkCore;
-using FlickPickApp.DTOs;
-using FlickPickApp.Models;
+using WatchHive.DTOs;
+using WatchHive.Models;
 
-namespace FlickPickApp.Services;
+namespace WatchHive.Services;
 
 public class UserService : IUserService
 {
-    private readonly MovieAppDbContext _dbContext;
+    private readonly WatchHiveDbContext _dbContext;
     private readonly ITokenService _tokenService;
     private readonly IConfiguration _configuration;
     private readonly IClientCacheService _clientCacheService;
 
-    public UserService(MovieAppDbContext dbContext, ITokenService tokenService, IConfiguration configuration, IClientCacheService clientCacheService)
+    public UserService(WatchHiveDbContext dbContext, ITokenService tokenService, IConfiguration configuration, IClientCacheService clientCacheService)
     {
         _dbContext = dbContext;
         _tokenService = tokenService;

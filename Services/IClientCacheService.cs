@@ -1,5 +1,5 @@
-using FlickPickApp.Models;
-namespace FlickPickApp.Services;
+using WatchHive.Models;
+namespace WatchHive.Services;
 
 public interface IClientCacheService
 {

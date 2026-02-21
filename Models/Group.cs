@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FlickPickApp.Models;
+namespace WatchHive.Models;
 
 // Relationship
 // One group → many users (via UserGroup)

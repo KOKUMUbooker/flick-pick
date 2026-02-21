@@ -1,4 +1,4 @@
-# FlickPick API
+# WatchHive API
 
 A .NET 8 Web API for managing movies with CRUD operations, PostgreSQL, and Minimal APIs.
 
@@ -25,7 +25,7 @@ A .NET 8 Web API for managing movies with CRUD operations, PostgreSQL, and Minim
 
 ```bash
 git clone <repo-url>
-cd Movie-manager
+cd watch-hive
 ```
 
 2. **Start PostgreSQL**
@@ -34,7 +34,7 @@ cd Movie-manager
 docker compose up -d
 ```
 
-Database: `flickpick` | User: `admin` | Password: `secret` | Port: `5480`
+Database: `watchHive` | User: `admin` | Password: `secret` | Port: `5480`
 
 3. **Install EF Core tools**
 
@@ -51,7 +51,7 @@ rm -r Migrations/
 If database contained some data first (for local development)
 
 ```bash
-docker exec -it postgres psql -U admin -d flickpick -c "DROP SCHEMA app CASCADE;
+docker exec -it postgres psql -U admin -d WatchHive -c "DROP SCHEMA app CASCADE;
 ```
 
 ```bash
@@ -76,7 +76,6 @@ Once running, explore the API:
 
 ### Endpoints
 
-
 ## Development
 
 ### Useful Commands
@@ -98,7 +97,7 @@ docker-compose down
 ### Project Structure
 
 ```
-FlickPickApp/
+WatchHive/
 ├── Models/          # Domain entities & DB context
 ├── DTOs/           # Data transfer objects
 ├── Services/       # Business logic
@@ -113,7 +112,7 @@ Connection string in `appsettings.json`:
 
 ```json
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5480;Database=flickpick;Username=admin;Password=secret;"
+    "DefaultConnection": "Host=localhost;Port=5480;Database=WatchHive;Username=admin;Password=secret;"
   }
 ```
 

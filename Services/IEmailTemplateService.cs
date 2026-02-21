@@ -1,4 +1,4 @@
-namespace FlickPickApp.Services;
+namespace WatchHive.Services;
 
 public interface IEmailTemplateService
 {

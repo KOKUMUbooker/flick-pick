@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 
-namespace FlickPickApp.Services;
+namespace WatchHive.Services;
 
 public class EmailService : IEmailService
 {
@@ -51,7 +51,7 @@ public class EmailService : IEmailService
 // using MailKit.Net.Smtp;
 // using MimeKit;
 
-// namespace FlickPickApp.Services;
+// namespace WatchHive.Services;
 
 // public class EmailSender : IEmailSender
 // {

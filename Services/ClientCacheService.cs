@@ -1,8 +1,8 @@
-using FlickPickApp.Models;
+using WatchHive.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace FlickPickApp.Services;
+namespace WatchHive.Services;
 
 public class ClientCacheService : IClientCacheService
 {
@@ -32,7 +32,7 @@ public class ClientCacheService : IClientCacheService
 
         // Cache miss - create a new scope to get a fresh DbContext instance
         using var scope = _serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<MovieAppDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<WatchHiveDbContext>();
 
         client = await dbContext.Clients.AsNoTracking()
             .FirstOrDefaultAsync(c => c.ClientId == clientId && c.IsActive);

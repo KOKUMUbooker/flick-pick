@@ -1,11 +1,11 @@
-namespace FlickPickApp.Services;
+namespace WatchHive.Services;
 
 public interface IEmailService
 {
     Task SendEmail(string receptor, string subject, string body);
 }
 
-// namespace FlickPickApp.Services;
+// namespace WatchHive.Services;
 
 // public interface IEmailSender
 // {

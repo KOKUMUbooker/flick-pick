@@ -64,7 +64,7 @@
 					>
 						<Play class="h-4 w-4 text-primary-foreground" />
 					</div>
-					<span class="text-xl font-bold tracking-tight">FlickPick</span>
+					<span class="text-xl font-bold tracking-tight">WatchHive</span>
 				</a>
 			</div>
 

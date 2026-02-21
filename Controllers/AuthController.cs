@@ -1,24 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
-using FlickPickApp.Models;
-using FlickPickApp.DTOs;
+using WatchHive.Models;
+using WatchHive.DTOs;
 using Microsoft.EntityFrameworkCore;
-using FlickPickApp.Services;
+using WatchHive.Services;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace FlickPickApp.Controllers;
+namespace WatchHive.Controllers;
 
 [ApiController]
 [Route("/api/auth/")]
 public class AuthController : ControllerBase
 {
-    private readonly MovieAppDbContext _context;
+    private readonly WatchHiveDbContext _context;
     private readonly IUserService _userService;
     private IEmailService _emailService;
     private IEmailTemplateService _templateService;
     private IConfiguration _configuration;
 
-    public AuthController(MovieAppDbContext context, IUserService userService, IEmailService emailService, IEmailTemplateService templateService, IConfiguration configuration)
+    public AuthController(WatchHiveDbContext context, IUserService userService, IEmailService emailService, IEmailTemplateService templateService, IConfiguration configuration)
     {
         _context = context;
         _userService = userService;
@@ -45,7 +45,7 @@ public class AuthController : ControllerBase
             // Send verification email
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
             var verificationUrl = $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
-            string htmlBody = await _templateService.GenerateVerificationEmail("FlickPick", user.FullName, verificationUrl);
+            string htmlBody = await _templateService.GenerateVerificationEmail("WatchHive", user.FullName, verificationUrl);
 
             await _emailService.SendEmail(user.Email, "Verify email", htmlBody);
 
@@ -176,7 +176,7 @@ public class AuthController : ControllerBase
         // Send verification email
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var verificationUrl = $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
-        string htmlBody = await _templateService.GenerateVerificationEmail("FlickPick", user.FullName, verificationUrl);
+        string htmlBody = await _templateService.GenerateVerificationEmail("WatchHive", user.FullName, verificationUrl);
 
         await _emailService.SendEmail(user.Email, "Verify email", htmlBody);
 
@@ -205,7 +205,7 @@ public class AuthController : ControllerBase
             var resetUrl = $"{clientUrl}/reset-password?tkn={rawToken}&email={user.Email}";
 
             var htmlBody = await _templateService
-                .GeneratePasswordResetEmail("FlickPick", user.FullName, resetUrl);
+                .GeneratePasswordResetEmail("WatchHive", user.FullName, resetUrl);
 
             await _emailService.SendEmail(user.Email, "Password reset", htmlBody);
         }

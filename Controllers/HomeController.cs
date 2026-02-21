@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using FlickPickApp.Services;
+using WatchHive.Services;
 
-namespace FlickPickApp.Controllers;
+namespace WatchHive.Controllers;
 
 [ApiController]
 public class HomeController : ControllerBase

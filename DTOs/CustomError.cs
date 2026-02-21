@@ -1,4 +1,4 @@
-namespace FlickPickApp.DTOs;
+namespace WatchHive.DTOs;
 
 public enum AuthErrorType
 {

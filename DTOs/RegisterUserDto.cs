@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FlickPickApp.DTOs;
+namespace WatchHive.DTOs;
 
 public class RegisterUserDto
 {

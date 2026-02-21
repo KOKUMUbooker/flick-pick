@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   postgres:
     image: postgres:16
@@ -7,9 +7,9 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
-      POSTGRES_DB: flickpick
+      POSTGRES_DB: watchhive
     ports:
-      - "5480:5432"
+      - '5480:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

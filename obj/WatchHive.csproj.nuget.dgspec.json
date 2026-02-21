@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "/home/boookumu/projects/flick-pick/Server/WatchHive.csproj": {}
+    "/home/boookumu/projects/flick-pick/WatchHive.csproj": {}
   },
   "projects": {
-    "/home/boookumu/projects/flick-pick/Server/WatchHive.csproj": {
+    "/home/boookumu/projects/flick-pick/WatchHive.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/boookumu/projects/flick-pick/Server/WatchHive.csproj",
+        "projectUniqueName": "/home/boookumu/projects/flick-pick/WatchHive.csproj",
         "projectName": "WatchHive",
-        "projectPath": "/home/boookumu/projects/flick-pick/Server/WatchHive.csproj",
+        "projectPath": "/home/boookumu/projects/flick-pick/WatchHive.csproj",
         "packagesPath": "/home/boookumu/.nuget/packages/",
-        "outputPath": "/home/boookumu/projects/flick-pick/Server/obj/",
+        "outputPath": "/home/boookumu/projects/flick-pick/obj/",
         "projectStyle": "PackageReference",
-        "configFilePaths": ["/home/boookumu/.nuget/NuGet/NuGet.Config"],
-        "originalTargetFrameworks": ["net8.0"],
+        "configFilePaths": [
+          "/home/boookumu/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -25,7 +29,9 @@
           }
         },
         "warningProperties": {
-          "warnAsError": ["NU1605"]
+          "warnAsError": [
+            "NU1605"
+          ]
         },
         "restoreAuditProperties": {
           "enableAudit": "true",

@@ -1,4 +1,4 @@
-namespace FlickPickApp.Models;
+namespace WatchHive.Models;
 using System.ComponentModel.DataAnnotations;
 
 public class Vote : EntityBase

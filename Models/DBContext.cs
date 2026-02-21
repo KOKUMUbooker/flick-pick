@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace FlickPickApp.Models;
+namespace WatchHive.Models;
 
-public partial class MovieAppDbContext : DbContext
+public partial class WatchHiveDbContext : DbContext
 {
-    public MovieAppDbContext(DbContextOptions<MovieAppDbContext> options) : base(options)
+    public WatchHiveDbContext(DbContextOptions<WatchHiveDbContext> options) : base(options)
     {
     }
 

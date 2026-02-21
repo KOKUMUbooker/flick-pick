@@ -1,4 +1,4 @@
-namespace FlickPickApp.Models;
+namespace WatchHive.Models;
 
 public class Client : EntityBase
 {
