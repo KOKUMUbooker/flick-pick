@@ -4,9 +4,8 @@ namespace FlickPickApp.Models;
 
 public class ChatMessage : EntityBase
 {
-    public Guid MovieNightEventId { get; set; }
-
     public Guid UserId { get; set; }
+    public Guid MovieNightEventId { get; set; }
 
     [Required]
     [MaxLength(1000)]

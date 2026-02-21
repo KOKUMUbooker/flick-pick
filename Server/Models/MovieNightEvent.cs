@@ -12,12 +12,14 @@ public class MovieNightEvent : EntityBase
 
     public bool IsLocked { get; set; } = false; 
     // Lock voting when event starts
+    public Guid CreatedById {get; set;}
 
     public int? SelectedMovieTmdbId { get; set; }
 
     // Navigational properties
     public Group Group { get; set; } = null!;
-    public ICollection<MovieSuggestion> Suggestions { get; set; } = new List<MovieSuggestion>();
-    public ICollection<MovieNightRating> Ratings { get; set; } = new List<MovieNightRating>();
+    public User CreatedBy {get; set; } = null!;
+    public ICollection<MovieSuggestion> MovieSuggestions { get; set; } = new List<MovieSuggestion>();
+    public ICollection<MovieNightRating> MovieNightRatings { get; set; } = new List<MovieNightRating>();
     public ICollection<ChatMessage> ChatMessages { get; set; } = new List<ChatMessage>();
 }
