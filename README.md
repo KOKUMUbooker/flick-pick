@@ -134,6 +134,26 @@ dotnet ef database update
 dotnet run
 ```
 
+OR via docker
+
+1. Build image
+
+```bash
+docker build -t watchhive:1.0 .
+```
+
+2. Start image
+
+```bash
+docker run --env-file .env watchhive
+```
+
+OR via docker compose
+
+```bash
+docker compose -f docker-compose-server.yaml up -d
+```
+
 API runs on `https://localhost:5167`
 
 ## API Documentation

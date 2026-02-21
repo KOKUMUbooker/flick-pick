@@ -1,6 +1,6 @@
 services:
   watchhive:
-    image: watchhive
+    image: watchhive:1.0
     ports:
       - '8080:8080'
     env_file:
