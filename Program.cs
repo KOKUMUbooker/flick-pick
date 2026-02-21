@@ -137,6 +137,11 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+
+        app.MapFallbackToFile("index.html");
+
         app.UseCors("AllowSpecificOrigin");
         app.MapControllers();
 

@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Hosting;
+using System.Text;
+using WatchHive.Services;
 using WatchHive.Models;
 using WatchHive.DTOs;
-using Microsoft.EntityFrameworkCore;
-using WatchHive.Services;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace WatchHive.Controllers;
 
@@ -17,14 +18,16 @@ public class AuthController : ControllerBase
     private IEmailService _emailService;
     private IEmailTemplateService _templateService;
     private IConfiguration _configuration;
+    private readonly IHostEnvironment _env;
 
-    public AuthController(WatchHiveDbContext context, IUserService userService, IEmailService emailService, IEmailTemplateService templateService, IConfiguration configuration)
+    public AuthController(WatchHiveDbContext context, IUserService userService, IEmailService emailService, IEmailTemplateService templateService, IConfiguration configuration, IHostEnvironment env)
     {
         _context = context;
         _userService = userService;
         _emailService = emailService;
         _templateService = templateService;
         _configuration = configuration;
+        _env = env;
     }
 
     [HttpPost("sign-up")]
@@ -268,8 +271,8 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,               // MUST be true in production
-            SameSite = SameSiteMode.None, // TODO: Once figured how to serve UI from backend update this to SameSiteMode.Strict
+            Secure = true,               
+            SameSite = _env.IsDevelopment() ? SameSiteMode.None :  SameSiteMode.Strict, 
             Expires = expiresAt
         };
 

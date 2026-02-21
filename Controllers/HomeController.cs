@@ -17,13 +17,13 @@ public class HomeController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpGet("/")]
-    public IActionResult Home()
-    {
-        return Ok("Hello from movie manager server");
-    }
+    // [HttpGet("/")]
+    // public IActionResult Home()
+    // {
+    //     return Ok("Hello from movie manager server");
+    // }
 
-    [HttpGet("/mail")]
+    [HttpGet("/test-mail")]
     public async Task<IActionResult> SendMail()
     {
         try
