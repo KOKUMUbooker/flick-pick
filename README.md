@@ -1,121 +1,151 @@
-# **🎬 FlickPick - Stop Debating, Start Watching**
+# FlickPick API
 
-**End the "what should we watch?" debate for good.**
+A .NET 8 Web API for managing movies with CRUD operations, PostgreSQL, and Minimal APIs.
 
-FlickPick is a decision-making platform that helps friends, couples, and families choose movies together—without the endless group chat debates. We solve the coordination problem so you can focus on the fun part: actually watching.
+## Features
 
----
+- Full CRUD operations for movie management
+- PostgreSQL database with Docker
+- Entity Framework Core with code-first migrations
+- Minimal API endpoints
+- Automatic data seeding
+- OpenAPI documentation
 
-## ** The Problem**
+## Quick Start
 
-### **The Movie Night Planning Nightmare:**
--  **30+ minutes** lost debating in group chats
--  **No fair system** - someone always compromises
--  **Scheduling headaches** across time zones and busy lives
--  **Streaming confusion** - "Who has Netflix? Does anyone have Hulu?"
--  **Lost conversations** - Great discussions disappear in chat history
+### Prerequisites
 
-**Result:** Decision fatigue, frustration, or movie night never happens.
+- .NET 8 SDK
+- Docker
+- Git
 
----
+### Installation
 
-## ** The Solution**
+1. **Clone and setup**
 
-FlickPick transforms chaotic planning into a **simple 4-step process:**
+```bash
+git clone <repo-url>
+cd Movie-manager
+```
 
-1. **Create** a group for your movie nights
-2. **Suggest & Vote** on movies with fair voting (up/down + veto power)
-3. **Schedule** a time that works for everyone
-4. **Watch & Discuss** with post-movie ratings and conversations
+2. **Start PostgreSQL**
 
-**We don't stream movies—we help you decide which ones to watch.**
+```bash
+docker compose up -d
+```
 
----
+Database: `flickpick` | User: `admin` | Password: `secret` | Port: `5480`
 
-## ** Core Features**
+3. **Install EF Core tools**
 
-### ** Smart Voting System**
-- **Upvote/downvote** movies in real-time
-- **One veto per person** to prevent absolute no-gos
-- **Live results** so everyone sees what's winning
-- **Streaming availability check** before voting
+```bash
+dotnet tool restore
+```
 
-### ** Group Coordination**
-- **Persistent groups** for your friend circles
-- **Anonymous voting** - friends can vote without accounts
-- **Easy invites** with shareable links
-- **Member management** with admin controls
+4. **Create & Apply migrations**
 
-### ** Decision & Scheduling**
-- **Calendar integration** to find mutual availability
-- **Time zone support** for long-distance friends
-- **Reminders & notifications** for upcoming movie nights
-- **Watch tracking** - mark when you actually start watching
+```bash
+rm -r Migrations/
+```
 
-### ** Post-Movie Experience**
-- **Group ratings** (1-10 with averages)
-- **Watch history** - see all movies your group has watched
+If database contained some data first (for local development)
 
-## ** Tech Stack**
+```bash
+docker exec -it postgres psql -U admin -d flickpick -c "DROP SCHEMA app CASCADE;
+```
 
-### **Frontend**
-- **Svelte** + **SvelteKit** - Reactive, fast UI
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** + **shadcn-svelte** - Beautiful, consistent components
-- **Lucide Icons** - Clean iconography
+```bash
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
 
-### **Backend**
-- **ASP.NET Core** - Robust API framework
-- **Entity Framework Core** - Database ORM
-- **PostgreSQL** - Relational database with JSONB support
-- **SignalR** - Real-time voting and chat
+5. **Run the API**
 
-### **APIs & Services**
-- **TMDB API** - Movie metadata and details
-- **JustWatch API** - Streaming availability data
-- **JWT Authentication** - Secure user sessions
+```bash
+dotnet run
+```
 
----
+API runs on `https://localhost:5167`
 
-## ** Who It's For**
+## API Documentation
 
-### **Perfect for:**
-- **Friend groups** with weekly movie nights
-- **Long-distance relationships** staying connected
-- **Families** coordinating across households
-- **Film clubs** organizing viewings and discussions
-- **Remote teams** building culture through shared experiences
-- **Anyone tired of scrolling streaming apps for 30 minutes**
+Once running, explore the API:
 
----
+- **Swagger UI**: `https://localhost:5167/swagger`
+- **Interactive docs** with full endpoint details
 
-## ** The Vision**
+### Endpoints
 
-**From fragmented chats to seamless movie nights in 5 minutes.**
 
-We believe the best part of movie night should be watching the movie, not deciding what to watch. FlickPick turns coordination from a chore into a fun part of the experience.
+## Development
 
----
+### Useful Commands
 
-## ** Future Possibilities**
-- **Smart recommendations** based on group taste profiles
-- **"Movie night recipes"** - save successful theme nights
-- **Watch party integration** with existing streaming services
-- **Mobile apps** for on-the-go planning
-- **Advanced analytics** - "Your group loves 90s sci-fi!"
+```bash
+# Run with auto-reload
+dotnet watch run
 
----
+# Create new migration
+dotnet ef migrations add MigrationName
 
-## ** Current Status**
+# Update database
+dotnet ef database update
 
-**Active Development** - Core features being implemented
--  Authentication system
--  Landing pages & marketing site
--  Group management foundation
--  Real-time voting interface
--  Movie search & suggestion
--  Post-movie discussion system
+# Stop PostgreSQL
+docker-compose down
+```
 
----
+### Project Structure
 
-**Because the hardest part of movie night should be choosing the popcorn flavor, not the movie.** 🍿
+```
+FlickPickApp/
+├── Models/          # Domain entities & DB context
+├── DTOs/           # Data transfer objects
+├── Services/       # Business logic
+├── Endpoints/      # API endpoints
+├── Migrations/     # Database migrations
+└── Utils/          # Database seeding
+```
+
+## Configuration
+
+Connection string in `appsettings.json`:
+
+```json
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5480;Database=flickpick;Username=admin;Password=secret;"
+  }
+```
+
+## Troubleshooting
+
+**Can't connect to database?**
+
+```bash
+# Check if PostgreSQL is running
+docker ps
+# Should show 'postgres' container
+
+# View logs
+docker-compose logs postgres
+```
+
+**Migrations not working?**
+
+```bash
+# Reset everything
+docker-compose down -v
+docker-compose up -d
+rm -rf Migrations/
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
+
+**API won't start?**
+
+```bash
+# Clean and rebuild
+dotnet clean
+dotnet build
+dotnet run
+```
