@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "u4OGaOhTuIbGJkmesmE6ya4TpBQIb3dZrL6+gI9bT9k=",
+  "Source": "WatchHive",
+  "BasePath": "_content/WatchHive",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "WatchHive/wwwroot",
+      "Source": "WatchHive",
+      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

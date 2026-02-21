@@ -21,4 +21,19 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
   </ItemGroup>
 
+  <Target Name="BuildSvelte" BeforeTargets="Build">
+    <Exec WorkingDirectory="UI" Command="npm install" />
+    <Exec WorkingDirectory="UI" Command="npm run build" />
+  </Target>
+
+  <Target Name="CopySvelteBuild" AfterTargets="Build">
+    <ItemGroup>
+      <SvelteFiles Include="UI/build/**" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(SvelteFiles)"
+      DestinationFiles="@(SvelteFiles->'wwwroot/%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

@@ -206,11 +206,6 @@
   resolved "https://registry.npmjs.org/@sveltejs/acorn-typescript/-/acorn-typescript-1.0.8.tgz"
   integrity sha512-esgN+54+q0NjB0Y/4BomT9samII7jGwNy/2a3wNZbT2A2RpmXsXwUt24LvLhx6jUq2gVk4cWEvcRO6MFQbOfNA==
 
-"@sveltejs/adapter-auto@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.npmjs.org/@sveltejs/adapter-auto/-/adapter-auto-7.0.0.tgz"
-  integrity sha512-ImDWaErTOCkRS4Gt+5gZuymKFBobnhChXUZ9lhUZLahUgvA4OOvRzi3sahzYgbxGj5nkA6OV0GAW378+dl/gyw==
-
 "@sveltejs/adapter-netlify@^5.2.4":
   version "5.2.4"
   resolved "https://registry.npmjs.org/@sveltejs/adapter-netlify/-/adapter-netlify-5.2.4.tgz"
