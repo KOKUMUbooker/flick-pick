@@ -148,7 +148,8 @@ public class AuthController : ControllerBase
         user.EmailVerificationTokenExpiry = null;
         await _context.SaveChangesAsync();
 
-        return Redirect($"/email-verified?email={user.Email}");
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        return Redirect($"{baseUrl}/email-verified?email={user.Email}");
     }
 
     [HttpPost("resend-verification")]
@@ -192,7 +193,8 @@ public class AuthController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            var resetUrl = $"/reset-password?tkn={rawToken}&email={user.Email}";
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var resetUrl = $"{baseUrl}/reset-password?tkn={rawToken}&email={user.Email}";
 
             var htmlBody = await _templateService
                 .GeneratePasswordResetEmail("WatchHive", user.FullName, resetUrl);
