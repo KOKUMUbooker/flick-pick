@@ -23,30 +23,31 @@ public class HomeController : ControllerBase
     //     return Ok("Hello from movie manager server");
     // }
 
+    [HttpGet("/err")]
+    public IActionResult Err()
+    {
+        int x = 0;
+        int n = 500 / x;
+        return Ok("Test global error handler");
+    }
+
     [HttpGet("/test-mail")]
     public async Task<IActionResult> SendMail()
     {
-        try
-        {
-            var appName = "Movie-Manager";
-            var userName = "Booker";
-            string recipientEmail = _configuration.GetValue("EmailConf:TestRecipient", "test@example.com")!;
-            string clientUrl = _configuration.GetValue("UIClient:URL", "http://localhost:5173")!;
+        var appName = "Movie-Manager";
+        var userName = "Booker";
+        string recipientEmail = _configuration.GetValue("EmailConf:TestRecipient", "test@example.com")!;
+        string clientUrl = _configuration.GetValue("UIClient:URL", "http://localhost:5173")!;
 
-            var resetEmailUrl = $"{clientUrl}/api/auth/reset-password";
-            var verifymailUrl = $"{clientUrl}/api/auth/verify-email?tkn=abcd";
+        var resetEmailUrl = $"{clientUrl}/api/auth/reset-password";
+        var verifymailUrl = $"{clientUrl}/api/auth/verify-email?tkn=abcd";
 
-            string htmlBody = false
-                    ? await _templateService.GeneratePasswordResetEmail(appName, userName, resetEmailUrl)
-                    : await _templateService.GenerateVerificationEmail(appName, userName, verifymailUrl);
+        string htmlBody = false
+                ? await _templateService.GeneratePasswordResetEmail(appName, userName, resetEmailUrl)
+                : await _templateService.GenerateVerificationEmail(appName, userName, verifymailUrl);
 
-            await _emailService.SendEmail(recipientEmail, "Verify email", htmlBody);
+        await _emailService.SendEmail(recipientEmail, "Verify email", htmlBody);
 
-            return Ok(new { message = "Email sent successfully." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = "Error occured", error = ex.Message });
-        }
+        return Ok(new { message = "Email sent successfully." });
     }
 }

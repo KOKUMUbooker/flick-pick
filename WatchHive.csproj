@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="dotenv.net" Version="4.0.0" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.21" />
@@ -20,5 +21,17 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
   </ItemGroup>
+
+  <Target Name="BuildSvelte" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Exec WorkingDirectory="UI" Command="npm install" />
+    <Exec WorkingDirectory="UI" Command="npm run build" />
+  </Target>
+
+  <Target Name="CopySvelteBuild" AfterTargets="Build">
+    <ItemGroup>
+      <SvelteFiles Include="UI/build/**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SvelteFiles)" DestinationFiles="@(SvelteFiles->'wwwroot/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

@@ -28,6 +28,15 @@
           }
         }
       },
+      "dotenv.net/4.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/dotenv.net.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/dotenv.net.dll": {}
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -1246,6 +1255,20 @@
         "lib/netstandard2.0/BouncyCastle.Cryptography.dll",
         "lib/netstandard2.0/BouncyCastle.Cryptography.xml",
         "packageIcon.png"
+      ]
+    },
+    "dotenv.net/4.0.0": {
+      "sha512": "SM8Qp6L/E3tsLKDFkV23M8WHyp5l1YqsXkylQDjQjV02Z2tUL3J6j1gV0gMs4L6YtoSB7jZPw2dnDdnpEXnpNQ==",
+      "type": "package",
+      "path": "dotenv.net/4.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "dotenv.net.4.0.0.nupkg.sha512",
+        "dotenv.net.nuspec",
+        "lib/netstandard2.0/dotenv.net.dll",
+        "lib/netstandard2.1/dotenv.net.dll"
       ]
     },
     "Humanizer.Core/2.14.1": {
@@ -3299,23 +3322,24 @@
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.*",
       "SendGrid >= 9.29.3",
       "Swashbuckle.AspNetCore >= 6.6.2",
-      "System.IdentityModel.Tokens.Jwt >= 8.16.0"
+      "System.IdentityModel.Tokens.Jwt >= 8.16.0",
+      "dotenv.net >= 4.0.0"
     ]
   },
   "packageFolders": {
-    "/home/boookumu/.nuget/packages/": {}
+    "/home/booker/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/boookumu/projects/watch-hive/WatchHive.csproj",
+      "projectUniqueName": "/home/booker/projects/watch-hive/WatchHive.csproj",
       "projectName": "WatchHive",
-      "projectPath": "/home/boookumu/projects/watch-hive/WatchHive.csproj",
-      "packagesPath": "/home/boookumu/.nuget/packages/",
-      "outputPath": "/home/boookumu/projects/watch-hive/obj/",
+      "projectPath": "/home/booker/projects/watch-hive/WatchHive.csproj",
+      "packagesPath": "/home/booker/.nuget/packages/",
+      "outputPath": "/home/booker/projects/watch-hive/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/boookumu/.nuget/NuGet/NuGet.Config"
+        "/home/booker/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -3381,6 +3405,10 @@
           "System.IdentityModel.Tokens.Jwt": {
             "target": "Package",
             "version": "[8.16.0, )"
+          },
+          "dotenv.net": {
+            "target": "Package",
+            "version": "[4.0.0, )"
           }
         },
         "imports": [
@@ -3402,7 +3430,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/home/boookumu/.dotnet/sdk/8.0.417/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,3 +1,4 @@
 UI/node-modules
 input.json
-appsettings.Development.json
+appsettings.*
+.env*

@@ -20,7 +20,14 @@ public class AuthController : ControllerBase
     private IConfiguration _configuration;
     private readonly IHostEnvironment _env;
 
-    public AuthController(WatchHiveDbContext context, IUserService userService, IEmailService emailService, IEmailTemplateService templateService, IConfiguration configuration, IHostEnvironment env)
+    public AuthController(
+        WatchHiveDbContext context, 
+        IUserService userService, 
+        IEmailService emailService,
+        IEmailTemplateService templateService,
+        IConfiguration configuration, 
+        IHostEnvironment env
+    )
     {
         _context = context;
         _userService = userService;
@@ -41,23 +48,16 @@ public class AuthController : ControllerBase
             return BadRequest("Email is already in use, please log in");
         }
 
-        try
-        {
-            var user = await _userService.CreateUserAsync(userDetails);
+        var user = await _userService.CreateUserAsync(userDetails);
 
-            // Send verification email
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var verificationUrl = $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
-            string htmlBody = await _templateService.GenerateVerificationEmail("WatchHive", user.FullName, verificationUrl);
+        // Send verification email
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var verificationUrl = $"{baseUrl}/api/auth/verify-email?token={user.EmailVerificationToken}";
+        string htmlBody = await _templateService.GenerateVerificationEmail("WatchHive", user.FullName, verificationUrl);
 
-            await _emailService.SendEmail(user.Email, "Verify email", htmlBody);
+        await _emailService.SendEmail(user.Email, "Verify email", htmlBody);
 
-            return Ok(new { Message = "User registered successfully.", EmailVerificationToken = user.EmailVerificationToken });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new CustomError { Message = ex.Message });
-        }
+        return Ok(new { Message = "User registered successfully.", EmailVerificationToken = user.EmailVerificationToken });
     }
 
     [HttpPost("login")]
@@ -110,23 +110,16 @@ public class AuthController : ControllerBase
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO refreshRequest)
     {
-        try
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-            var authResponse = await _userService.RefreshTokenAsync(refreshRequest.RefreshToken, refreshRequest.ClientId, ipAddress);
+        var authResponse = await _userService.RefreshTokenAsync(refreshRequest.RefreshToken, refreshRequest.ClientId, ipAddress);
 
-            // If refresh token or client is invalid, return 401 Unauthorized
-            if (authResponse == null) return Unauthorized(new CustomError { Message = "Invalid refresh token or client." });
+        // If refresh token or client is invalid, return 401 Unauthorized
+        if (authResponse == null) return Unauthorized(new CustomError { Message = "Invalid refresh token or client." });
 
-            return Ok(authResponse);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new CustomError { Message = ex.Message });
-        }
+        return Ok(authResponse);
     }
 
     [HttpGet("verify-email")]
