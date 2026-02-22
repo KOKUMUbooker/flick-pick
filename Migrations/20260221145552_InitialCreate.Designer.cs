@@ -117,7 +117,7 @@ namespace WatchHive.Migrations
                             Created = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 352, DateTimeKind.Unspecified).AddTicks(4303), new TimeSpan(0, 0, 0, 0, 0)),
                             IsActive = true,
                             LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 352, DateTimeKind.Unspecified).AddTicks(4303), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Movie Manager Web Application"
+                            Name = "Watch Hive Web Application"
                         });
                 });
 

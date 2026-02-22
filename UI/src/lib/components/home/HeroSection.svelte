@@ -28,7 +28,7 @@
 				<h1
 					class="bg-linear-to-r from-primary to-primary-foreground bg-clip-text text-5xl font-bold text-transparent md:text-6xl"
 				>
-					Movie Manager
+					Watch Hive
 				</h1>
 			</div>
 		</div>

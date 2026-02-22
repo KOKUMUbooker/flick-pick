@@ -29,7 +29,7 @@ public class EmailService : IEmailService
 
         var message = new MailMessage
         {
-            From = new MailAddress(email!, "Movie Manager"),
+            From = new MailAddress(email!, "Watch Hive"),
             Subject = subject,
         };
 

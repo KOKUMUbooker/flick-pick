@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WatchHive")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7810aeebdba87054b36d0d96aac01afc2645c293")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+728af6141ce6ce0265777784773c0aee69653386")]
 [assembly: System.Reflection.AssemblyProductAttribute("WatchHive")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WatchHive")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

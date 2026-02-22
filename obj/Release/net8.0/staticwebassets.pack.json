@@ -1,203 +1,247 @@
 {
   "Files": [
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/env.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/env.js",
       "PackagePath": "staticwebassets/_app/env.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/0.C2aSykuk.css",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/0.C2aSykuk.css",
       "PackagePath": "staticwebassets/_app/immutable/assets/0.C2aSykuk.css"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/2.BWXssYB4.css",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/2.BWXssYB4.css",
       "PackagePath": "staticwebassets/_app/immutable/assets/2.BWXssYB4.css"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/3.DciW7I2M.css",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/3.DciW7I2M.css",
       "PackagePath": "staticwebassets/_app/immutable/assets/3.DciW7I2M.css"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/4.VqYplhRw.css",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/4.VqYplhRw.css",
       "PackagePath": "staticwebassets/_app/immutable/assets/4.VqYplhRw.css"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/7._CYo5djV.css",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/7._CYo5djV.css",
       "PackagePath": "staticwebassets/_app/immutable/assets/7._CYo5djV.css"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/movie.1JqFpdIG.jpg",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/movie.1JqFpdIG.jpg",
       "PackagePath": "staticwebassets/_app/immutable/assets/movie.1JqFpdIG.jpg"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/B-fde8it.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/B-fde8it.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/B-fde8it.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/B7bFwcYc.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/B7bFwcYc.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/B7bFwcYc.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BE4kj85j.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BD_pgjnD.js",
+      "PackagePath": "staticwebassets/_app/immutable/chunks/BD_pgjnD.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BE4kj85j.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/BE4kj85j.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BEB5HCET.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BEB5HCET.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/BEB5HCET.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BR5j0glC.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BR5j0glC.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/BR5j0glC.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/B_5rUsoM.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/B_5rUsoM.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/B_5rUsoM.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BkmtTGTm.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BkmtTGTm.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/BkmtTGTm.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BxmJc5bs.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BxmJc5bs.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/BxmJc5bs.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C0UOkQYV.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C0UOkQYV.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/C0UOkQYV.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C180zsLW.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C180zsLW.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/C180zsLW.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C3L73MzT.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C3L73MzT.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/C3L73MzT.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C5_wJgna.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C5_wJgna.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/C5_wJgna.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C8kaujdF.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C8kaujdF.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/C8kaujdF.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/CKTSjATE.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/CKTSjATE.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/CKTSjATE.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/CSUflvoX.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/CSUflvoX.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/CSUflvoX.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/CYxqIRiu.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/CYxqIRiu.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/CYxqIRiu.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C_qAQaQN.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C_qAQaQN.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/C_qAQaQN.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/D57HcRkC.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/D57HcRkC.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/D57HcRkC.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/DBx0u94T.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/DBx0u94T.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/DBx0u94T.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/DJxnAQxZ.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/DJxnAQxZ.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/DJxnAQxZ.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/DYHuzUNG.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/DYHuzUNG.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/DYHuzUNG.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/D__f5P3N.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/D__f5P3N.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/D__f5P3N.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/Da6FEXed.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/Da6FEXed.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/Da6FEXed.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/JpLCEfp9.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/JpLCEfp9.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/JpLCEfp9.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/KB_K6DwI.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/KB_K6DwI.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/KB_K6DwI.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/lJV4QVYA.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/Q2myELX8.js",
+      "PackagePath": "staticwebassets/_app/immutable/chunks/Q2myELX8.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/lJV4QVYA.js",
       "PackagePath": "staticwebassets/_app/immutable/chunks/lJV4QVYA.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/entry/app.D0EqOPYd.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/app.CFkkoyk3.js",
+      "PackagePath": "staticwebassets/_app/immutable/entry/app.CFkkoyk3.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/app.D0EqOPYd.js",
       "PackagePath": "staticwebassets/_app/immutable/entry/app.D0EqOPYd.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/entry/start.M9Ha-KRd.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/start.CALWgKnN.js",
+      "PackagePath": "staticwebassets/_app/immutable/entry/start.CALWgKnN.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/start.M9Ha-KRd.js",
       "PackagePath": "staticwebassets/_app/immutable/entry/start.M9Ha-KRd.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/0.C1458ELg.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/0.C1458ELg.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/0.C1458ELg.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/1.DDltFFrw.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/0.D0maaDew.js",
+      "PackagePath": "staticwebassets/_app/immutable/nodes/0.D0maaDew.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/1.CMTdrHUg.js",
+      "PackagePath": "staticwebassets/_app/immutable/nodes/1.CMTdrHUg.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/1.DDltFFrw.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/1.DDltFFrw.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/10.tMOncd--.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/10.DTR5H1cm.js",
+      "PackagePath": "staticwebassets/_app/immutable/nodes/10.DTR5H1cm.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/10.tMOncd--.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/10.tMOncd--.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/11.BfNLzqKn.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/11.BfNLzqKn.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/11.BfNLzqKn.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/2.Ginluub_.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/11.CBl9OUsM.js",
+      "PackagePath": "staticwebassets/_app/immutable/nodes/11.CBl9OUsM.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/2.Ginluub_.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/2.Ginluub_.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/3.BkGINBAj.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/3.BkGINBAj.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/3.BkGINBAj.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/4.UNhsxWLw.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/4.UNhsxWLw.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/4.UNhsxWLw.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/5.CvEDTwvx.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/5.Co9f1icY.js",
+      "PackagePath": "staticwebassets/_app/immutable/nodes/5.Co9f1icY.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/5.CvEDTwvx.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/5.CvEDTwvx.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/6.BR0FYuMi.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/6.BR0FYuMi.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/6.BR0FYuMi.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/7.D_bMbDbx.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/7.D_bMbDbx.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/7.D_bMbDbx.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/8.CbvVcSbE.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/8.CbvVcSbE.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/8.CbvVcSbE.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/9.CiEocZ6P.js",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/8.DXwgZFQb.js",
+      "PackagePath": "staticwebassets/_app/immutable/nodes/8.DXwgZFQb.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/9.CiEocZ6P.js",
       "PackagePath": "staticwebassets/_app/immutable/nodes/9.CiEocZ6P.js"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/_app/version.json",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/9.qrdBZZxj.js",
+      "PackagePath": "staticwebassets/_app/immutable/nodes/9.qrdBZZxj.js"
+    },
+    {
+      "Id": "/home/booker/projects/watch-hive/wwwroot/_app/version.json",
       "PackagePath": "staticwebassets/_app/version.json"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/index.html",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/index.html",
       "PackagePath": "staticwebassets/index.html"
     },
     {
-      "Id": "/home/boookumu/projects/watch-hive/wwwroot/robots.txt",
+      "Id": "/home/booker/projects/watch-hive/wwwroot/robots.txt",
       "PackagePath": "staticwebassets/robots.txt"
     },
     {
