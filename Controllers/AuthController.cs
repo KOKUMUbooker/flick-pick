@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using Microsoft.Extensions.Hosting;
 using System.Text;
 using WatchHive.Services;
 using WatchHive.Models;
@@ -17,7 +16,6 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private IEmailService _emailService;
     private IEmailTemplateService _templateService;
-    private IConfiguration _configuration;
     private readonly IHostEnvironment _env;
 
     public AuthController(
@@ -25,7 +23,6 @@ public class AuthController : ControllerBase
         IUserService userService, 
         IEmailService emailService,
         IEmailTemplateService templateService,
-        IConfiguration configuration, 
         IHostEnvironment env
     )
     {
@@ -33,7 +30,6 @@ public class AuthController : ControllerBase
         _userService = userService;
         _emailService = emailService;
         _templateService = templateService;
-        _configuration = configuration;
         _env = env;
     }
 
@@ -152,8 +148,7 @@ public class AuthController : ControllerBase
         user.EmailVerificationTokenExpiry = null;
         await _context.SaveChangesAsync();
 
-        string clientUrl = _configuration.GetValue<string>("UIClient:URL") ?? "http://localhost:5173";
-        return Redirect($"{clientUrl}/email-verified?email={user.Email}");
+        return Redirect($"/email-verified?email={user.Email}");
     }
 
     [HttpPost("resend-verification")]
@@ -197,8 +192,7 @@ public class AuthController : ControllerBase
 
             await _context.SaveChangesAsync();
 
-            string clientUrl = _configuration.GetValue<string>("UIClient:URL") ?? "http://localhost:5173";
-            var resetUrl = $"{clientUrl}/reset-password?tkn={rawToken}&email={user.Email}";
+            var resetUrl = $"/reset-password?tkn={rawToken}&email={user.Email}";
 
             var htmlBody = await _templateService
                 .GeneratePasswordResetEmail("WatchHive", user.FullName, resetUrl);
