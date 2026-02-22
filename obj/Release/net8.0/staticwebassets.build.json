@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "NfYGHnbIVbnFJMXk44vOfok/STJHQvMthTdEQ/DLPA8=",
+  "Hash": "pYpgYs2Vr/nvUCkrIlQjO1BtkOoNIGA/adOFYrw7uxA=",
   "Source": "WatchHive",
   "BasePath": "_content/WatchHive",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "WatchHive/wwwroot",
       "Source": "WatchHive",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/env.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/env.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/env.js",
       "AssetKind": "All",
@@ -36,10 +36,10 @@
       "OriginalItemSpec": "wwwroot/_app/env.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/0.C2aSykuk.css",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/0.C2aSykuk.css",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/assets/0.C2aSykuk.css",
       "AssetKind": "All",
@@ -55,10 +55,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/assets/0.C2aSykuk.css"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/2.BWXssYB4.css",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/2.BWXssYB4.css",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/assets/2.BWXssYB4.css",
       "AssetKind": "All",
@@ -74,10 +74,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/assets/2.BWXssYB4.css"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/3.DciW7I2M.css",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/3.DciW7I2M.css",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/assets/3.DciW7I2M.css",
       "AssetKind": "All",
@@ -93,10 +93,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/assets/3.DciW7I2M.css"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/4.VqYplhRw.css",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/4.VqYplhRw.css",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/assets/4.VqYplhRw.css",
       "AssetKind": "All",
@@ -112,10 +112,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/assets/4.VqYplhRw.css"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/7._CYo5djV.css",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/7._CYo5djV.css",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/assets/7._CYo5djV.css",
       "AssetKind": "All",
@@ -131,10 +131,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/assets/7._CYo5djV.css"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/assets/movie.1JqFpdIG.jpg",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/assets/movie.1JqFpdIG.jpg",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/assets/movie.1JqFpdIG.jpg",
       "AssetKind": "All",
@@ -150,10 +150,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/assets/movie.1JqFpdIG.jpg"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/B_5rUsoM.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/B_5rUsoM.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/B_5rUsoM.js",
       "AssetKind": "All",
@@ -169,10 +169,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/B_5rUsoM.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/B-fde8it.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/B-fde8it.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/B-fde8it.js",
       "AssetKind": "All",
@@ -188,10 +188,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/B-fde8it.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/B7bFwcYc.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/B7bFwcYc.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/B7bFwcYc.js",
       "AssetKind": "All",
@@ -207,10 +207,29 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/B7bFwcYc.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BE4kj85j.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BD_pgjnD.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/chunks/BD_pgjnD.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/chunks/BD_pgjnD.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BE4kj85j.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/BE4kj85j.js",
       "AssetKind": "All",
@@ -226,10 +245,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/BE4kj85j.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BEB5HCET.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BEB5HCET.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/BEB5HCET.js",
       "AssetKind": "All",
@@ -245,10 +264,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/BEB5HCET.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BkmtTGTm.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BkmtTGTm.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/BkmtTGTm.js",
       "AssetKind": "All",
@@ -264,10 +283,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/BkmtTGTm.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BR5j0glC.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BR5j0glC.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/BR5j0glC.js",
       "AssetKind": "All",
@@ -283,10 +302,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/BR5j0glC.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/BxmJc5bs.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/BxmJc5bs.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/BxmJc5bs.js",
       "AssetKind": "All",
@@ -302,10 +321,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/BxmJc5bs.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C_qAQaQN.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C_qAQaQN.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/C_qAQaQN.js",
       "AssetKind": "All",
@@ -321,10 +340,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/C_qAQaQN.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C0UOkQYV.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C0UOkQYV.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/C0UOkQYV.js",
       "AssetKind": "All",
@@ -340,10 +359,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/C0UOkQYV.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C180zsLW.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C180zsLW.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/C180zsLW.js",
       "AssetKind": "All",
@@ -359,10 +378,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/C180zsLW.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C3L73MzT.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C3L73MzT.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/C3L73MzT.js",
       "AssetKind": "All",
@@ -378,10 +397,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/C3L73MzT.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C5_wJgna.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C5_wJgna.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/C5_wJgna.js",
       "AssetKind": "All",
@@ -397,10 +416,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/C5_wJgna.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/C8kaujdF.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/C8kaujdF.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/C8kaujdF.js",
       "AssetKind": "All",
@@ -416,10 +435,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/C8kaujdF.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/CKTSjATE.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/CKTSjATE.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/CKTSjATE.js",
       "AssetKind": "All",
@@ -435,10 +454,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/CKTSjATE.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/CSUflvoX.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/CSUflvoX.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/CSUflvoX.js",
       "AssetKind": "All",
@@ -454,10 +473,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/CSUflvoX.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/CYxqIRiu.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/CYxqIRiu.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/CYxqIRiu.js",
       "AssetKind": "All",
@@ -473,10 +492,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/CYxqIRiu.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/D__f5P3N.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/D__f5P3N.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/D__f5P3N.js",
       "AssetKind": "All",
@@ -492,10 +511,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/D__f5P3N.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/D57HcRkC.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/D57HcRkC.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/D57HcRkC.js",
       "AssetKind": "All",
@@ -511,10 +530,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/D57HcRkC.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/Da6FEXed.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/Da6FEXed.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/Da6FEXed.js",
       "AssetKind": "All",
@@ -530,10 +549,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/Da6FEXed.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/DBx0u94T.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/DBx0u94T.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/DBx0u94T.js",
       "AssetKind": "All",
@@ -549,10 +568,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/DBx0u94T.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/DJxnAQxZ.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/DJxnAQxZ.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/DJxnAQxZ.js",
       "AssetKind": "All",
@@ -568,10 +587,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/DJxnAQxZ.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/DYHuzUNG.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/DYHuzUNG.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/DYHuzUNG.js",
       "AssetKind": "All",
@@ -587,10 +606,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/DYHuzUNG.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/JpLCEfp9.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/JpLCEfp9.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/JpLCEfp9.js",
       "AssetKind": "All",
@@ -606,10 +625,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/JpLCEfp9.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/KB_K6DwI.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/KB_K6DwI.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/KB_K6DwI.js",
       "AssetKind": "All",
@@ -625,10 +644,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/KB_K6DwI.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/chunks/lJV4QVYA.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/lJV4QVYA.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/chunks/lJV4QVYA.js",
       "AssetKind": "All",
@@ -644,10 +663,48 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/chunks/lJV4QVYA.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/entry/app.D0EqOPYd.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/chunks/Q2myELX8.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/chunks/Q2myELX8.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/chunks/Q2myELX8.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/app.CFkkoyk3.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/entry/app.CFkkoyk3.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/entry/app.CFkkoyk3.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/app.D0EqOPYd.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/entry/app.D0EqOPYd.js",
       "AssetKind": "All",
@@ -663,10 +720,29 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/entry/app.D0EqOPYd.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/entry/start.M9Ha-KRd.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/start.CALWgKnN.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/entry/start.CALWgKnN.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/entry/start.CALWgKnN.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/entry/start.M9Ha-KRd.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/entry/start.M9Ha-KRd.js",
       "AssetKind": "All",
@@ -682,10 +758,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/entry/start.M9Ha-KRd.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/0.C1458ELg.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/0.C1458ELg.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/0.C1458ELg.js",
       "AssetKind": "All",
@@ -701,10 +777,48 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/0.C1458ELg.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/1.DDltFFrw.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/0.D0maaDew.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/nodes/0.D0maaDew.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/nodes/0.D0maaDew.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/1.CMTdrHUg.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/nodes/1.CMTdrHUg.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/nodes/1.CMTdrHUg.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/1.DDltFFrw.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/1.DDltFFrw.js",
       "AssetKind": "All",
@@ -720,10 +834,29 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/1.DDltFFrw.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/10.tMOncd--.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/10.DTR5H1cm.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/nodes/10.DTR5H1cm.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/nodes/10.DTR5H1cm.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/10.tMOncd--.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/10.tMOncd--.js",
       "AssetKind": "All",
@@ -739,10 +872,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/10.tMOncd--.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/11.BfNLzqKn.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/11.BfNLzqKn.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/11.BfNLzqKn.js",
       "AssetKind": "All",
@@ -758,10 +891,29 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/11.BfNLzqKn.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/2.Ginluub_.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/11.CBl9OUsM.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/nodes/11.CBl9OUsM.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/nodes/11.CBl9OUsM.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/2.Ginluub_.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/2.Ginluub_.js",
       "AssetKind": "All",
@@ -777,10 +929,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/2.Ginluub_.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/3.BkGINBAj.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/3.BkGINBAj.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/3.BkGINBAj.js",
       "AssetKind": "All",
@@ -796,10 +948,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/3.BkGINBAj.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/4.UNhsxWLw.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/4.UNhsxWLw.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/4.UNhsxWLw.js",
       "AssetKind": "All",
@@ -815,10 +967,29 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/4.UNhsxWLw.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/5.CvEDTwvx.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/5.Co9f1icY.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/nodes/5.Co9f1icY.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/nodes/5.Co9f1icY.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/5.CvEDTwvx.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/5.CvEDTwvx.js",
       "AssetKind": "All",
@@ -834,10 +1005,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/5.CvEDTwvx.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/6.BR0FYuMi.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/6.BR0FYuMi.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/6.BR0FYuMi.js",
       "AssetKind": "All",
@@ -853,10 +1024,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/6.BR0FYuMi.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/7.D_bMbDbx.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/7.D_bMbDbx.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/7.D_bMbDbx.js",
       "AssetKind": "All",
@@ -872,10 +1043,10 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/7.D_bMbDbx.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/8.CbvVcSbE.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/8.CbvVcSbE.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/8.CbvVcSbE.js",
       "AssetKind": "All",
@@ -891,10 +1062,29 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/8.CbvVcSbE.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/immutable/nodes/9.CiEocZ6P.js",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/8.DXwgZFQb.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/nodes/8.DXwgZFQb.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/nodes/8.DXwgZFQb.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/9.CiEocZ6P.js",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/immutable/nodes/9.CiEocZ6P.js",
       "AssetKind": "All",
@@ -910,10 +1100,29 @@
       "OriginalItemSpec": "wwwroot/_app/immutable/nodes/9.CiEocZ6P.js"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/_app/version.json",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/immutable/nodes/9.qrdBZZxj.js",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
+      "BasePath": "_content/WatchHive",
+      "RelativePath": "_app/immutable/nodes/9.qrdBZZxj.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_app/immutable/nodes/9.qrdBZZxj.js"
+    },
+    {
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/_app/version.json",
+      "SourceId": "WatchHive",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "_app/version.json",
       "AssetKind": "All",
@@ -929,10 +1138,10 @@
       "OriginalItemSpec": "wwwroot/_app/version.json"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/index.html",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/index.html",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "index.html",
       "AssetKind": "All",
@@ -948,10 +1157,10 @@
       "OriginalItemSpec": "wwwroot/index.html"
     },
     {
-      "Identity": "/home/boookumu/projects/watch-hive/wwwroot/robots.txt",
+      "Identity": "/home/booker/projects/watch-hive/wwwroot/robots.txt",
       "SourceId": "WatchHive",
       "SourceType": "Discovered",
-      "ContentRoot": "/home/boookumu/projects/watch-hive/wwwroot/",
+      "ContentRoot": "/home/booker/projects/watch-hive/wwwroot/",
       "BasePath": "_content/WatchHive",
       "RelativePath": "robots.txt",
       "AssetKind": "All",

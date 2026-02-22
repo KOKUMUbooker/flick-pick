@@ -2,7 +2,7 @@
 <div class="space-y-6">
 	<h2 class="text-3xl font-bold">Ready to organize your movie collection?</h2>
 	<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-		Join thousands of film enthusiasts who use Movie Manager to track, rate, and organize their
+		Join thousands of film enthusiasts who use Watch Hive to track, rate, and organize their
 		collections.
 	</p>
 

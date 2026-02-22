@@ -57,7 +57,7 @@ public partial class WatchHiveDbContext : DbContext {
             {
                 Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"), // Fixed GUID
                 ClientId = clientId,
-                Name = "Movie Manager Web Application",
+                Name = "Watch Hive Web Application",
                 ClientSecret = clientSecret,
                 ClientURL = "https://localhost:5173",
                 IsActive = true,

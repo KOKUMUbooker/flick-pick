@@ -20,7 +20,7 @@ public class HomeController : ControllerBase
     // [HttpGet("/")]
     // public IActionResult Home()
     // {
-    //     return Ok("Hello from movie manager server");
+    //     return Ok("Hello from Watch Hive server");
     // }
 
     [HttpGet("/err")]
