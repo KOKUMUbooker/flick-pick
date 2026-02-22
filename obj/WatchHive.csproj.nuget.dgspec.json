@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/boookumu/projects/watch-hive/WatchHive.csproj": {}
+    "/home/booker/projects/watch-hive/WatchHive.csproj": {}
   },
   "projects": {
-    "/home/boookumu/projects/watch-hive/WatchHive.csproj": {
+    "/home/booker/projects/watch-hive/WatchHive.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/boookumu/projects/watch-hive/WatchHive.csproj",
+        "projectUniqueName": "/home/booker/projects/watch-hive/WatchHive.csproj",
         "projectName": "WatchHive",
-        "projectPath": "/home/boookumu/projects/watch-hive/WatchHive.csproj",
-        "packagesPath": "/home/boookumu/.nuget/packages/",
-        "outputPath": "/home/boookumu/projects/watch-hive/obj/",
+        "projectPath": "/home/booker/projects/watch-hive/WatchHive.csproj",
+        "packagesPath": "/home/booker/.nuget/packages/",
+        "outputPath": "/home/booker/projects/watch-hive/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/boookumu/.nuget/NuGet/NuGet.Config"
+          "/home/booker/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -105,7 +105,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/boookumu/.dotnet/sdk/8.0.417/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

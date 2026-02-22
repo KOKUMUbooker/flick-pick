@@ -14,6 +14,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddExceptionHandler<AppExceptionHandler>();
+        builder.Services.AddProblemDetails();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -130,6 +132,7 @@ public class Program
 
 
         var app = builder.Build();
+        app.UseExceptionHandler();
 
         if (app.Environment.IsProduction())
         {
