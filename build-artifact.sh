@@ -24,7 +24,22 @@ rm -f $ZIP_NAME
 # Publish ASP.NET Core
 # =========================
 echo "⚙️ Publishing ASP.NET Core..."
-dotnet publish $PROJECT_PATH -c Release -o $PUBLISH_DIR
+# dotnet publish $PROJECT_PATH -c Release -o $PUBLISH_DIR
+
+# Monster ASP.NET build instructions 
+# Works if place to be deployed to is a windows environment & runs a 64 bit system 
+# dotnet publish WatchHive.csproj \
+#   -c Release \
+#   -r win-x64 \
+#   --self-contained true \
+#   -o $PUBLISH_DIR
+
+# Works if place to be deployed to is a windows environment & runs a 32 bit system 
+dotnet publish WatchHive.csproj \ 
+    -c Release \
+    -r win-x86 \
+    --self-contained true \
+    -o $PUBLISH_DIR 
 
 # =========================
 # Create ZIP
