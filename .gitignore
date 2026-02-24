@@ -2,3 +2,5 @@ UI/node-modules
 input.json
 appsettings.*
 .env*
+obj
+bin
