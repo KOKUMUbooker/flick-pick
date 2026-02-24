@@ -132,7 +132,6 @@
 /home/boookumu/projects/watch-hive/obj/Release/net8.0/WatchHive.pdb
 /home/boookumu/projects/watch-hive/obj/Release/net8.0/WatchHive.genruntimeconfig.cache
 /home/boookumu/projects/watch-hive/obj/Release/net8.0/ref/WatchHive.dll
-/home/boookumu/projects/watch-hive/bin/Release/net8.0/appsettings.Development.json
 /home/boookumu/projects/watch-hive/bin/Release/net8.0/dotenv.net.dll
 /home/booker/projects/watch-hive/bin/Release/net8.0/UI/components.json
 /home/booker/projects/watch-hive/bin/Release/net8.0/UI/package-lock.json
@@ -268,3 +267,5 @@
 /home/booker/projects/watch-hive/obj/Release/net8.0/WatchHive.pdb
 /home/booker/projects/watch-hive/obj/Release/net8.0/WatchHive.genruntimeconfig.cache
 /home/booker/projects/watch-hive/obj/Release/net8.0/ref/WatchHive.dll
+/home/boookumu/projects/watch-hive/bin/Release/net8.0/EmailTemplates/EmailVerificationTemplate.html
+/home/boookumu/projects/watch-hive/bin/Release/net8.0/EmailTemplates/PasswordResetTemplate.html

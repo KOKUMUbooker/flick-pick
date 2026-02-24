@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using dotenv.net;
 using WatchHive.Models;
 using WatchHive.Services;
+using WatchHive.Extensions;
 
 namespace WatchHive;
 
@@ -57,86 +58,11 @@ public class Program
             });
         });        
         
-        Lazy<IClientCacheService>? clientCacheInstance = null;
-
         // Configure JWT Bearer Authentication
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                // Setup token validation parameters
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-
-                    // fetching the corresponding client’s secret key from cache.
-                    IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
-                    {
-                        // Parse the incoming JWT token to extract claims
-                        var jwtToken = new JwtSecurityToken(token);
-                        var clientId = jwtToken.Claims.FirstOrDefault(c => c.Type == "clientId")?.Value;
-
-                        if (string.IsNullOrEmpty(clientId) || clientCacheInstance == null)
-                            return Enumerable.Empty<SecurityKey>();
-
-                        var client = clientCacheInstance.Value.GetClientByClientIdAsync(clientId).Result;
-                        if (client == null) return Enumerable.Empty<SecurityKey>();
-
-                        var keyBytes = Convert.FromBase64String(client.ClientSecret);
-
-                        return new[] { new SymmetricSecurityKey(keyBytes) };
-                    }
-                };
-
-                // confirming the client exists and audience matches the stored client URL.
-                options.Events = new JwtBearerEvents
-                {
-                    OnTokenValidated = async context =>
-                    {
-                        // Extract client_id claim from the validated token
-                        var clientId = context.Principal?.FindFirst("clientId")?.Value;
-                        if (string.IsNullOrEmpty(clientId))
-                        {
-                            // Fail if claim is missing
-                            context.Fail("ClientId claim missing.");
-                            return;
-                        }
-                        if (clientCacheInstance == null)
-                        {
-                            context.Fail("Client Cache Instance is null");
-                            return;
-                        }
-                        // Asynchronously get client info from cache or database
-                        var client = await clientCacheInstance.Value.GetClientByClientIdAsync(clientId);
-                        if (client == null)
-                        {
-                            // Fail if client not found
-                            context.Fail("Invalid client.");
-                            return;
-                        }
-                        // Extract audience claim from token and compare to client URL stored in DB/cache
-                        var audClaim = context.Principal?.FindFirst(JwtRegisteredClaimNames.Aud)?.Value;
-                        if (audClaim != client.ClientURL)
-                        {
-                            // Fail if audience doesn't match
-                            context.Fail("Invalid audience.");
-                            return;
-                        }
-                    }
-                };
-            });
-
+        builder.Services.AddJwtAuthentication(builder.Configuration);
 
         var app = builder.Build();
         app.UseExceptionHandler();
-
-        if (app.Environment.IsProduction())
-        {
-            app.UseHttpsRedirection();
-        }
 
         if (app.Environment.IsDevelopment())
         {
@@ -144,6 +70,7 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseCors("AllowSpecificOrigin");
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -152,7 +79,6 @@ public class Program
 
         app.MapFallbackToFile("index.html");
 
-        app.UseCors("AllowSpecificOrigin");
         app.MapControllers();
 
         app.Run();
