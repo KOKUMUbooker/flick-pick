@@ -3,6 +3,7 @@ namespace WatchHive.Services;
 public class EmailTemplateService : IEmailTemplateService
 {
     private readonly IWebHostEnvironment _environment;
+    private readonly Dictionary<string, string> _templateCache = new();
 
     public EmailTemplateService(IWebHostEnvironment environment)
     {
@@ -11,21 +12,28 @@ public class EmailTemplateService : IEmailTemplateService
 
     private async Task<string> LoadTemplateAsync(string templateName)
     {
+        if (_templateCache.TryGetValue(templateName, out var cached))
+            return cached;
+
         var filePath = Path.Combine(_environment.ContentRootPath, "EmailTemplates", templateName);
 
-        if (File.Exists(filePath))
+        string template;
+
+        if (File.Exists(filePath)) template = await File.ReadAllTextAsync(filePath);
+        else
         {
-            return await File.ReadAllTextAsync(filePath);
+            template = templateName switch
+            {
+                "EmailVerificationTemplate.html" => GetFallbackVerificationTemplate(),
+                "PasswordResetTemplate.html" => GetFallbackPasswordResetTemplate(),
+                _ => throw new FileNotFoundException($"Template not found: {templateName}")
+            };
         }
 
-        // Fallback to embedded simple template if file not found
-        return templateName switch
-        {
-            "EmailVerificationTemplate.html" => GetFallbackVerificationTemplate(),
-            "PasswordResetTemplate.html" => GetFallbackPasswordResetTemplate(),
-            _ => throw new FileNotFoundException($"Template not found: {templateName}")
-        };
+        _templateCache[templateName] = template;
+        return template;
     }
+    
 
     public async Task<string> GenerateVerificationEmail(string appName, string userName, string verificationUrl)
     {
