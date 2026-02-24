@@ -42,30 +42,4 @@ public partial class WatchHiveDbContext : DbContext {
             }
         );
     }
-
-    private static void SeedDefaultClient(ModelBuilder modelBuilder)
-    {
-        var now = DateTimeOffset.UtcNow;
-
-        // Generate a client secret (in production, use a secure random generator)
-        var clientId = "movie-manager-web";
-
-        var clientSecret = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("MySuperSecureAndRandomKeyThatLooksJustAwesomeAndNeedsToBeVeryVeryLong!!!111oneeleven"));
-
-        modelBuilder.Entity<Client>().HasData(
-            new Client
-            {
-                Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"), // Fixed GUID
-                ClientId = clientId,
-                Name = "Watch Hive Web Application",
-                ClientSecret = clientSecret,
-                ClientURL = "https://localhost:5173",
-                IsActive = true,
-                Created = now,
-                LastModified = now
-            }
-        );
-    }
-
-
 }

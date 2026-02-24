@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace WatchHive.Models;
 
 public partial class WatchHiveDbContext : DbContext {
-        private static void ConfigureEntityConstraints(ModelBuilder modelBuilder)
+    private static void ConfigureEntityConstraints(ModelBuilder modelBuilder)
     {
         // USER constraints
         modelBuilder.Entity<User>()
@@ -15,32 +15,6 @@ public partial class WatchHiveDbContext : DbContext {
             .Property(u => u.FullName)
             .IsRequired()
             .HasMaxLength(100);
-
-        // CLIENT constraints
-        modelBuilder.Entity<Client>(entity =>
-        {
-            entity.Property(c => c.ClientId)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entity.HasIndex(c => c.ClientId)
-                .IsUnique(); // ClientId should be unique
-
-            entity.Property(c => c.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entity.Property(c => c.ClientSecret)
-                .IsRequired()
-                .HasMaxLength(500);
-
-            entity.Property(c => c.ClientURL)
-                .IsRequired()
-                .HasMaxLength(500);
-
-            entity.Property(c => c.IsActive)
-                .HasDefaultValue(true);
-        });
 
         // REFRESH TOKENS constraints
         modelBuilder.Entity<RefreshToken>(entity =>

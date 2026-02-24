@@ -46,7 +46,7 @@ namespace WatchHive.Migrations
                     b.Property<DateTime>("SentAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 2, 21, 14, 55, 51, 353, DateTimeKind.Utc).AddTicks(8628));
+                        .HasDefaultValue(new DateTime(2026, 2, 24, 10, 42, 32, 421, DateTimeKind.Utc).AddTicks(4277));
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -58,64 +58,6 @@ namespace WatchHive.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ChatMessages", "app");
-                });
-
-            modelBuilder.Entity("WatchHive.Models.Client", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("ClientSecret")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("ClientURL")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId")
-                        .IsUnique();
-
-                    b.ToTable("Clients", "app");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            ClientId = "movie-manager-web",
-                            ClientSecret = "TXlTdXBlclNlY3VyZUFuZFJhbmRvbUtleVRoYXRMb29rc0p1c3RBd2Vzb21lQW5kTmVlZHNUb0JlVmVyeVZlcnlMb25nISEhMTExb25lZWxldmVu",
-                            ClientURL = "https://localhost:5173",
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 352, DateTimeKind.Unspecified).AddTicks(4303), new TimeSpan(0, 0, 0, 0, 0)),
-                            IsActive = true,
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 352, DateTimeKind.Unspecified).AddTicks(4303), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Watch Hive Web Application"
-                        });
                 });
 
             modelBuilder.Entity("WatchHive.Models.Group", b =>
@@ -279,8 +221,9 @@ namespace WatchHive.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -355,15 +298,15 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 127, DateTimeKind.Unspecified).AddTicks(1468), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 127, DateTimeKind.Unspecified).AddTicks(1468), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 1
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 127, DateTimeKind.Unspecified).AddTicks(1468), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 127, DateTimeKind.Unspecified).AddTicks(1468), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 2
                         });
                 });
@@ -425,12 +368,12 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 127, DateTimeKind.Unspecified).AddTicks(1788), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8906), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@system.com",
                             EmailVerified = false,
                             FullName = "System Administrator",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 21, 14, 55, 51, 127, DateTimeKind.Unspecified).AddTicks(1788), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$8wGZZNQavGm/pYWdToJRVuO6sJ/9/mCUySEwvE4MfHflBVBG2P5nq",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8906), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$CQwDsGxTvJzX6mkNoNhY0uVQjtNf9/aWC2BBAO8RMWUPISOKvROGO",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000001")
                         });
                 });
@@ -590,19 +533,11 @@ namespace WatchHive.Migrations
 
             modelBuilder.Entity("WatchHive.Models.RefreshToken", b =>
                 {
-                    b.HasOne("WatchHive.Models.Client", "Client")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("WatchHive.Models.User", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Client");
 
                     b.Navigation("User");
                 });
@@ -654,11 +589,6 @@ namespace WatchHive.Migrations
                     b.Navigation("MovieSuggestion");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WatchHive.Models.Client", b =>
-                {
-                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("WatchHive.Models.Group", b =>

@@ -10,7 +10,6 @@ public partial class WatchHiveDbContext : DbContext
 
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Role> Roles { get; set; } = null!;
-    public DbSet<Client> Clients { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<Group> Groups { get; set; } = null!;
     public DbSet<UserGroup> UserGroups { get; set; } = null!;
@@ -131,14 +130,6 @@ public partial class WatchHiveDbContext : DbContext
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         
-        // Client - RefreshToken
-        modelBuilder.Entity<Client>()
-            .HasMany(c => c.RefreshTokens)
-            .WithOne(rf => rf.Client)
-            .HasForeignKey(rf => rf.ClientId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
-        
         // Many to Many
         // User - Groups -> UserGroups Joint table used to address it
         modelBuilder.Entity<UserGroup>()
@@ -162,7 +153,6 @@ public partial class WatchHiveDbContext : DbContext
 
         SeedRoles(modelBuilder);
         SeedAdminUser(modelBuilder);
-        SeedDefaultClient(modelBuilder);
 
         // Configure required properties and constraints
         ConfigureEntityConstraints(modelBuilder);

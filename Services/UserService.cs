@@ -9,14 +9,14 @@ public class UserService : IUserService
     private readonly WatchHiveDbContext _dbContext;
     private readonly ITokenService _tokenService;
     private readonly IConfiguration _configuration;
-    private readonly IClientCacheService _clientCacheService;
+    private readonly AppClient _client;
 
-    public UserService(WatchHiveDbContext dbContext, ITokenService tokenService, IConfiguration configuration, IClientCacheService clientCacheService)
+    public UserService(WatchHiveDbContext dbContext, ITokenService tokenService, IConfiguration configuration, AppClient client)
     {
         _dbContext = dbContext;
         _tokenService = tokenService;
         _configuration = configuration;
-        _clientCacheService = clientCacheService;
+        _client = client;
     }
 
     public async Task<User> CreateUserAsync(RegisterUserDto userDto, Guid? roleId = null)
@@ -77,8 +77,7 @@ public class UserService : IUserService
             };
         }
 
-        var client = await _clientCacheService.GetClientByClientIdAsync(loginDto.ClientId);
-        if (client == null)
+        if (_client.ClientId == loginDto.ClientId)
         {
             return new AuthResult
             {
@@ -87,8 +86,8 @@ public class UserService : IUserService
             };
         }
 
-        var accessToken = _tokenService.GenerateAccessToken(user, user.Role.RoleValue, out string jwtId, client);
-        var refreshToken = _tokenService.GenerateRefreshToken(ipAddress, jwtId, client, user.Id);
+        var accessToken = _tokenService.GenerateAccessToken(user, user.Role.RoleValue, out string jwtId);
+        var refreshToken = _tokenService.GenerateRefreshToken(ipAddress, jwtId, user.Id);
 
         _dbContext.RefreshTokens.Add(refreshToken);
         await _dbContext.SaveChangesAsync();
@@ -115,9 +114,7 @@ public class UserService : IUserService
     // Refreshes an expired access token using a valid refresh token and client ID
     public async Task<AuthResponseDTO?> RefreshTokenAsync(string refreshToken, string clientId, string ipAddress)
     {
-        // Retrieve client info by clientId for validation
-        var client = await _clientCacheService.GetClientByClientIdAsync(clientId);
-        if (client == null)
+        if (clientId != _client.ClientId)
         {
             return null;
         }
@@ -126,7 +123,7 @@ public class UserService : IUserService
         var existingToken = await _dbContext.RefreshTokens
             .Include(rt => rt.User)
             .ThenInclude(u => u.Role)
-            .FirstOrDefaultAsync(rt => rt.Token == refreshToken && rt.ClientId == client.Id);
+            .FirstOrDefaultAsync(rt => rt.Token == refreshToken && rt.ClientId == clientId);
 
         // Validate refresh token existence, revocation status, and expiration
         if (existingToken == null || existingToken.IsRevoked || existingToken.Expires <= DateTime.UtcNow)
@@ -138,9 +135,9 @@ public class UserService : IUserService
 
         var user = existingToken.User;
         // Generate a new access token with fresh JWT ID and client info
-        var accessToken = _tokenService.GenerateAccessToken(user, user.Role.RoleValue, out string newJwtId, client);
+        var accessToken = _tokenService.GenerateAccessToken(user, user.Role.RoleValue, out string newJwtId);
         // Generate a new refresh token linked to the new JWT ID
-        var newRefreshToken = _tokenService.GenerateRefreshToken(ipAddress, newJwtId, client, user.Id);
+        var newRefreshToken = _tokenService.GenerateRefreshToken(ipAddress, newJwtId, user.Id);
 
         // Store the new refresh token in the database
         _dbContext.RefreshTokens.Add(newRefreshToken);

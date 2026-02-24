@@ -26,6 +26,7 @@ public class Program
         }
 
         builder.Configuration.AddEnvironmentVariables();
+        var appClient = new AppClient(builder.Configuration);
 
         // Register services
         builder.Services.AddControllers();
@@ -34,13 +35,16 @@ public class Program
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
-        builder.Services.AddSingleton<IClientCacheService, ClientCacheService>();
+        builder.Services.AddSingleton(appClient);
 
         builder.Services.AddDbContext<WatchHiveDbContext>(options =>
         {
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             options.UseNpgsql(connectionString);
         });
+
+        // Configure JWT Bearer Authentication
+        builder.Services.AddJwtAuthentication(builder.Configuration, appClient);
 
         // Configure a specific CORS policy
         builder.Services.AddCors(options =>
@@ -57,9 +61,6 @@ public class Program
                 .AllowCredentials(); // If using cookies/auth headers
             });
         });        
-        
-        // Configure JWT Bearer Authentication
-        builder.Services.AddJwtAuthentication(builder.Configuration);
 
         var app = builder.Build();
         app.UseExceptionHandler();

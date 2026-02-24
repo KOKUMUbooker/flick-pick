@@ -20,9 +20,8 @@ public class RefreshToken : EntityBase
     public string? CreatedByIp { get; set; }
 
     [Required]
-    public Guid ClientId { get; set; }
+    public string ClientId { get; set; } = null!; // Not present in db so no db relationship setup need
 
     // Navigational properties
     public User User { get; set; } = null!;
-    public Client Client { get; set; } = null!;
 }

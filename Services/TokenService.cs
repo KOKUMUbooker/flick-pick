@@ -9,20 +9,22 @@ public class TokenService : ITokenService
 {
     // IConfiguration to access appsettings.json values like issuer and token expiry times
     private readonly IConfiguration _configuration;
+    private readonly AppClient _client;
 
-    public TokenService(IConfiguration configuration)
+    public TokenService(IConfiguration configuration, AppClient client)
     {
         _configuration = configuration;
+        _client = client;
     }
 
     // Generates a JWT Access Token for the authenticated user.
-    public string GenerateAccessToken(User user, RoleEnum role, out string jwtId, Client client)
+    public string GenerateAccessToken(User user, RoleEnum role, out string jwtId)
     {
         // Initialize JWT token handler which creates and serializes tokens
         var tokenHandler = new JwtSecurityTokenHandler();
 
         // Decode the Base64-encoded client secret key into byte array for signing
-        var keyBytes = Convert.FromBase64String(client.ClientSecret);
+        var keyBytes = Convert.FromBase64String(_client.ClientSecret);
         var key = new SymmetricSecurityKey(keyBytes);
 
         // Generate a new unique identifier for the JWT token (jti claim)
@@ -39,8 +41,8 @@ public class TokenService : ITokenService
             new Claim(JwtRegisteredClaimNames.Jti, jwtId),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Iss, issuer),
-            new Claim(JwtRegisteredClaimNames.Aud, client.ClientURL),
-            new Claim("clientId", client.ClientId),
+            new Claim(JwtRegisteredClaimNames.Aud, _client.ClientURL),
+            new Claim("clientId", _client.ClientId),
             new Claim("role", role.ToString()),
             new Claim("userId", user.Id.ToString())
         };
@@ -55,7 +57,7 @@ public class TokenService : ITokenService
             Expires = DateTime.UtcNow.AddMinutes(accessTokenExpirationMinutes), // Token expiration time
             SigningCredentials = creds, // Signing credentials using client secret key
             Issuer = issuer, // Token issuer
-            Audience = client.ClientURL // Token audience (client URL)
+            Audience = _client.ClientURL // Token audience (client URL)
         };
 
         // Create the JWT token based on the descriptor
@@ -66,7 +68,7 @@ public class TokenService : ITokenService
     }
 
     // Generates a Refresh Token linked to a JWT token and client.
-    public RefreshToken GenerateRefreshToken(string ipAddress, string jwtId, Client client, Guid userId)
+    public RefreshToken GenerateRefreshToken(string ipAddress, string jwtId, Guid userId)
     {
         // Generate a secure random 64-byte array to be used as the refresh token string
         var randomBytes = new byte[64];
@@ -81,7 +83,7 @@ public class TokenService : ITokenService
             JwtId = jwtId,
             Expires = DateTime.UtcNow.AddDays(refreshTokenExpirationDays),
             UserId = userId,
-            ClientId = client.Id,
+            ClientId = _client.ClientId,
             IsRevoked = false,
             RevokedAt = null,
             CreatedByIp = ipAddress
