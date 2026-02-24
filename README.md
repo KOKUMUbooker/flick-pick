@@ -145,7 +145,7 @@ docker build -t watchhive:1.0 .
 2. Start image
 
 ```bash
-docker run --env-file .env watchhive
+docker run --env-file .env watchhive:1.0
 ```
 
 OR via docker compose

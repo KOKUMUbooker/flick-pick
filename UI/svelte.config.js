@@ -12,6 +12,9 @@ const config = {
 		}),
 		alias: {
 			'@/*': './src/lib/*'
+		},
+		paths: {
+			base: '' // <-- ensure base path is empty
 		}
 	}
 };

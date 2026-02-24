@@ -31,7 +31,7 @@ RUN rm -rf wwwroot/*
 COPY --from=ui-build /app/UI/build ./wwwroot
 
 # Publish
-RUN dotnet publish WatchHive.csproj -c Build -o /app/publish
+RUN dotnet publish WatchHive.csproj -c Build --self-contained false -o /app/publish
 
 
 # =========================
@@ -43,9 +43,6 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-EXPOSE 8080
-
-ENV ASPNETCORE_URLS=http://+:8080
-ENV ASPNETCORE_ENVIRONMENT=Production
+RUN export PORT=5000
 
 ENTRYPOINT ["dotnet", "WatchHive.dll"]
