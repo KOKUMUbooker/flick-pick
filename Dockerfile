@@ -31,7 +31,7 @@ RUN rm -rf wwwroot/*
 COPY --from=ui-build /app/UI/build ./wwwroot
 
 # Publish
-RUN dotnet publish WatchHive.csproj -o /app/publish
+RUN dotnet publish WatchHive.csproj -c Build -o /app/publish
 
 
 # =========================

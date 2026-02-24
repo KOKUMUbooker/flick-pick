@@ -12,7 +12,7 @@ using WatchHive.Models;
 namespace WatchHive.Migrations
 {
     [DbContext(typeof(WatchHiveDbContext))]
-    [Migration("20260224104232_InitialCreate")]
+    [Migration("20260224122107_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,7 +49,7 @@ namespace WatchHive.Migrations
                     b.Property<DateTime>("SentAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 2, 24, 10, 42, 32, 421, DateTimeKind.Utc).AddTicks(4277));
+                        .HasDefaultValue(new DateTime(2026, 2, 24, 12, 21, 7, 263, DateTimeKind.Utc).AddTicks(7819));
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -301,15 +301,15 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 1
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 2
                         });
                 });
@@ -371,12 +371,12 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8906), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6756), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@system.com",
                             EmailVerified = false,
                             FullName = "System Administrator",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8906), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$CQwDsGxTvJzX6mkNoNhY0uVQjtNf9/aWC2BBAO8RMWUPISOKvROGO",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6756), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$rNyHGz/q5AVh39Z3jE7IPuwqM0XtCaGcY5ddmvEJnh3T8lB0K60CG",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000001")
                         });
                 });

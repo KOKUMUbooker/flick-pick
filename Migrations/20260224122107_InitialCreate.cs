@@ -203,7 +203,7 @@ namespace WatchHive.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     MovieNightEventId = table.Column<Guid>(type: "uuid", nullable: false),
                     Message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 2, 24, 10, 42, 32, 421, DateTimeKind.Utc).AddTicks(4277)),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 2, 24, 12, 21, 7, 263, DateTimeKind.Utc).AddTicks(7819)),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -322,15 +322,15 @@ namespace WatchHive.Migrations
                 columns: new[] { "Id", "Created", "LastModified", "RoleValue" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8693), new TimeSpan(0, 0, 0, 0, 0)), 2 }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)), 2 }
                 });
 
             migrationBuilder.InsertData(
                 schema: "app",
                 table: "Users",
                 columns: new[] { "Id", "Created", "Email", "EmailVerificationToken", "EmailVerificationTokenExpiry", "EmailVerified", "FullName", "LastModified", "PasswordHash", "PasswordResetTokenExpiry", "PasswordResetTokenHash", "RoleId" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8906), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", null, null, false, "System Administrator", new DateTimeOffset(new DateTime(2026, 2, 24, 10, 42, 32, 294, DateTimeKind.Unspecified).AddTicks(8906), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$CQwDsGxTvJzX6mkNoNhY0uVQjtNf9/aWC2BBAO8RMWUPISOKvROGO", null, null, new Guid("00000000-0000-0000-0000-000000000001") });
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6756), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", null, null, false, "System Administrator", new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6756), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$rNyHGz/q5AVh39Z3jE7IPuwqM0XtCaGcY5ddmvEJnh3T8lB0K60CG", null, null, new Guid("00000000-0000-0000-0000-000000000001") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_MovieNightEventId",
