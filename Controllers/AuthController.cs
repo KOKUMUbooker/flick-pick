@@ -83,6 +83,22 @@ public class AuthController : ControllerBase
             };
         }
 
+        if (result?.Data != null)
+        {
+            // Set refresh token in HTTP-only cookie
+            SetAuthTokenCookie(
+                "refreshToken",
+                result.Data.RefreshToken,
+                result.Data.AccessTokenExpiresAt
+            );
+
+            SetAuthTokenCookie(
+                "accessToken",
+                result.Data.AccessToken,
+                result.Data.AccessTokenExpiresAt
+            );
+        }
+
         return Ok(new { 
             UserDetails = result?.Data.UserDetails,
             RefreshToken = result?.Data.RefreshToken,
@@ -244,16 +260,16 @@ public class AuthController : ControllerBase
     }
 
 
-    private void SetAuthTokenCookie(string cookieName, string refreshToken, DateTime expiresAt)
+    private void SetAuthTokenCookie(string cookieName, string token, DateTime expiresAt)
     {
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,               
+            Secure = false, // TODO: Till I can afford consitent monthly hosting this will be false for the app to work     
             SameSite = _env.IsDevelopment() ? SameSiteMode.None :  SameSiteMode.Strict, 
             Expires = expiresAt
         };
 
-        Response.Cookies.Append(cookieName, refreshToken, cookieOptions);
+        Response.Cookies.Append(cookieName, token, cookieOptions);
     }
 }
