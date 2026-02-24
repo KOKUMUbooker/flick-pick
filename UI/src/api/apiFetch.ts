@@ -1,8 +1,9 @@
-import { logOut } from "../store";
+import { ACCESS_TOKEN_STORE_NAME, logIn, logOut } from "../store";
 import { ApiError } from "../types/error";
+import type { AuthResponseData } from "./auth";
 
 let isRefreshing = false;
-let refreshPromise: Promise<void> | null = null;
+let refreshPromise: Promise<AuthResponseData> | null = null;
 
 export async function apiFetch<T>(
     url: string,
@@ -11,9 +12,10 @@ export async function apiFetch<T>(
 ): Promise<T> {
 
     const res = await fetch(url, {
-        credentials: "include", // REQUIRED for HttpOnly cookies
+        // credentials: "include", // REQUIRED for HttpOnly cookies
         headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN_STORE_NAME)}`,
             ...options?.headers
         },
         ...options
@@ -31,10 +33,14 @@ export async function apiFetch<T>(
     return res.json();
 }
 
-async function refreshToken(): Promise<void> {
+async function refreshToken(): Promise<AuthResponseData> {
     const res = await fetch("/auth/refresh", {
         method: "POST",
-        credentials: "include"
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN_STORE_NAME)}`,
+            'Content-Type': 'application/json'
+        }
+        // credentials: "include"
     });
 
     if (!res.ok) {
@@ -43,6 +49,8 @@ async function refreshToken(): Promise<void> {
         window.location.href = "/login";
         throw new Error("Session expired");
     }
+
+    return await res.json()
 }
 
 async function handleRefreshAndRetry<T>(
@@ -59,7 +67,8 @@ async function handleRefreshAndRetry<T>(
             });
     }
 
-    await refreshPromise;
+    const authRes = await refreshPromise;
+    if (authRes != null) logIn(authRes)
 
     // Retry original request (IMPORTANT: retry = false)
     return apiFetch<T>(url, options, false);

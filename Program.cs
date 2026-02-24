@@ -38,7 +38,6 @@ public class Program
         builder.Services.AddDbContext<WatchHiveDbContext>(options =>
         {
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            // var dbURL = builder.Configuration["Movies:ConnectionStrings"];
             options.UseNpgsql(connectionString);
         });
 

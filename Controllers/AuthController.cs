@@ -83,23 +83,12 @@ public class AuthController : ControllerBase
             };
         }
 
-        if (result?.Data != null)
-        {
-            // Set refresh token in HTTP-only cookie
-            SetAuthTokenCookie(
-                "refreshToken",
-                result.Data.RefreshToken,
-                result.Data.AccessTokenExpiresAt
-            );
-
-            SetAuthTokenCookie(
-                "accessToken",
-                result.Data.AccessToken,
-                result.Data.AccessTokenExpiresAt
-            );
-        }
-
-        return Ok(new { UserDetails = result?.Data?.UserDetails });
+        return Ok(new { 
+            UserDetails = result?.Data.UserDetails,
+            RefreshToken = result?.Data.RefreshToken,
+            AccessToken = result?.Data.AccessToken,
+            AccessTokenExpiresAt = result?.Data.AccessTokenExpiresAt
+        });
     }
 
     // Endpoint to obtain a new access token using a refresh token

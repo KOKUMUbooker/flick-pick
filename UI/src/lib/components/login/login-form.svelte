@@ -87,7 +87,7 @@
 			return;
 		}
 
-		logIn({user:res.userDetails})
+		logIn(res)
 		goto('/dashboard');
 	}
 

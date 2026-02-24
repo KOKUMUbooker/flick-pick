@@ -154,7 +154,14 @@ public class UserService : IUserService
         {
             AccessToken = accessToken,
             RefreshToken = newRefreshToken.Token,
-            AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(accessTokenExpiryMinutes)
+            AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(accessTokenExpiryMinutes),
+            UserDetails = new UIAuthState
+            {
+                Id = user.Id.ToString(),
+                Email = user.Email,
+                FullName = user.FullName,
+                Role = ((int)user.Role.RoleValue).ToString() // To get the numeric value & not the key
+            }
         };
     }
 

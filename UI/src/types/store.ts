@@ -5,10 +5,9 @@ export interface User {
   fullName: string;
 }
 
-export interface IAuthData {
-  user: User
-}
-
 export interface IAuthState {
-  user?: User
+  user?: User;
+  accessToken?: string;
+  refreshToken?: string;
+  accessTokenExpiresAt?: number;
 }
