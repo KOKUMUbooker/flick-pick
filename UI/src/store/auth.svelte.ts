@@ -39,6 +39,6 @@ export function isLoggedIn() {
     return authState.user != undefined
 }
 
-export const ACCESS_TOKEN_STORE_NAME = "Athn"
+export const ACCESS_TOKEN_STORE_NAME = "Atkn"
 export const REFRESH_TOKEN_STORE_NAME = "Rtkn"
-export const ACCESS_TOKEN_EXP_STORE_NAME = "AExp"
+export const ACCESS_TOKEN_EXP_STORE_NAME = "ATknExp"
