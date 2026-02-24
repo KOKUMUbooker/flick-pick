@@ -17,11 +17,6 @@ export function logIn(authData: AuthResponseData) {
     authState.accessToken = accessToken;
     authState.refreshToken = refreshToken;
     authState.accessTokenExpiresAt = tknExpiration;
-
-    // Set values in localStorage
-    localStorage.setItem(ACCESS_TOKEN_STORE_NAME, accessToken)
-    localStorage.setItem(REFRESH_TOKEN_STORE_NAME, refreshToken)
-    localStorage.setItem(ACCESS_TOKEN_EXP_STORE_NAME, tknExpiration.toString())
 }
 
 export async function logOut() {
@@ -29,16 +24,8 @@ export async function logOut() {
     authState.refreshToken = undefined
     authState.accessToken = undefined
     authState.accessTokenExpiresAt = undefined
-
-    localStorage.removeItem(ACCESS_TOKEN_STORE_NAME)
-    localStorage.removeItem(ACCESS_TOKEN_EXP_STORE_NAME)
-    localStorage.removeItem(REFRESH_TOKEN_STORE_NAME)
 }
 
 export function isLoggedIn() {
     return authState.user != undefined
 }
-
-export const ACCESS_TOKEN_STORE_NAME = "Atkn"
-export const REFRESH_TOKEN_STORE_NAME = "Rtkn"
-export const ACCESS_TOKEN_EXP_STORE_NAME = "ATknExp"
