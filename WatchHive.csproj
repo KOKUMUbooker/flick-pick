@@ -34,4 +34,11 @@
     <Copy SourceFiles="@(SvelteFiles)" DestinationFiles="@(SvelteFiles->'wwwroot/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 
+  <ItemGroup>
+      <Content Include="EmailTemplates/**/*">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+  </ItemGroup>
+
 </Project>
