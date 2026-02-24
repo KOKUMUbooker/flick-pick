@@ -30,7 +30,7 @@ public class Program
         var appClient = new AppClient(builder.Configuration);
 
         // ========== Render configuration =============
-        string port = Environment.GetEnvironmentVariable("PORT");
+        string? port = Environment.GetEnvironmentVariable("PORT");
         if (!string.IsNullOrEmpty(port))
         {
             builder.WebHost.UseUrls($"http://*:{port}");
