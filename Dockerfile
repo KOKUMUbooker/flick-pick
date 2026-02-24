@@ -1,20 +1,41 @@
 # =========================
-# 1. Build Stage
+# 1️⃣ Build Svelte UI
+# =========================
+FROM node:lts-alpine AS ui-build
+
+WORKDIR /app/UI
+
+COPY UI/package*.json ./
+RUN npm install
+
+COPY UI/ .
+RUN npm run build
+
+
+# =========================
+# 2️⃣ Build ASP.NET Core
 # =========================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Install Node
-RUN apt-get update && apt-get install -y nodejs npm
-
 WORKDIR /src
 
+# Copy only csproj first (better layer caching)
+COPY WatchHive.csproj .
+RUN dotnet restore WatchHive.csproj
+
+# Copy everything else
 COPY . .
 
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
+# Replace wwwroot with built UI
+RUN rm -rf wwwroot/*
+COPY --from=ui-build /app/UI/build ./wwwroot
+
+# Publish
+RUN dotnet publish WatchHive.csproj -o /app/publish
+
 
 # =========================
-# 2. Runtime Stage
+# 3️⃣ Runtime Image
 # =========================
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
