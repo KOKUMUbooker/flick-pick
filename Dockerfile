@@ -43,6 +43,4 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-RUN export PORT=5000
-
 ENTRYPOINT ["dotnet", "WatchHive.dll"]
