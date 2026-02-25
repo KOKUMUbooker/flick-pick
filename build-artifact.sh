@@ -35,11 +35,11 @@ echo "⚙️ Publishing ASP.NET Core..."
 #   -o $PUBLISH_DIR
 
 # Works if place to be deployed to is a windows environment & runs a 32 bit system 
-dotnet publish WatchHive.csproj \ 
-    -c Release \
+dotnet publish $PROJECT_PATH \
+    -c Build \
+    -o $PUBLISH_DIR  \
     -r win-x86 \
-    --self-contained true \
-    -o $PUBLISH_DIR 
+    --self-contained true
 
 # =========================
 # Create ZIP

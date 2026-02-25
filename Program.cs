@@ -69,6 +69,7 @@ public class Program
         }
 
         app.UseDefaultFiles();
+        app.UseStaticFiles();
         app.UseRouting();
 
         app.UseAuthentication();
