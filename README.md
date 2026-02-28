@@ -120,7 +120,7 @@ rm -r Migrations/
 If database contained some data first (for local development)
 
 ```bash
-docker exec -it postgres psql -U admin -d WatchHive -c "DROP SCHEMA app CASCADE;
+docker exec -it postgres psql -U admin -d WatchHive -c "DROP SCHEMA app CASCADE";
 ```
 
 ```bash
