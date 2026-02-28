@@ -10,6 +10,7 @@ public class Group : EntityBase
     [Required]
     [MaxLength(100)]
     public string Name { get; set; } = null!;
+    public string? Description { get; set; } 
 
     public Guid CreatedById { get; set; }
 
