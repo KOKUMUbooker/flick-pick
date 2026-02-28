@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using dotenv.net;
 using WatchHive.Models;
 using WatchHive.Services;
 using WatchHive.Extensions;
+using WatchHive.Hubs;
 
 namespace WatchHive;
 
@@ -16,6 +18,7 @@ public class Program
         builder.Services.AddProblemDetails();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddSignalR();
 
         if (builder.Environment.IsDevelopment())
         {
@@ -76,6 +79,8 @@ public class Program
         app.UseAuthorization();
 
         app.UseCors("AllowSpecificOrigin");
+
+        app.MapHub<MovieNightHub>("/movieNightHub");
 
         app.MapControllers();
 

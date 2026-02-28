@@ -66,6 +66,14 @@ public partial class WatchHiveDbContext : DbContext
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
         
+        // User - GroupInvites
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.GroupInvites)
+            .WithOne(gi => gi.User)
+            .HasForeignKey(gi => gi.CreatedById)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        
         // User - MovieNightRating
         modelBuilder.Entity<User>()
             .HasMany(u => u.MovieNightRatings)
@@ -103,6 +111,14 @@ public partial class WatchHiveDbContext : DbContext
             .HasMany(g => g.MovieNightEvents)
             .WithOne(mn => mn.Group)
             .HasForeignKey(mn => mn.GroupId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Group - GroupInvites
+        modelBuilder.Entity<Group>()
+            .HasMany(g => g.GroupInvites)
+            .WithOne(gi => gi.Group)
+            .HasForeignKey(gi => gi.GroupId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 

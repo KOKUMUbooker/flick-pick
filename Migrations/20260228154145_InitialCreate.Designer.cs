@@ -12,7 +12,7 @@ using WatchHive.Models;
 namespace WatchHive.Migrations
 {
     [DbContext(typeof(WatchHiveDbContext))]
-    [Migration("20260224122107_InitialCreate")]
+    [Migration("20260228154145_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,7 +49,7 @@ namespace WatchHive.Migrations
                     b.Property<DateTime>("SentAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 2, 24, 12, 21, 7, 263, DateTimeKind.Utc).AddTicks(7819));
+                        .HasDefaultValue(new DateTime(2026, 2, 28, 15, 41, 44, 593, DateTimeKind.Utc).AddTicks(5401));
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -75,6 +75,9 @@ namespace WatchHive.Migrations
                     b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
@@ -88,6 +91,43 @@ namespace WatchHive.Migrations
                     b.HasIndex("CreatedById");
 
                     b.ToTable("Groups", "app");
+                });
+
+            modelBuilder.Entity("WatchHive.Models.GroupInvite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("GroupInvite", "app");
                 });
 
             modelBuilder.Entity("WatchHive.Models.MovieNightEvent", b =>
@@ -301,15 +341,15 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 1
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6376), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 2
                         });
                 });
@@ -371,12 +411,12 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6756), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9622), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@system.com",
                             EmailVerified = false,
                             FullName = "System Administrator",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 24, 12, 21, 7, 113, DateTimeKind.Unspecified).AddTicks(6756), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$rNyHGz/q5AVh39Z3jE7IPuwqM0XtCaGcY5ddmvEJnh3T8lB0K60CG",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9622), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$YdMltoClkCvFA2H6wi19kuoOpRke69EzSO4jippa.zQmQVETgPHje",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000001")
                         });
                 });
@@ -464,6 +504,25 @@ namespace WatchHive.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("WatchHive.Models.GroupInvite", b =>
+                {
+                    b.HasOne("WatchHive.Models.User", "User")
+                        .WithMany("GroupInvites")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WatchHive.Models.Group", "Group")
+                        .WithMany("GroupInvites")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WatchHive.Models.MovieNightEvent", b =>
@@ -596,6 +655,8 @@ namespace WatchHive.Migrations
 
             modelBuilder.Entity("WatchHive.Models.Group", b =>
                 {
+                    b.Navigation("GroupInvites");
+
                     b.Navigation("Members");
 
                     b.Navigation("MovieNightEvents");
@@ -625,6 +686,8 @@ namespace WatchHive.Migrations
                     b.Navigation("ChatMessages");
 
                     b.Navigation("CreatedGroups");
+
+                    b.Navigation("GroupInvites");
 
                     b.Navigation("MovieNightEvents");
 
