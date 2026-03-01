@@ -57,6 +57,16 @@ public class MovieSuggestionController : ControllerBase
             return NotFound(new CustomError { Message = "Movie night event not found" } );
         }
 
+        // Check if user already made a suggestion
+        var previousSuggestion = await _dbContext.MovieSuggestions
+            .Where(ms => ms.SuggestedById == parsedUserId && ms.MovieNightEventId == parsedMovieNightId)
+            .FirstAsync();
+
+        if (previousSuggestion != null)
+        {
+            return BadRequest(new CustomError { Message = "Only one suggestion allowed per user in a Movie Night" });
+        }
+
         var MovieSuggestion = new MovieSuggestion
         {
             TmdbId = createDto.TmdbId,
