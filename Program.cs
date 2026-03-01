@@ -52,9 +52,7 @@ public class Program
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
                 policy.WithOrigins(
-                    "http://localhost:5173",  // Vite dev server
-                    "https://localhost:5173", // Vite with HTTPS
-                    "https://productiondomain.com"
+                    "http://localhost:5173"  // Vite dev server
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
@@ -80,7 +78,7 @@ public class Program
 
         app.UseCors("AllowSpecificOrigin");
 
-        app.MapHub<MovieNightHub>("/movieNightHub");
+        app.MapHub<MovieNightHub>("/api/movieNightHub");
 
         app.MapControllers();
 
