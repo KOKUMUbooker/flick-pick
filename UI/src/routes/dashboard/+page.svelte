@@ -252,7 +252,7 @@
 		{/if}
 
 		<!-- Mobile Bottom Navigation -->
-		<GroupsMobileNav {activeTab} />
+		<GroupsMobileNav bind:activeTab />
 	</main>
 </div>
 
