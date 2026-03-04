@@ -59,6 +59,12 @@
 
 	// Initialize
 	onMount(() => {
+		// 1. Fetch groups
+
+		// 2. Connect to signalR hub
+
+		// 3. Fetch selected group data
+
 		groups = mockGroups.map((g) => ({ ...g, isActive: false }));
 
 		if (groups.length > 0) {
