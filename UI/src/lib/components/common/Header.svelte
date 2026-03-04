@@ -13,7 +13,7 @@
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { toggleMode } from 'mode-watcher';
-	import { authState, logOut } from '../../../store';
+	import { appState, logOut } from '../../../store';
 	import { createMutation } from '@tanstack/svelte-query';
 	import { apiFetch } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
@@ -21,8 +21,8 @@
 	import LoadingOverlay from './LoadingOverlay.svelte';
 
 	// Authentication state (in real app, this would come from a store)
-	let isAuthenticated = $derived(authState.user != undefined);
-	let user = $derived(authState.user);
+	let isAuthenticated = $derived(appState.user != undefined);
+	let user = $derived(appState.user);
 
 	// Navigation items
 	const navItems = [
@@ -31,28 +31,28 @@
 	];
 
 	let logoutMutation = createMutation<
-		{message:string}, // response type
+		{ message: string }, // response type
 		Error, // error type
 		void // variables type
 	>(() => ({
 		mutationFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/auth/logout`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
- 			});
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 	}));
 
 	// Mobile menu state
 	let mobileMenuOpen = $state(false);
-	const handleLogout = async () => { 
+	const handleLogout = async () => {
 		await logoutMutation.mutateAsync();
 		logOut(); // Clear local user state
-		goto("/login")
-	}
+		goto('/login');
+	};
 </script>
 
-<LoadingOverlay show={logoutMutation.isPending} message={"Logging you out..."} spinnerSize="md"/>
+<LoadingOverlay show={logoutMutation.isPending} message={'Logging you out...'} spinnerSize="md" />
 <header class="fixed top-0 z-10 w-full border-b border-border bg-background/80 backdrop-blur-sm">
 	<div class="container mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex h-16 items-center justify-between">
@@ -112,13 +112,7 @@
 								</a>
 
 								<!-- Logout Button -->
-								<Button
-									variant="ghost"
-									size="sm"
-									onclick={handleLogout}
-								>
-									Logout
-								</Button>
+								<Button variant="ghost" size="sm" onclick={handleLogout}>Logout</Button>
 							</div>
 
 							<!-- Mobile: Just the dashboard button -->

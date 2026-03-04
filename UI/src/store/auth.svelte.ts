@@ -1,21 +1,21 @@
 import type { AuthResponseData } from "../api";
 import type { AppState } from "../types";
 
-export const authState = $state<AppState>({
+export const appState = $state<AppState>({
     user: undefined,
     hubConnection: undefined
 });
 
 export function logIn(authData: AuthResponseData) {
     const { userDetails } = authData;
-    authState.user = userDetails;
+    appState.user = userDetails;
 }
 
 export async function logOut() {
-    authState.user = undefined
-    authState.hubConnection = undefined
+    appState.user = undefined
+    appState.hubConnection = undefined
 }
 
 export function isLoggedIn() {
-    return authState.user != undefined
+    return appState.user != undefined
 }

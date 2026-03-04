@@ -55,7 +55,7 @@
 	);
 
 	// Computed property for event chat visibility
-	const activeEventChat = $derived(showEventChat && selectedEvent ? selectedEvent : null);
+	// const activeEventChat = $derived(showEventChat && selectedEvent ? selectedEvent : null);
 
 	// Initialize
 	onMount(() => {
@@ -121,13 +121,13 @@
 		console.log(`Voted ${voteType} on suggestion ${suggestionId}`);
 	}
 
-	function sendEventChatMessage(eventId: number, message: string) {
-		console.log(`Sending message to event ${eventId}: ${message}`);
-	}
+	// function sendEventChatMessage(eventId: number, message: string) {
+	// 	console.log(`Sending message to event ${eventId}: ${message}`);
+	// }
 
-	function canVote(event: MovieNightEvent): boolean {
-		return !event.isLocked && new Date(event.scheduledAt) > new Date();
-	}
+	// function canVote(event: MovieNightEvent): boolean {
+	// 	return !event.isLocked && new Date(event.scheduledAt) > new Date();
+	// }
 
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;

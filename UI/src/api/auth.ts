@@ -20,9 +20,6 @@ export interface LoginData {
 
 export interface AuthResponseData {
     userDetails: User;
-    accessToken: string;
-    refreshToken: string;
-    accessTokenExpiresAt: string;
 }
 
 export interface LoginRes extends AuthResponseData {
