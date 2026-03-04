@@ -38,7 +38,8 @@ public partial class WatchHiveDbContext : DbContext {
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
                 RoleId = RoleConstants.AdminRoleId,
                 Created = now,
-                LastModified = now
+                LastModified = now,
+                EmailVerified = true
             }
         );
     }
