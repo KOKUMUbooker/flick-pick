@@ -1,11 +1,10 @@
-
 namespace WatchHive.DTOs;
 
 public class AuthResponseDTO
 {
     public string AccessToken { get; set; } = null!;
     public DateTime AccessTokenExpiresAt { get; set; }
-    public UIAuthState UserDetails { get; set; } = null!;
+    public UserDetailsDto UserDetails { get; set; } = null!;
     public string RefreshToken { get; set; } = null!;
 }
 
@@ -17,10 +16,10 @@ public class AuthResult
     public string ErrorMessage { get; set; } = String.Empty;
 }
 
-public class UIAuthState
+public class UserDetailsDto
 {
-    public string Id { get; set; } = String.Empty;
-    public string Email { get; set; } = String.Empty;
-    public string Role { get; set; } = String.Empty;
-    public string FullName { get; set; } = String.Empty;
+    public string Id { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string FullName { get; set; } = null!;
+    public string Role { get; set; } = null!;
 }

@@ -107,6 +107,16 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        string accessToken = Request.Cookies["accessToken"] ?? "";
+        var user =  _userService.GetUserFromAccessToken(accessToken);
+        if (user == null) return Unauthorized(new CustomError { Message = "Unauthorized", Logout = true } );
+
+        return Ok(new { UserDetails = user });
+    }
+
     // Endpoint to obtain a new access token using a refresh token
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO refreshRequest)
