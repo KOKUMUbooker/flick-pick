@@ -276,8 +276,9 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = false, // TODO: Till I can afford consitent monthly hosting that supports https this will be false for the app to work     
-            SameSite = _env.IsDevelopment() ? SameSiteMode.None :  SameSiteMode.Strict, 
-            Expires = expiresAt
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax :  SameSiteMode.Strict, 
+            Expires = expiresAt,
+            IsEssential = true 
         };
 
         Response.Cookies.Append(cookieName, token, cookieOptions);
