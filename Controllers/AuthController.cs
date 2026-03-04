@@ -107,6 +107,16 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        string accessToken = Request.Cookies["accessToken"] ?? "";
+        var user =  _userService.GetUserFromAccessToken(accessToken);
+        if (user == null) return Unauthorized(new CustomError { Message = "Unauthorized", Logout = true } );
+
+        return Ok(new { UserDetails = user });
+    }
+
     // Endpoint to obtain a new access token using a refresh token
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO refreshRequest)
@@ -266,8 +276,9 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = false, // TODO: Till I can afford consitent monthly hosting that supports https this will be false for the app to work     
-            SameSite = _env.IsDevelopment() ? SameSiteMode.None :  SameSiteMode.Strict, 
-            Expires = expiresAt
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax :  SameSiteMode.Strict, 
+            Expires = expiresAt,
+            IsEssential = true 
         };
 
         Response.Cookies.Append(cookieName, token, cookieOptions);

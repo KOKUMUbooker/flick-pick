@@ -251,8 +251,10 @@
 			</div>
 		{/if}
 
-		<!-- Mobile Bottom Navigation -->
-		<GroupsMobileNav {activeTab} />
+		{#if !showEventChat}
+			<!-- Mobile Bottom Navigation -->
+			<GroupsMobileNav bind:activeTab />
+		{/if}
 	</main>
 </div>
 

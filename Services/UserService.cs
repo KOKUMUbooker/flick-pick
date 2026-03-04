@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using WatchHive.DTOs;
 using WatchHive.Models;
 
@@ -52,6 +55,51 @@ public class UserService : IUserService
         return user;
     }
 
+    public UserDetailsDto? GetUserFromAccessToken(string token)
+    {
+        if (string.IsNullOrEmpty(token)) return null;
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var keyBytes = Convert.FromBase64String(_client.ClientSecret);
+        var key = new SymmetricSecurityKey(keyBytes);
+
+        try
+        {
+            var claimsPrincipal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["JwtSettings:Issuer"] ?? "WatchHive",
+                ValidateAudience = true,
+                ValidAudience = _client.ClientURL,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = key,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromSeconds(30) // optional small clock skew
+            }, out SecurityToken validatedToken);
+
+            // Extract claims
+            var userId = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var email = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Email);
+            var fullName = claimsPrincipal.FindFirstValue("fullName");
+            var role = claimsPrincipal.FindFirstValue("role");
+
+            if (userId == null || email == null || fullName == null || role == null) return null;
+
+            return new UserDetailsDto
+            {
+                Id = userId,
+                Email = email,
+                FullName = fullName,
+                Role = role
+            };
+        }
+        catch
+        {
+            // token invalid or expired
+            return null;
+        }
+    }
+
     public async Task<AuthResult> AuthenticateUserAsync(UserLoginDto loginDto, string ipAddress)
     {
         var user = await _dbContext.Users
@@ -77,7 +125,7 @@ public class UserService : IUserService
             };
         }
 
-        if (_client.ClientId == loginDto.ClientId)
+        if (_client.ClientId != loginDto.ClientId)
         {
             return new AuthResult
             {
@@ -99,7 +147,7 @@ public class UserService : IUserService
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.Token,
                 AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15),
-                UserDetails = new UIAuthState
+                UserDetails = new UserDetailsDto
                 {
                     Id = user.Id.ToString(),
                     Email = user.Email,
@@ -152,7 +200,7 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = newRefreshToken.Token,
             AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(accessTokenExpiryMinutes),
-            UserDetails = new UIAuthState
+            UserDetails = new UserDetailsDto
             {
                 Id = user.Id.ToString(),
                 Email = user.Email,

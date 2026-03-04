@@ -10,4 +10,5 @@ public interface IUserService
     Task<AuthResponseDTO?> RefreshTokenAsync(string refreshToken, string clientId, string ipAddress);
     Task<bool> RevokeRefreshTokenAsync(string refreshToken, string ipAddress);
     string GenerateVerificationToken();
+    UserDetailsDto? GetUserFromAccessToken(string token);
 }

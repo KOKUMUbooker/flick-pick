@@ -43,8 +43,8 @@ public class TokenService : ITokenService
             new Claim(JwtRegisteredClaimNames.Iss, issuer),
             new Claim(JwtRegisteredClaimNames.Aud, _client.ClientURL),
             new Claim("clientId", _client.ClientId),
-            new Claim("role", role.ToString()),
-            new Claim("userId", user.Id.ToString())
+            new Claim("role", ((int)role).ToString()),
+            new Claim("fullName", user.FullName.ToString())
         };
 
         // Create signing credentials with the symmetric security key and HMAC SHA256 algorithm
