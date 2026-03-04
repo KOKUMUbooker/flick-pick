@@ -12,7 +12,7 @@ using WatchHive.Models;
 namespace WatchHive.Migrations
 {
     [DbContext(typeof(WatchHiveDbContext))]
-    [Migration("20260228154145_InitialCreate")]
+    [Migration("20260304115856_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,7 +49,7 @@ namespace WatchHive.Migrations
                     b.Property<DateTime>("SentAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 2, 28, 15, 41, 44, 593, DateTimeKind.Utc).AddTicks(5401));
+                        .HasDefaultValue(new DateTime(2026, 3, 4, 11, 58, 55, 714, DateTimeKind.Utc).AddTicks(3323));
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -341,15 +341,15 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 1
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9096), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 2
                         });
                 });
@@ -411,12 +411,12 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9622), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3981), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@system.com",
-                            EmailVerified = false,
+                            EmailVerified = true,
                             FullName = "System Administrator",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 2, 28, 15, 41, 44, 330, DateTimeKind.Unspecified).AddTicks(9622), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$YdMltoClkCvFA2H6wi19kuoOpRke69EzSO4jippa.zQmQVETgPHje",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3981), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$tWyi7dhY.2J/MqiPCTIlfuW4oDIkkccZ8M8qhtHEA4lAIJwu6oc2S",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000001")
                         });
                 });
