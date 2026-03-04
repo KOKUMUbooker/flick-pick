@@ -57,7 +57,6 @@ public class UserService : IUserService
 
     public UserDetailsDto? GetUserFromAccessToken(string token)
     {
-        Console.WriteLine("accessToken : ",token);
         if (string.IsNullOrEmpty(token)) return null;
 
         var tokenHandler = new JwtSecurityTokenHandler();
