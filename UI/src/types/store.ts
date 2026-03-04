@@ -1,3 +1,5 @@
+import { HubConnection } from "@microsoft/signalr"
+
 export interface User {
   id: string;
   email: string;
@@ -10,4 +12,9 @@ export interface IAuthState {
   accessToken?: string;
   refreshToken?: string;
   accessTokenExpiresAt?: number;
+}
+
+export interface AppState {
+  user?: User;
+  hubConnection?: HubConnection
 }

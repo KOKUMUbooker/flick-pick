@@ -1,29 +1,19 @@
-import { SvelteDate } from "svelte/reactivity";
 import type { AuthResponseData } from "../api";
-import type { IAuthState } from "../types";
+import type { AppState } from "../types";
 
-export const authState = $state<IAuthState>({
+export const authState = $state<AppState>({
     user: undefined,
-    accessToken: undefined,
-    accessTokenExpiresAt: undefined,
-    refreshToken: undefined
+    hubConnection: undefined
 });
 
 export function logIn(authData: AuthResponseData) {
-    const { userDetails, accessToken, accessTokenExpiresAt, refreshToken } = authData;
-    const tknExpiration = new SvelteDate(accessTokenExpiresAt).getTime()
-
+    const { userDetails } = authData;
     authState.user = userDetails;
-    authState.accessToken = accessToken;
-    authState.refreshToken = refreshToken;
-    authState.accessTokenExpiresAt = tknExpiration;
 }
 
 export async function logOut() {
     authState.user = undefined
-    authState.refreshToken = undefined
-    authState.accessToken = undefined
-    authState.accessTokenExpiresAt = undefined
+    authState.hubConnection = undefined
 }
 
 export function isLoggedIn() {
