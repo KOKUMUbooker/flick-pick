@@ -4,7 +4,6 @@
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
 	import GroupsSideBar from '@/components/groups/groups-side-bar.svelte';
-	import MainContentArea from '@/components/groups/main-content-area.svelte';
 	import MembersTabContent from '@/components/groups/members-tab-content.svelte';
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
 	import StatsTabContent from '@/components/groups/stats-tab-content.svelte';
@@ -16,9 +15,11 @@
 	import { API_BASE_URL } from '../../api/urls';
 	import { appState, getAppUser } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
+	import { dbGroups } from '../../data/dbGroups';
+	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 
 	// State management
-	let groups = $state<DBGroup[]>([]);
+	let groups = $state<DBGroup[]>(dbGroups); // TODO: Remove this dbGroups once intergration is complete as its just dummy data
 	let activeTab = $state('upcoming');
 	let sidebarOpen = $state(false); // Controls mobile sidebar visibility
 	let searchQuery = $state('');
@@ -35,9 +36,6 @@
 		upcoming: [],
 		past: []
 	});
-
-	// User's vote state
-	let userVotes = $state(new Map<number, VoteType>());
 
 	let user = getAppUser();
 	// Filtered groups based on search
@@ -75,7 +73,7 @@
 	>(() => ({
 		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS],
 		queryFn: async (data) => {
-			return apiFetch(`${API_BASE_URL}/groups/${selectedGroup?.id}/movie-nights`, {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights`, {
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
@@ -133,13 +131,6 @@
 		sidebarOpen = !sidebarOpen;
 	}
 
-	type VoteType = 'Upvote' | 'Downvote' | 'Veto';
-
-	function handleVote(suggestionId: number, voteType: VoteType) {
-		userVotes.set(suggestionId, voteType);
-		console.log(`Voted ${voteType} on suggestion ${suggestionId}`);
-	}
-
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -194,8 +185,7 @@
 			<div class="p-4 md:p-6">
 				<!-- Conditionally show event chat or group tabs -->
 				{#if showEventChat && selectedEvent}
-					<!-- Event-Specific Chat View -->
-					<MainContentArea {closeEventChat} {showEventChat} {selectedEvent} {getEventStatus} />
+					<ChatContentArea {closeEventChat} {selectedEvent} {getEventStatus} {selectedGroup} />
 				{:else}
 					<!-- Tabs -->
 					<Tabs value={activeTab} onValueChange={(value) => (activeTab = value)} class="mb-8">
@@ -219,13 +209,7 @@
 						</TabsList>
 
 						<!-- Upcoming Events Tab -->
-						<UpcomingEventsTabContent
-							{events}
-							{userVotes}
-							{handleVote}
-							{openEventChat}
-							{createNewEvent}
-						/>
+						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
 
 						<!-- Past Events Tab -->
 						<PastEventContentTab {events} {openEventChat} {createNewEvent} />
