@@ -75,7 +75,9 @@ public class MovieNightController : ControllerBase
         var MovieNights = await _dbContext.MovieNightEvents
              .Where(mn => mn.GroupId == parsedGroupId)
              .Include(mn => mn.MovieSuggestions)
+             .ThenInclude(ms => ms.SuggestedBy)
              .Include(mn => mn.MovieNightRatings)
+             .ThenInclude(mr => mr.User)
              .AsNoTracking()
              .ToListAsync();
 

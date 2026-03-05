@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 public class MovieNightEvent : EntityBase
 {
     [Required]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public string? Description { get; set; } = string.Empty;
 
