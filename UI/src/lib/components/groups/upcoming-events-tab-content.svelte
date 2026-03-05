@@ -23,7 +23,7 @@
 		Error, // error type
 		MovieNightEvent[] // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS],
+		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + "upcoming"],
 		queryFn: async (data) => {
 			return apiFetch(
 				`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=upcoming`,
