@@ -1,0 +1,4 @@
+export const QUERY_KEYS = {
+    GROUPS: "GROUPS",
+    MOVIE_NIGHT_EVENTS: "MOVIE_NIGHT_EVENTS",
+}
