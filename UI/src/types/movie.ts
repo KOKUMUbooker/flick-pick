@@ -1,45 +1,34 @@
-import type { Genre } from "./genre";
-
-// export interface Movie {
-//     id: number;
-//     title: string;
-//     genre: string;
-//     imgUrl: string;
-//     releaseDate: Date;
-//     rating: number;
-// }
-
-export interface Movie {
-    Id: number;
-    Title: string;
-    Minutes: number;
-    Description: string;
-    AgeRating: string;
-    Genre: Genre;
-    ImgUrl: string;
-    ReleaseDate: Date;
-    TrailerUrl: string;
-    Rating: number;
-    AddedBy: string;
-    CreatedAt: Date;
-    Verified: boolean
-}
-
-// Accurate DB versions
 export interface MovieNightEvent {
+    id: string;
+    name: string,
+    description?: string,
     groupId: string,
     scheduledAt: string,
     createdById: string,
     isLocked: boolean,
     selectedMovieTmdbId?: number,
-    movieSuggestions: MovieSuggestion[]
+    movieSuggestions: MovieSuggestion[],
+    movieRatings: MovieNightRating[],
+    selectedMovie: TMDBMovieDetails
+}
+
+export interface MovieNightRating {
+    MovieNightEventId: string;
+    UserId: string;
+    Rating: string;
+    Comment?: string
+}
+
+export interface UserDto {
+    fullName: string;
+    email: string;
 }
 
 export interface MovieSuggestion {
     id: string,
     tmdbId: number,
     movieDetails: TMDBMovieDetails,
-    suggestedBy: { fullName: string, email: string },
+    suggestedBy: UserDto,
     votes: Vote[],
     isDisqualified: boolean,
 }
@@ -57,7 +46,7 @@ export interface Vote {
     userId: string;
     movieSuggestionId: string;
     voteType: VoteType
-    user: { fullName: string, email: string }
+    user: UserDto
 }
 
 export enum VoteType {
