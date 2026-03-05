@@ -10,11 +10,17 @@ export interface Group {
     upcomingEventsCount: number;
 }
 
+export interface DBGroup {
+    id: string;
+    name: string;
+    description?: string;
+    createdById: string
+}
+
 export interface Member {
     id: number;
     name: string;
     isAdmin: boolean;
-    avatar: string;
     joinedAt: string;
 }
 
