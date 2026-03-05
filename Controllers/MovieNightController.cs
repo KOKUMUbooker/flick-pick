@@ -6,7 +6,7 @@ using WatchHive.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 [ApiController]
-[Route("/api")]
+[Route("/api/")]
 public class MovieNightController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
@@ -16,7 +16,7 @@ public class MovieNightController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpPost("/groups/{groupId}/movie-night")]
+    [HttpPost("groups/{groupId}/movie-night")]
     public async Task<IActionResult> CreateMovieNight([FromRoute] string groupId, [FromBody] CreateMovieNightDto movieNightDto)
     {
         if (!Guid.TryParse(groupId, out Guid parsedGroupId))
@@ -53,7 +53,7 @@ public class MovieNightController : ControllerBase
         return Ok(new { Message = "Movie night event created successfully" });
     }
 
-    [HttpGet("/groups/{groupId}/movie-nights")]
+    [HttpGet("groups/{groupId}/movie-nights")]
     public async Task<IActionResult> FetchMovieNights([FromRoute] string groupId)
     {
         if (!Guid.TryParse(groupId, out Guid parsedGroupId))
@@ -69,13 +69,16 @@ public class MovieNightController : ControllerBase
 
         var MovieNights = await _dbContext.MovieNightEvents
              .Where(mn => mn.GroupId == parsedGroupId)
+             .Include(mn => mn.MovieSuggestions)
              .AsNoTracking()
              .ToListAsync();
+
+        // TODO: Call TMDB API to get details about the movie suggestion
 
         return Ok(new { MovieNights });
     }
 
-    [HttpGet("/movie-nights/{movieNightId}")]
+    [HttpGet("movie-nights/{movieNightId}")]
     public async Task<IActionResult> FetchMovieNight([FromRoute] string movieNightId)
     {
         if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
@@ -93,7 +96,7 @@ public class MovieNightController : ControllerBase
         return Ok(new { MovieNight });
     }
 
-    [HttpPatch("/movie-nights/{movieNightId}")]
+    [HttpPatch("movie-nights/{movieNightId}")]
     public async Task<IActionResult> UpdateMovieNight([FromRoute] string movieNightId, [FromBody] UpdateMovieNightDto updateDto)
     {
         if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
