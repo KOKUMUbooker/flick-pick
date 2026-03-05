@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using WatchHive.Models;
 
 namespace WatchHive.DTOs;
 
@@ -17,7 +19,7 @@ public class MovieSuggestionDto
 
     public int TmdbId { get; set; }
 
-    public TmdbMovieDetailsDto MovieDetails { get; set; } = new();
+    public TMDBMovieDetailsDto MovieDetails { get; set; } = new();
 
     public UserInfoDto SuggestedBy { get; set; } = new();
 
@@ -57,4 +59,26 @@ public class UserInfoDto
 {
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Vote DTO with proper enum handling
+/// </summary>
+public class VoteDto
+{
+    [JsonPropertyName("userId")]
+    public string UserId { get; set; } = string.Empty;
+
+    [JsonPropertyName("movieSuggestionId")]
+    public string MovieSuggestionId { get; set; } = string.Empty;
+
+    [JsonPropertyName("voteType")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public VoteType VoteType { get; set; }
+
+    [JsonPropertyName("user")]
+    public UserInfoDto User { get; set; } = new();
+
+    [JsonPropertyName("votedAt")] // Optional: track when vote was cast
+    public DateTime? VotedAt { get; set; }
 }
