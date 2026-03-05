@@ -85,7 +85,7 @@ public partial class WatchHiveDbContext : DbContext
         // User - ChatMessage
         modelBuilder.Entity<User>()
             .HasMany(u => u.ChatMessages)
-            .WithOne(cm => cm.User)
+            .WithOne(cm => cm.SentBy)
             .HasForeignKey(cm => cm.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
