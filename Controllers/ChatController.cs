@@ -24,7 +24,7 @@ public class ChatController : ControllerBase
     public async Task<IActionResult> GetMovieNightChats(
         [FromRoute] string movieNightId,
         [FromQuery] DateTime? before,
-        [FromQuery] int limit = 20)
+        [FromQuery] int? limit = 20)
     {
         if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
         {
@@ -45,7 +45,8 @@ public class ChatController : ControllerBase
 
         var query = _dbContext.ChatMessages
             .AsNoTracking()
-            .Where(c => c.MovieNightEventId == parsedMovieNightId);
+            .Where(c => c.MovieNightEventId == parsedMovieNightId)
+            .Include(c => c.SentBy);
 
         // Apply cursor filter (fetch older messages)
         if (before.HasValue)

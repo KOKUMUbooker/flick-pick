@@ -13,6 +13,6 @@ public class ChatMessage : EntityBase
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
     // Navigational properties
-    public User User { get; set; } = null!;
+    public User SentBy { get; set; } = null!;
     public MovieNightEvent MovieNightEvent { get; set; } = null!;
 }
