@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import {
@@ -11,10 +12,9 @@
 		CardTitle
 	} from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
-	import { Film, ChevronRight, Loader2, Sparkles, Check, X } from '@lucide/svelte';
-	import { goto } from '$app/navigation';
+	import { Check, ChevronRight, Film, Loader2, Sparkles, X } from '@lucide/svelte';
+	import { onMount } from 'svelte';
 	import { genreSampleTMDBRes } from '../../../data';
-	// import { goto } from '$app/navigation';
 
 	// Types
 	interface Genre {
@@ -120,7 +120,7 @@
 			localStorage.setItem('userGenrePreferences', JSON.stringify(selectedGenreIds));
 
 			// Redirect to dashboard
-			goto('/dashboard');
+			goto(resolve('/dashboard'));
 		} catch (err) {
 			preferences.error = err instanceof Error ? err.message : 'Failed to save preferences';
 		} finally {
@@ -129,7 +129,7 @@
 	};
 
 	const skipForNow = () => {
-		goto('/dashboard');
+		goto(resolve('/dashboard'));
 	};
 </script>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import mvImg from '$lib/assets/movie.jpg';
 	import Button from '@/components/ui/button/button.svelte';
 	import { ArrowRight, MailCheck } from '@lucide/svelte';
@@ -27,7 +28,7 @@
 					<p class="mt-2 text-muted-foreground">
 						Thanks for verifying your email — your account is now fully active.
 					</p>
-					<Button class="mt-4 w-full" onclick={() => goto(loginRoute)}>
+					<Button class="mt-4 w-full" onclick={() => goto(resolve(loginRoute as '/login'))}>
 						Go to Login
 						<ArrowRight class="ml-2 h-4 w-4" />
 					</Button>

@@ -12,6 +12,7 @@
 	import { API_BASE_URL } from '../../../api/urls';
 	import HelperText from '../common/HelperText.svelte';
 	import { Spinner } from '../ui/spinner';
+	import { resolve } from '$app/paths';
 
 	let { class: className, ...restProps }: HTMLAttributes<HTMLFormElement> = $props();
 	let formData = $state({
@@ -40,14 +41,13 @@
 		Error, // error type
 		SignUpData // variables type
 	>(() => ({
-		mutationFn:async (data) =>
-		{
+		mutationFn: async (data) => {
 			return apiFetch(`${API_BASE_URL}/api/auth/sign-up`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
 			});
-		},
+		}
 	}));
 
 	function validatePasswords() {
@@ -84,9 +84,9 @@
 			return;
 		}
 
-		const res =  await signInMutation.mutateAsync(formData);
-		toast.success(res.message,{richColors:true});
-		goto(`/verify-email?tkn=${res.emailVerificationToken}`);
+		const res = await signInMutation.mutateAsync(formData);
+		toast.success(res.message, { richColors: true });
+		goto(resolve(`/verify-email?tkn=${res.emailVerificationToken}` as '/verify-email'));
 	}
 </script>
 
@@ -138,7 +138,7 @@
 			/>
 			<HelperText
 				variant={errors?.['Password'] ? 'error' : 'info'}
-				message={'Must be at least 8 characters long.'}
+				message="Must be at least 8 characters long."
 			></HelperText>
 		</Field.Field>
 		<Field.Field>
@@ -158,17 +158,16 @@
 			></HelperText>
 		</Field.Field>
 		<Field.Field>
-			
 			<Button disabled={signInMutation.isPending} type="submit">
 				{#if signInMutation.isPending}
-				 <Spinner />
+					<Spinner />
 				{/if}
-				{signInMutation.isPending ? "Creating account..." :"Create Account"}
+				{signInMutation.isPending ? 'Creating account...' : 'Create Account'}
 			</Button>
 		</Field.Field>
 		<Field.Field>
 			<Field.Description class="px-6 text-center">
-				Already have an account? <a href="/login">Log in</a>
+				Already have an account? <a href={resolve('/login')}>Log in</a>
 			</Field.Description>
 		</Field.Field>
 	</Field.Group>

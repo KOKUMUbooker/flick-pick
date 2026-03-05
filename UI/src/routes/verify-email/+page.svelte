@@ -2,6 +2,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import mvImg from '$lib/assets/movie.jpg';
 	import { Alert, AlertDescription } from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
@@ -14,7 +15,7 @@
 	import { API_BASE_URL } from '../../api/urls';
 
 	let noTokenFound = $state(false);
- 	let isVerifyingEmail = false;
+	let isVerifyingEmail = false;
 	let resendCooldown = $state(0);
 	let cooldownTimer: number | null = null;
 	let searchParams = page.url.searchParams;
@@ -47,20 +48,19 @@
 			resendCooldown -= 1;
 
 			if (resendCooldown <= 0) {
-			resendCooldown = 0;
-			clearInterval(cooldownTimer!);
-			cooldownTimer = null;
+				resendCooldown = 0;
+				clearInterval(cooldownTimer!);
+				cooldownTimer = null;
 			}
 		}, 1000);
 	}
-	
 
 	let resendVerificationMutation = createMutation<
 		SignUpRes, // response type
 		Error, // error type
-		{EmailVerificationToken: string} // variables type
+		{ EmailVerificationToken: string } // variables type
 	>(() => ({
-		mutationFn: async (data) =>{
+		mutationFn: async (data) => {
 			return apiFetch(`${API_BASE_URL}/api/auth/resend-verification`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -69,21 +69,21 @@
 		}
 	}));
 
-
 	async function resendVerification() {
 		if (!token) {
-			toast.error("Verification token missing",{richColors:true});
-			return
+			toast.error('Verification token missing', { richColors: true });
+			return;
 		}
-		
-		const res = await resendVerificationMutation.mutateAsync({EmailVerificationToken: token})
-		toast.success(res.message, {richColors: true})
 
- 		startCooldown(60);
+		const res = await resendVerificationMutation.mutateAsync({ EmailVerificationToken: token });
+		toast.success(res.message, { richColors: true });
 
-    	goto(`/verify-email?tkn=${res.emailVerificationToken}`, { replaceState: true, });
+		startCooldown(60);
+
+		goto(resolve(`/verify-email?tkn=${res.emailVerificationToken}` as '/verify-email'), {
+			replaceState: true
+		});
 	}
-
 </script>
 
 <div class="grid min-h-svh lg:grid-cols-2">
@@ -111,7 +111,7 @@
 				</div>
 
 				{#if noTokenFound}
-					<Alert variant={'destructive'} class="mb-6">
+					<Alert variant="destructive" class="mb-6">
 						<AlertDescription class="text-center">
 							Verification link is invalid or missing.
 						</AlertDescription>
@@ -133,9 +133,9 @@
 					<Button
 						class="w-full"
 						onclick={resendVerification}
-						disabled={resendVerificationMutation.isPending || resendCooldown > 0 || !token }
+						disabled={resendVerificationMutation.isPending || resendCooldown > 0 || !token}
 					>
- 						{#if resendVerificationMutation.isPending}
+						{#if resendVerificationMutation.isPending}
 							<Spinner />
 							Sending...
 						{:else if resendCooldown > 0}
@@ -145,7 +145,7 @@
 							Resend Verification
 						{/if}
 					</Button>
-					<Button variant="outline" class="w-full" onclick={() => goto('/login')}>
+					<Button variant="outline" class="w-full" onclick={() => goto(resolve('/login'))}>
 						Back to Login
 					</Button>
 				</div>
