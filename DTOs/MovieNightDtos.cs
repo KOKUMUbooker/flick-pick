@@ -5,6 +5,11 @@ using System.ComponentModel.DataAnnotations;
 public class CreateMovieNightDto
 {
     [Required]
+    public string Name { get; set; }
+
+    public string? Description { get; set; }
+
+    [Required]
     public DateTime ScheduledAt { get; set; }
 
     [Required]

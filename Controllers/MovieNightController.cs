@@ -43,6 +43,8 @@ public class MovieNightController : ControllerBase
 
         var movieNight = new MovieNightEvent
         {
+            Name = movieNightDto.Name,
+            Description = movieNightDto.Description ?? "",
             CreatedById = parsedUserId,
             GroupId = parsedGroupId,
             ScheduledAt = movieNightDto.ScheduledAt
@@ -54,7 +56,7 @@ public class MovieNightController : ControllerBase
     }
 
     [HttpGet("groups/{groupId}/movie-nights")]
-    public async Task<IActionResult> FetchMovieNights([FromRoute] string groupId)
+    public async Task<IActionResult> FetchMovieNights([FromRoute] string groupId,[FromQuery] string? status)
     {
         if (!Guid.TryParse(groupId, out Guid parsedGroupId))
         {
@@ -67,9 +69,13 @@ public class MovieNightController : ControllerBase
             return NotFound(new CustomError{ Message = "The movie night's group does not exist" });
         }
 
+        // TODO: When fetching MovieNightEvent also fetch the selected movie from TMDB
+        // TODO: status query param could hold upcoming(sheduledAt > currentDate) or past(sheduledAt < currentDate OR isLocked), Ensure you handle them
+
         var MovieNights = await _dbContext.MovieNightEvents
              .Where(mn => mn.GroupId == parsedGroupId)
              .Include(mn => mn.MovieSuggestions)
+             .Include(mn => mn.MovieNightRatings)
              .AsNoTracking()
              .ToListAsync();
 
