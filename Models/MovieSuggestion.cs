@@ -12,6 +12,8 @@ public class MovieSuggestion : EntityBase
     [Required]
     public Guid MovieNightEventId { get; set; }
 
+    public bool IsDisqualified { get; set; } = false;
+
     // Navigation properties
     public MovieNightEvent MovieNightEvent { get; set; } = null!;
     public ICollection<Vote> Votes { get; set; } = new List<Vote>();
