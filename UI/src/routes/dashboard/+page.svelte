@@ -153,11 +153,11 @@
 
 	<!-- Sidebar -->
 	<GroupsSideBar
-		{createNewGroup}
-		{filteredGroups}
-		{searchQuery}
-		{toggleSidebar}
 		{sidebarOpen}
+		{toggleSidebar}
+		{filteredGroups}
+		{createNewGroup}
+		bind:searchQuery
 		bind:selectedGroup
 	/>
 
@@ -212,7 +212,7 @@
 						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
 
 						<!-- Past Events Tab -->
-						<PastEventContentTab {events} {openEventChat} {createNewEvent} />
+						<PastEventContentTab  {openEventChat} {selectedGroup} />
 
 						<!-- Members Tab -->
 						<MembersTabContent {selectedGroup} {inviteToGroup} />
