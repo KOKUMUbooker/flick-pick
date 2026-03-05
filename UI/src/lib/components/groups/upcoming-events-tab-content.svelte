@@ -20,7 +20,7 @@
 <TabsContent value="upcoming" class="mt-6">
 	{#if props.events.upcoming.length > 0}
 		<div class="space-y-6">
-			{#each props.events.upcoming as event}
+			{#each props.events.upcoming as event (event.id)}
 				<EventCard
 					{event}
 					handleVote={props.handleVote}

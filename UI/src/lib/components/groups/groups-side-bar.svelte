@@ -1,19 +1,25 @@
 <script lang="ts">
 	import { ChevronLeft, Plus, Search, Users } from '@lucide/svelte';
-	import type { Group } from '../../../types';
-	import Badge from '../ui/badge/badge.svelte';
+	import type { DBGroup } from '../../../types';
 	import Button from '../ui/button/button.svelte';
 
 	interface GroupsSideBarProps {
-		sidebarOpen: boolean;
-		toggleSidebar: () => void;
 		searchQuery: string;
-		filteredGroups: Group[];
+		sidebarOpen: boolean;
+		selectedGroup: DBGroup | null;
+		filteredGroups: DBGroup[];
+		toggleSidebar: () => void;
 		createNewGroup: () => void;
-		setActiveGroup: (group: Group) => void;
 	}
 
-	const props: GroupsSideBarProps = $props();
+	let {
+		sidebarOpen,
+		toggleSidebar,
+		createNewGroup,
+		filteredGroups,
+		selectedGroup = $bindable(),
+		searchQuery = $bindable()
+	}: GroupsSideBarProps = $props();
 </script>
 
 <aside
@@ -22,13 +28,13 @@
 			w-80 flex-col border-r border-border bg-card
 			transition-transform duration-300 ease-in-out
 			md:static
-			${props.sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+			${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
 		`}
 >
 	<!-- Sidebar Header -->
 	<div class="flex h-16 items-center justify-between border-b border-border px-4">
 		<h2 class="text-lg font-semibold">Your Groups</h2>
-		<Button size="sm" variant="ghost" onclick={props.toggleSidebar} class="md:hidden">
+		<Button size="sm" variant="ghost" onclick={toggleSidebar} class="md:hidden">
 			<ChevronLeft class="h-4 w-4" />
 		</Button>
 	</div>
@@ -38,7 +44,7 @@
 		<div class="relative">
 			<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 			<input
-				bind:value={props.searchQuery}
+				bind:value={searchQuery}
 				type="text"
 				placeholder="Search groups..."
 				class="w-full rounded-lg border border-border bg-background py-2 pr-4 pl-10 text-sm"
@@ -48,17 +54,19 @@
 
 	<!-- Groups List -->
 	<div class="flex-1 overflow-y-auto p-2">
-		{#if props.filteredGroups.length === 0}
+		{#if filteredGroups.length === 0}
 			<div class="p-4 text-center">
 				<p class="text-sm text-muted-foreground">No groups found</p>
 			</div>
 		{:else}
 			<div class="space-y-1">
-				{#each props.filteredGroups as group}
+				{#each filteredGroups as group (group.id)}
 					<button
-						onclick={() => props.setActiveGroup(group)}
+						onclick={() => (selectedGroup = group)}
 						class={`flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors ${
-							group.isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+							group.id == selectedGroup?.id
+								? 'bg-primary text-primary-foreground'
+								: 'hover:bg-muted'
 						}`}
 					>
 						<div class="flex items-center gap-3 overflow-hidden">
@@ -67,22 +75,7 @@
 							</div>
 							<div class="min-w-0 flex-1">
 								<div class="truncate font-medium">{group.name}</div>
-								<div class="truncate text-xs opacity-80">
-									{group.members.length} members • {group.lastActivity}
-								</div>
 							</div>
-						</div>
-						<div class="flex items-center gap-1">
-							{#if group.unreadCount > 0}
-								<Badge variant="default" class="h-5 min-w-5 px-1 text-xs">
-									{group.unreadCount}
-								</Badge>
-							{/if}
-							{#if group.upcomingEventsCount > 0}
-								<Badge variant="outline" class="h-5 text-xs">
-									{group.upcomingEventsCount}
-								</Badge>
-							{/if}
 						</div>
 					</button>
 				{/each}
@@ -92,7 +85,7 @@
 
 	<!-- Create Group Button -->
 	<div class="border-t border-border p-4">
-		<Button class="w-full" onclick={props.createNewGroup}>
+		<Button class="w-full" onclick={createNewGroup}>
 			<Plus class="mr-2 h-4 w-4" />
 			Create New Group
 		</Button>

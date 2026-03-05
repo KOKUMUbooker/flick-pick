@@ -74,7 +74,7 @@
 			<div class="mb-6">
 				<h3 class="mb-4 font-semibold">Cast Your Vote</h3>
 				<div class="space-y-3">
-					{#each event.suggestions.filter((s) => !s.isDisqualified) as suggestion}
+					{#each event.suggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
 						<div class="rounded-lg border border-border p-4">
 							<div class="mb-3 flex items-center justify-between">
 								<div class="flex items-center gap-3">
@@ -144,7 +144,7 @@
 					{#if event.suggestions.some((s) => s.isDisqualified)}
 						<div class="mt-4">
 							<h4 class="mb-2 text-sm font-medium text-muted-foreground">Disqualified (Vetoed)</h4>
-							{#each event.suggestions.filter((s) => s.isDisqualified) as suggestion}
+							{#each event.suggestions.filter((s) => s.isDisqualified) as suggestion (suggestion.id)}
 								<div
 									class="rounded-lg border border-destructive/30 bg-destructive/5 p-3 opacity-60"
 								>

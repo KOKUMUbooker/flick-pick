@@ -1,45 +1,50 @@
 <script lang="ts">
-	import { MoreVertical, MessageSquare, Users, Trash2, Link, Mail } from '@lucide/svelte';
+	import { Link, Mail, MessageSquare, MoreVertical, Trash2, Users } from '@lucide/svelte';
+	import type { DBGroup, Member } from '../../../types';
 	import { AvatarFallback } from '../ui/avatar';
-	import {
-		Card,
-		CardHeader,
-		CardTitle,
-		CardDescription,
-		CardContent,
-		CardFooter
-	} from '../ui/card';
-	import {
-		DropdownMenuTrigger,
-		DropdownMenuContent,
-		DropdownMenuItem,
-		DropdownMenuSeparator
-	} from '../ui/dropdown-menu';
-	import { TabsContent } from '../ui/tabs';
 	import Avatar from '../ui/avatar/avatar.svelte';
 	import Badge from '../ui/badge/badge.svelte';
-	import DropdownMenu from '../ui/dropdown-menu/dropdown-menu.svelte';
 	import Button from '../ui/button/button.svelte';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardFooter,
+		CardHeader,
+		CardTitle
+	} from '../ui/card';
+	import {
+		DropdownMenuContent,
+		DropdownMenuItem,
+		DropdownMenuSeparator,
+		DropdownMenuTrigger
+	} from '../ui/dropdown-menu';
+	import DropdownMenu from '../ui/dropdown-menu/dropdown-menu.svelte';
 	import Separator from '../ui/separator/separator.svelte';
-	import type { Group } from '../../../types';
+	import { TabsContent } from '../ui/tabs';
 
 	interface MembersTabContentProps {
-		activeGroup: Group | null;
+		selectedGroup: DBGroup | null;
 		inviteToGroup: () => void;
 	}
 
-	let props = $props();
+	let { inviteToGroup, selectedGroup }: MembersTabContentProps = $props();
+	// TODO: Fetching of members will be done here using the selected group details
+
+	const groupMembers: Member[] = [];
+	// svelte-ignore state_referenced_locally
+	console.log(selectedGroup);
 </script>
 
 <TabsContent value="members" class="mt-6">
 	<Card>
 		<CardHeader>
 			<CardTitle>Group Members</CardTitle>
-			<CardDescription>{props.activeGroup.members.length} people in this group</CardDescription>
+			<CardDescription>{groupMembers.length} people in this group</CardDescription>
 		</CardHeader>
 		<CardContent>
 			<div class="space-y-3">
-				{#each props.activeGroup.members as member}
+				{#each groupMembers as member (member.id)}
 					<div class="flex items-center justify-between rounded-lg border border-border p-4">
 						<div class="flex items-center gap-3">
 							<Avatar>
@@ -100,11 +105,11 @@
 					<p class="text-sm text-muted-foreground">Share a link or send email invites</p>
 				</div>
 				<div class="flex gap-2">
-					<Button variant="outline" onclick={props.inviteToGroup}>
+					<Button variant="outline" onclick={inviteToGroup}>
 						<Link class="mr-2 h-4 w-4" />
 						Copy Link
 					</Button>
-					<Button onclick={props.inviteToGroup}>
+					<Button onclick={inviteToGroup}>
 						<Mail class="mr-2 h-4 w-4" />
 						Email Invite
 					</Button>

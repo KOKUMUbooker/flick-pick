@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Users, Plus } from '@lucide/svelte';
+	import { Plus, Users } from '@lucide/svelte';
+	import type { DBGroup } from '../../../types';
 	import Button from '../ui/button/button.svelte';
-	import type { Group } from '../../../types';
 
 	interface DesktopHeaderProps {
-		activeGroup: Group;
+		selectedGroup: DBGroup | null;
 		createNewEvent: () => void;
 		inviteToGroup: () => void;
 	}
@@ -16,9 +16,9 @@
 >
 	<div class="flex h-16 items-center justify-between px-6">
 		<div>
-			<h1 class="text-xl font-semibold">{props.activeGroup.name}</h1>
+			<h1 class="text-xl font-semibold">{props?.selectedGroup?.name}</h1>
 			<p class="text-sm text-muted-foreground">
-				{props.activeGroup.members.length} members • {props.activeGroup.description}
+				{props?.selectedGroup?.description}
 			</p>
 		</div>
 
