@@ -1,22 +1,46 @@
 <script lang="ts">
 	import { Clock, MessageSquare, Star } from '@lucide/svelte';
-	import type { EventItem, MovieNightEvent } from '../../../types';
+	import { createQuery } from '@tanstack/svelte-query';
+	import { onMount } from 'svelte';
+	import { QUERY_KEYS, apiFetch } from '../../../api';
+	import { API_BASE_URL } from '../../../api/urls';
+	import type { DBGroup, MovieNightEvent, MovieNightRating } from '../../../types';
 	import Button from '../ui/button/button.svelte';
 	import { Card, CardContent } from '../ui/card';
 	import { TabsContent } from '../ui/tabs';
-
 	interface PastEventsTabContentProps {
-		events: EventItem;
+		selectedGroup: DBGroup | null;
 		openEventChat: (event: MovieNightEvent) => void;
-		createNewEvent: () => void;
 	}
-	let props: PastEventsTabContentProps = $props();
+
+	let { selectedGroup, openEventChat }: PastEventsTabContentProps = $props();
+	let _movieNightsQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		MovieNightEvent[] // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS],
+		queryFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=past`, {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		enabled: selectedGroup != null
+	}));
+
+	let movieNightsQuery = $state(_movieNightsQuery);
+
+	onMount(async () => {
+		await movieNightsQuery.refetch();
+	});
 </script>
 
 <TabsContent value="past" class="mt-6">
-	{#if props.events.past.length > 0}
+	{#if movieNightsQuery.data != undefined}
 		<div class="grid gap-4 md:grid-cols-2">
-			{#each props.events.past as event}
+			{#each movieNightsQuery.data as event (event.id)}
 				<Card class="group transition-all hover:shadow-lg">
 					<CardContent class="p-6">
 						<div class="mb-4 flex items-start justify-between">
@@ -42,28 +66,34 @@
 						<div class="space-y-3">
 							<div class="flex items-center justify-between">
 								<span class="text-sm text-muted-foreground">Group Rating</span>
+
 								<div class="flex items-center gap-1">
-									{#each Array(5) as _, i}
-										<Star
-											class={`h-4 w-4 ${
-												i <
-												Math.round(
-													event.ratings.reduce(
-														(acc: any, r: { rating: any }) => acc + r.rating,
-														0
-													) / event.ratings.length || 0
-												)
-													? 'fill-primary text-primary'
-													: 'text-muted-foreground'
-											}`}
-										/>
-									{/each}
-									<span class="ml-1 text-sm font-medium">
-										{(
-											event.ratings.reduce((acc: any, r: { rating: any }) => acc + r.rating, 0) /
-												event.ratings.length || 0
-										).toFixed(1)}
-									</span>
+									{#if event.movieRatings && event.movieRatings.length > 0}
+										{@const avgRating =
+											event.movieRatings.reduce(
+												(acc: number, r: MovieNightRating) => acc + Number(r.Rating),
+												0
+											) / event.movieRatings.length}
+
+										{@const roundedRating = Math.round(avgRating)}
+
+										{#each Array(5) as i (i)}
+											<Star
+												class={`h-4 w-4 ${
+													i < roundedRating ? 'fill-primary text-primary' : 'text-muted-foreground'
+												}`}
+											/>
+										{/each}
+
+										<span class="ml-1 text-sm font-medium">
+											{avgRating.toFixed(1)} ({event.movieRatings.length})
+										</span>
+									{:else}
+										{#each Array(5) as i (i)}
+											<Star class="h-4 w-4 text-muted-foreground" />
+										{/each}
+										<span class="ml-1 text-sm text-muted-foreground"> No ratings </span>
+									{/if}
 								</div>
 							</div>
 
@@ -72,10 +102,10 @@
 									variant="outline"
 									size="sm"
 									class="flex-1"
-									onclick={() => props.openEventChat(event)}
+									onclick={() => openEventChat(event)}
 								>
 									<MessageSquare class="mr-2 h-4 w-4" />
-									Chat ({event.chatMessages.length})
+									Chat
 								</Button>
 								<Button variant="outline" size="sm" class="flex-1">
 									<Star class="mr-2 h-4 w-4" />

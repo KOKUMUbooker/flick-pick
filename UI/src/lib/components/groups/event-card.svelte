@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Edit, MessageSquare, Plus, ThumbsDown, ThumbsUp, XCircle } from '@lucide/svelte';
-	import type { MovieNightEvent, VoteType } from '../../../types';
+	import { VoteType, type MovieNightEvent } from '../../../types';
 	import Badge from '../ui/badge/badge.svelte';
 	import Button from '../ui/button/button.svelte';
 	import {
@@ -13,13 +13,11 @@
 	} from '../ui/card';
 
 	interface EventCardProps {
-		userVotes: Map<number, VoteType>;
 		openEventChat: (event: MovieNightEvent) => void;
-		handleVote: (suggestionId: number, voteType: VoteType) => void;
 		event: MovieNightEvent;
 	}
 
-	let { event, handleVote, openEventChat, userVotes }: EventCardProps = $props();
+	let { event, openEventChat }: EventCardProps = $props();
 
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
@@ -39,7 +37,7 @@
 	<CardHeader class="bg-muted/50 py-4">
 		<div class="flex items-center justify-between">
 			<div>
-				<CardTitle>{event.title}</CardTitle>
+				<CardTitle>{event.name}</CardTitle>
 				<CardDescription>
 					{new Date(event.scheduledAt).toLocaleString('en-US', {
 						weekday: 'short',
@@ -53,13 +51,13 @@
 			<div class="flex items-center gap-2">
 				<Button size="sm" variant="ghost" class="relative" onclick={() => openEventChat(event)}>
 					<MessageSquare class="h-4 w-4" />
-					{#if event.chatMessages.length > 0}
+					<!-- {#if event.chatMessages.length > 0}
 						<span
 							class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground"
 						>
 							{event.chatMessages.length}
 						</span>
-					{/if}
+					{/if} -->
 				</Button>
 				<Badge variant={getEventStatus(event).variant}>
 					{getEventStatus(event).label}
@@ -74,7 +72,7 @@
 			<div class="mb-6">
 				<h3 class="mb-4 font-semibold">Cast Your Vote</h3>
 				<div class="space-y-3">
-					{#each event.suggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
+					{#each event.movieSuggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
 						<div class="rounded-lg border border-border p-4">
 							<div class="mb-3 flex items-center justify-between">
 								<div class="flex items-center gap-3">
@@ -86,7 +84,7 @@
 									<div>
 										<span class="font-medium">{suggestion.movieDetails?.title}</span>
 										<span class="ml-2 text-sm text-muted-foreground">
-											Added by {suggestion.suggestedBy.name}
+											Added by {suggestion.suggestedBy.fullName}
 										</span>
 									</div>
 								</div>
@@ -94,13 +92,13 @@
 									<div class="flex items-center gap-1">
 										<ThumbsUp class="h-4 w-4 text-green-500" />
 										<span class="font-semibold">
-											{suggestion.votes.filter((v) => v.voteType === 'Upvote').length}
+											{suggestion.votes.filter((v) => v.voteType === VoteType.Upvote).length}
 										</span>
 									</div>
 									<div class="flex items-center gap-1">
 										<ThumbsDown class="h-4 w-4 text-red-500" />
 										<span class="font-semibold">
-											{suggestion.votes.filter((v) => v.voteType === 'Downvote').length}
+											{suggestion.votes.filter((v) => v.voteType === VoteType.Downvote).length}
 										</span>
 									</div>
 								</div>
@@ -109,30 +107,30 @@
 							<div class="flex gap-2">
 								<Button
 									size="sm"
-									variant={userVotes.get(suggestion.id) === 'Upvote' ? 'default' : 'outline'}
+									variant="outline"
 									class="flex-1"
 									disabled={!canVote(event)}
-									onclick={() => handleVote(suggestion.id, 'Upvote')}
+									onclick={() => {}}
 								>
 									<ThumbsUp class="mr-2 h-4 w-4" />
 									Upvote
 								</Button>
 								<Button
 									size="sm"
-									variant={userVotes.get(suggestion.id) === 'Downvote' ? 'default' : 'outline'}
+									variant="outline"
 									class="flex-1"
 									disabled={!canVote(event)}
-									onclick={() => handleVote(suggestion.id, 'Downvote')}
+									onclick={() => {}}
 								>
 									<ThumbsDown class="mr-2 h-4 w-4" />
 									Downvote
 								</Button>
 								<Button
 									size="sm"
-									variant={userVotes.get(suggestion.id) === 'Veto' ? 'destructive' : 'outline'}
+									variant="outline"
 									class="flex-1"
 									disabled={!canVote(event)}
-									onclick={() => handleVote(suggestion.id, 'Veto')}
+									onclick={() => {}}
 								>
 									<XCircle class="mr-2 h-4 w-4" />
 									Veto
@@ -141,10 +139,10 @@
 						</div>
 					{/each}
 
-					{#if event.suggestions.some((s) => s.isDisqualified)}
+					{#if event.movieSuggestions.some((s) => s.isDisqualified)}
 						<div class="mt-4">
 							<h4 class="mb-2 text-sm font-medium text-muted-foreground">Disqualified (Vetoed)</h4>
-							{#each event.suggestions.filter((s) => s.isDisqualified) as suggestion (suggestion.id)}
+							{#each event.movieSuggestions.filter((s) => s.isDisqualified) as suggestion (suggestion.id)}
 								<div
 									class="rounded-lg border border-destructive/30 bg-destructive/5 p-3 opacity-60"
 								>
@@ -201,12 +199,7 @@
 				</div>
 
 				<div class="flex items-center justify-between rounded-lg border border-border p-4">
-					<div>
-						<div class="font-medium">Event Discussion</div>
-						<div class="text-sm text-muted-foreground">
-							{event.chatMessages.length} messages
-						</div>
-					</div>
+					<div class="font-medium">Event Discussion</div>
 					<Button size="sm" variant="outline" onclick={() => openEventChat(event)}>
 						<MessageSquare class="mr-2 h-4 w-4" />
 						Join Chat
@@ -223,7 +216,7 @@
 		</Button>
 		<Button size="sm" onclick={() => openEventChat(event)}>
 			<MessageSquare class="mr-2 h-4 w-4" />
-			Event Chat ({event.chatMessages.length})
+			Event Chat
 		</Button>
 	</CardFooter>
 </Card>
