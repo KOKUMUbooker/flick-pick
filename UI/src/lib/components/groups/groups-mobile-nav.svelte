@@ -20,18 +20,18 @@
 			<span class="text-xs">Past</span>
 		</button>
 		<button
-			onclick={() => (activeTab = 'stats')}
-			class={`flex flex-col items-center gap-1 ${activeTab === 'stats' ? 'text-primary' : 'text-muted-foreground'}`}
-		>
-			<Star class="h-5 w-5" />
-			<span class="text-xs">Stats</span>
-		</button>
-		<button
 			onclick={() => (activeTab = 'members')}
 			class={`flex flex-col items-center gap-1 ${activeTab === 'members' ? 'text-primary' : 'text-muted-foreground'}`}
 		>
 			<Users class="h-5 w-5" />
 			<span class="text-xs">Members</span>
+		</button>
+		<button
+			onclick={() => (activeTab = 'stats')}
+			class={`flex flex-col items-center gap-1 ${activeTab === 'stats' ? 'text-primary' : 'text-muted-foreground'}`}
+		>
+			<Star class="h-5 w-5" />
+			<span class="text-xs">Stats</span>
 		</button>
 	</div>
 </nav>

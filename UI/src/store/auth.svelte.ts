@@ -1,21 +1,30 @@
+import * as signalR from "@microsoft/signalr";
 import type { AuthResponseData } from "../api";
 import type { AppState } from "../types";
+import { API_BASE_URL } from "../api/urls";
 
-export const authState = $state<AppState>({
+export const appState = $state<AppState>({
     user: undefined,
-    hubConnection: undefined
+    hubConnection: new signalR.HubConnectionBuilder()
+        .withUrl(API_BASE_URL + "/api/movieNightHub", { withCredentials: true })
+        .withAutomaticReconnect()
+        .build()
 });
 
 export function logIn(authData: AuthResponseData) {
     const { userDetails } = authData;
-    authState.user = userDetails;
+    appState.user = userDetails;
 }
 
 export async function logOut() {
-    authState.user = undefined
-    authState.hubConnection = undefined
+    appState.user = undefined
 }
 
 export function isLoggedIn() {
-    return authState.user != undefined
+    return appState.user != undefined
 }
+
+export function getAppUser() {
+    return appState.user
+}
+

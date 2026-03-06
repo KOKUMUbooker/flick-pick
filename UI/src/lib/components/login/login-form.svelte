@@ -20,6 +20,7 @@
 	import HelperText from '../common/HelperText.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
 	import { logIn } from '../../../store';
+	import { resolve } from '$app/paths';
 
 	const searchParams = page.url.searchParams;
 	const paramEmail = searchParams.get('email') || '';
@@ -83,12 +84,12 @@
 
 		const res = await loginMutation.mutateAsync({ ...formData, ClientId: CLIENT_ID });
 		if (res.emailVerificationToken) {
-			goto(`/verify-email?tkn=${res.emailVerificationToken}`);
+			goto(resolve(`/verify-email?tkn=${res.emailVerificationToken}` as '/verify-email'));
 			return;
 		}
 
-		logIn(res)
-		goto('/dashboard');
+		logIn(res);
+		goto(resolve('/dashboard'));
 	}
 
 	const id = $props.id();
@@ -124,7 +125,10 @@
 		<Field>
 			<div class="flex items-center">
 				<FieldLabel for="password-{id}">Password</FieldLabel>
-				<a href="/forgot-password" class="ms-auto text-sm underline-offset-4 hover:underline">
+				<a
+					href={resolve('/forgot-password')}
+					class="ms-auto text-sm underline-offset-4 hover:underline"
+				>
 					Forgot your password?
 				</a>
 			</div>
@@ -138,7 +142,7 @@
 			/>
 			<HelperText
 				variant={errors?.['Password'] ? 'error' : 'info'}
-				message={'Must be at least 8 characters long.'}
+				message="Must be at least 8 characters long."
 			></HelperText>
 		</Field>
 		<Field>
@@ -152,7 +156,7 @@
 		<Field>
 			<FieldDescription class="text-center">
 				Don't have an account?
-				<a href="/signup" class="underline underline-offset-4">Sign up</a>
+				<a href={resolve('/signup')} class="underline underline-offset-4">Sign up</a>
 			</FieldDescription>
 		</Field>
 	</FieldGroup>

@@ -1,20 +1,22 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import type { RouteId } from '$app/types';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Field from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import { cn } from '$lib/utils.js';
 	import { resetPasswordBaseSchema, resetPasswordSchema } from '@/forms';
-	import HelperText from '../common/HelperText.svelte';
-	import { page } from '$app/state';
 	import { createMutation } from '@tanstack/svelte-query';
-	import { API_BASE_URL } from '../../../api/urls';
-	import { apiFetch, type PasswordResetData } from '../../../api';
 	import { toast } from 'svelte-sonner';
-	import { goto } from '$app/navigation';
+	import type { HTMLAttributes } from 'svelte/elements';
+	import { apiFetch, type PasswordResetData } from '../../../api';
+	import { API_BASE_URL } from '../../../api/urls';
+	import HelperText from '../common/HelperText.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
 	let { class: className, ...restProps }: HTMLAttributes<HTMLFormElement> = $props();
-	
+
 	let searchParams = page.url.searchParams;
 	let token = $derived(searchParams.get('tkn'));
 	let email = $derived(searchParams.get('email'));
@@ -58,7 +60,7 @@
 	}
 
 	let resetPasswordMutation = createMutation<
-		{ message : string }, // response type
+		{ message: string }, // response type
 		Error, // error type
 		PasswordResetData // variables type
 	>(() => ({
@@ -75,8 +77,8 @@
 		event.preventDefault();
 
 		if (!token) {
-			toast.error("No token found",{richColors:true})
-			return
+			toast.error('No token found', { richColors: true });
+			return;
 		}
 
 		// mark everything touched
@@ -91,13 +93,16 @@
 			return;
 		}
 
-		const data : PasswordResetData = {NewPassword : result.data.NewPassword, PasswordVerificationToken :token} 
-		const res = await resetPasswordMutation.mutateAsync(data)
-		toast.success(res.message, {richColors: true})
+		const data: PasswordResetData = {
+			NewPassword: result.data.NewPassword,
+			PasswordVerificationToken: token
+		};
+		const res = await resetPasswordMutation.mutateAsync(data);
+		toast.success(res.message, { richColors: true });
 
-		let url = '/login'
-		if (email) url += `?email=${email}`
-		goto(url)
+		let url: RouteId = '/login';
+		if (email) url += `?email=${email}`;
+		goto(resolve(url as '/login'));
 	}
 </script>
 
@@ -118,7 +123,7 @@
 			/>
 			<HelperText
 				variant={errors?.['NewPassword'] ? 'error' : 'info'}
-				message={'Must be at least 8 characters long.'}
+				message="Must be at least 8 characters long."
 			></HelperText>
 		</Field.Field>
 
@@ -144,13 +149,12 @@
 				{#if resetPasswordMutation.isPending}
 					<Spinner />
 				{/if}
-				{resetPasswordMutation.isPending ? 'Resetting password...' : 'Reset password'} 
-				
+				{resetPasswordMutation.isPending ? 'Resetting password...' : 'Reset password'}
 			</Button>
 		</Field.Field>
 		<Field.Field>
 			<Field.Description class="px-6 text-center">
-				<a href="/login">Back to log in</a>
+				<a href={resolve('/login')}>Back to log in</a>
 			</Field.Description>
 		</Field.Field>
 	</Field.Group>

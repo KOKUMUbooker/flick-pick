@@ -4,24 +4,28 @@
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
 	import GroupsSideBar from '@/components/groups/groups-side-bar.svelte';
-	import MainContentArea from '@/components/groups/main-content-area.svelte';
 	import MembersTabContent from '@/components/groups/members-tab-content.svelte';
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
 	import StatsTabContent from '@/components/groups/stats-tab-content.svelte';
 	import UpcomingEventsTabContent from '@/components/groups/upcoming-events-tab-content.svelte';
 	import { Calendar, Clock, Menu, Plus, Star, Users } from '@lucide/svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
-	import { loadGroupData, mockGroups } from '../../data';
-	import type { Group, MovieNightEvent } from '../../types';
+	import { apiFetch, QUERY_KEYS } from '../../api';
+	import { API_BASE_URL } from '../../api/urls';
+	import { appState, getAppUser } from '../../store';
+	import type { DBGroup, MovieNightEvent } from '../../types';
+	import { dbGroups } from '../../data/dbGroups';
+	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 
 	// State management
-	let activeGroup = $state<Group | null>(null);
-	let groups = $state<Group[]>([]);
+	let groups = $state<DBGroup[]>(dbGroups); // TODO: Remove this dbGroups once intergration is complete as its just dummy data
 	let activeTab = $state('upcoming');
 	let sidebarOpen = $state(false); // Controls mobile sidebar visibility
 	let searchQuery = $state('');
 
 	// Track selected event for chat view
+	let selectedGroup = $state<DBGroup | null>(null);
 	let selectedEvent = $state<MovieNightEvent | null>(null);
 	let showEventChat = $state(false);
 
@@ -33,58 +37,71 @@
 		past: []
 	});
 
-	let stats = $state({
-		moviesWatched: 0,
-		totalVotes: 0,
-		averageRating: 0,
-		streak: 0
-	});
-
-	// User's vote state
-	let userVotes = $state(new Map<number, VoteType>());
-
+	let user = getAppUser();
 	// Filtered groups based on search
 	const filteredGroups = $derived(
 		searchQuery
 			? groups.filter(
 					(g) =>
 						g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-						g.description.toLowerCase().includes(searchQuery.toLowerCase())
+						g?.description?.toLowerCase().includes(searchQuery.toLowerCase())
 				)
 			: groups
 	);
 
-	// Computed property for event chat visibility
-	const activeEventChat = $derived(showEventChat && selectedEvent ? selectedEvent : null);
+	let shouldFetchGroups = false;
+	let _groupsQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		DBGroup[] // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.GROUPS],
+		queryFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups?userId=${user?.id}`, {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		enabled: shouldFetchGroups
+	}));
+
+	let _movieNightsQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		MovieNightEvent[] // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS],
+		queryFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights`, {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		enabled: selectedGroup != null
+	}));
+
+	let groupsQuery = $state(_groupsQuery);
+	let movieNightsQuery = $state(_movieNightsQuery);
 
 	// Initialize
-	onMount(() => {
-		groups = mockGroups.map((g) => ({ ...g, isActive: false }));
+	onMount(async () => {
+		// 1. Connect to signalR hub
+		await appState.hubConnection.start();
 
-		if (groups.length > 0) {
-			setActiveGroup(groups[0]);
+		// 2. Fetch groups
+		shouldFetchGroups = true;
+		const groupsRes = await groupsQuery.refetch();
+		if (groupsRes.error || !groupsRes.data) return;
+
+		if (groupsRes.data.length > 0) {
+			selectedGroup = groupsRes.data[0];
 		}
+
+		// 3. Fetch selected group data (Movie night events & their suggestions)
+		await movieNightsQuery.refetch();
 	});
-
-	function setActiveGroup(group: Group) {
-		groups = groups.map((g) => ({
-			...g,
-			isActive: g.id === group.id
-		}));
-
-		activeGroup = { ...group, isActive: true };
-		showEventChat = false;
-		selectedEvent = null;
-
-		// Close sidebar on mobile after selection
-		sidebarOpen = false;
-
-		loadGroupData({
-			groupId: group.id,
-			eventCb: (data) => (events = data),
-			statsCb: (data) => (stats = data)
-		});
-	}
 
 	function openEventChat(event: MovieNightEvent) {
 		selectedEvent = event;
@@ -97,13 +114,13 @@
 	}
 
 	function createNewEvent() {
-		if (!activeGroup) return;
-		console.log('Create event for group:', activeGroup.id);
+		if (!selectedGroup) return;
+		console.log('Create event for group:', selectedGroup.id);
 	}
 
 	function inviteToGroup() {
-		if (!activeGroup) return;
-		console.log('Invite to group:', activeGroup.id);
+		if (!selectedGroup) return;
+		console.log('Invite to group:', selectedGroup.id);
 	}
 
 	function createNewGroup() {
@@ -112,21 +129,6 @@
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
-	}
-
-	type VoteType = 'Upvote' | 'Downvote' | 'Veto';
-
-	function handleVote(suggestionId: number, voteType: VoteType) {
-		userVotes.set(suggestionId, voteType);
-		console.log(`Voted ${voteType} on suggestion ${suggestionId}`);
-	}
-
-	function sendEventChatMessage(eventId: number, message: string) {
-		console.log(`Sending message to event ${eventId}: ${message}`);
-	}
-
-	function canVote(event: MovieNightEvent): boolean {
-		return !event.isLocked && new Date(event.scheduledAt) > new Date();
 	}
 
 	function getEventStatus(event: MovieNightEvent): {
@@ -151,12 +153,12 @@
 
 	<!-- Sidebar -->
 	<GroupsSideBar
-		{createNewGroup}
-		{filteredGroups}
-		{searchQuery}
-		{setActiveGroup}
-		{toggleSidebar}
 		{sidebarOpen}
+		{toggleSidebar}
+		{filteredGroups}
+		{createNewGroup}
+		bind:searchQuery
+		bind:selectedGroup
 	/>
 
 	<!-- Main Content -->
@@ -170,21 +172,20 @@
 					<Menu class="h-5 w-5" />
 				</Button>
 				<h1 class="text-lg font-semibold">
-					{activeGroup ? activeGroup.name : 'WatchHive'}
+					{selectedGroup ? selectedGroup.name : 'WatchHive'}
 				</h1>
 			</div>
 		</header>
 
-		{#if activeGroup}
+		{#if selectedGroup}
 			<!-- Desktop Group Header -->
-			<DesktopHeader {activeGroup} {createNewEvent} {inviteToGroup} />
+			<DesktopHeader {selectedGroup} {createNewEvent} {inviteToGroup} />
 
 			<!-- Main Content Area -->
 			<div class="p-4 md:p-6">
 				<!-- Conditionally show event chat or group tabs -->
 				{#if showEventChat && selectedEvent}
-					<!-- Event-Specific Chat View -->
-					<MainContentArea {closeEventChat} {showEventChat} {selectedEvent} {getEventStatus} />
+					<ChatContentArea {closeEventChat} {selectedEvent} {getEventStatus} {selectedGroup} />
 				{:else}
 					<!-- Tabs -->
 					<Tabs value={activeTab} onValueChange={(value) => (activeTab = value)} class="mb-8">
@@ -208,22 +209,16 @@
 						</TabsList>
 
 						<!-- Upcoming Events Tab -->
-						<UpcomingEventsTabContent
-							{events}
-							{userVotes}
-							{handleVote}
-							{openEventChat}
-							{createNewEvent}
-						/>
+						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
 
 						<!-- Past Events Tab -->
-						<PastEventContentTab {events} {openEventChat} {createNewEvent} />
+						<PastEventContentTab  {openEventChat} {selectedGroup} />
 
 						<!-- Members Tab -->
-						<MembersTabContent {activeGroup} {inviteToGroup} />
+						<MembersTabContent {selectedGroup} {inviteToGroup} />
 
 						<!-- Stats Tab -->
-						<StatsTabContent {events} {stats} />
+						<StatsTabContent {selectedGroup} />
 					</Tabs>
 				{/if}
 			</div>

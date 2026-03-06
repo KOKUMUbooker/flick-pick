@@ -1,4 +1,3 @@
-import type { Movie } from "../types/movie";
 import type { Genre } from '../types/genre';
 
 export const stats = {
@@ -7,7 +6,7 @@ export const stats = {
     recentAdditions: 0
 };
 
-export const dummyMovies: Movie[] = [
+export const dummyMovies = [
     {
         Id: 1,
         Title: "Hereditary",
@@ -310,71 +309,5 @@ export const dummyMovies: Movie[] = [
     }
 ];
 
-// Utility functions
-export const movieUtils = {
-    // Get movie by ID
-    getMovieById: (id: number): Movie | undefined => {
-        return dummyMovies.find(movie => movie.Id === id);
-    },
-
-    // Get movies by genre
-    getMoviesByGenre: (genre: Genre): Movie[] => {
-        return dummyMovies.filter(movie => movie.Genre === genre);
-    },
-
-    // Get recent movies (last 30 days)
-    getRecentMovies: (): Movie[] => {
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        return dummyMovies.filter(movie => movie.CreatedAt >= thirtyDaysAgo);
-    },
-
-    // Get top rated movies
-    getTopRatedMovies: (limit: number = 10): Movie[] => {
-        return [...dummyMovies]
-            .sort((a, b) => b.Rating - a.Rating)
-            .slice(0, limit);
-    },
-
-    // Get movies by year
-    getMoviesByYear: (year: number): Movie[] => {
-        return dummyMovies.filter(movie => movie.ReleaseDate.getFullYear() === year);
-    },
-
-    // Search movies by title or description
-    searchMovies: (query: string): Movie[] => {
-        const lowerQuery = query.toLowerCase();
-        return dummyMovies.filter(movie =>
-            movie.Title.toLowerCase().includes(lowerQuery) ||
-            movie.Description.toLowerCase().includes(lowerQuery) ||
-            movie.Genre.toLowerCase().includes(lowerQuery)
-        );
-    },
-
-    // Get random movie
-    getRandomMovie: (): Movie => {
-        return dummyMovies[Math.floor(Math.random() * dummyMovies.length)];
-    },
-
-    // Get statistics
-    getStats: () => {
-        const genres = new Set(dummyMovies.map(movie => movie.Genre));
-        const totalMinutes = dummyMovies.reduce((sum, movie) => sum + movie.Minutes, 0);
-        const avgRating = dummyMovies.reduce((sum, movie) => sum + movie.Rating, 0) / dummyMovies.length;
-
-        return {
-            totalMovies: dummyMovies.length,
-            totalGenres: genres.size,
-            totalWatchTime: `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`,
-            averageRating: avgRating.toFixed(1),
-            verifiedMovies: dummyMovies.filter(m => m.Verified).length,
-            recentAdditions: dummyMovies.filter(m => {
-                const thirtyDaysAgo = new Date();
-                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                return m.CreatedAt >= thirtyDaysAgo;
-            }).length
-        };
-    }
-};
 
 export type { Genre };

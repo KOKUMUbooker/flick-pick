@@ -16,5 +16,5 @@ export interface IAuthState {
 
 export interface AppState {
   user?: User;
-  hubConnection?: HubConnection
+  hubConnection: HubConnection
 }
