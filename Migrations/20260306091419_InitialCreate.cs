@@ -174,6 +174,8 @@ namespace WatchHive.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     GroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     ScheduledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: false),
@@ -237,7 +239,7 @@ namespace WatchHive.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     MovieNightEventId = table.Column<Guid>(type: "uuid", nullable: false),
                     Message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 3, 4, 11, 58, 55, 714, DateTimeKind.Utc).AddTicks(3323)),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 3, 6, 9, 14, 18, 653, DateTimeKind.Utc).AddTicks(4284)),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -299,6 +301,7 @@ namespace WatchHive.Migrations
                     TmdbId = table.Column<int>(type: "integer", nullable: false),
                     SuggestedById = table.Column<Guid>(type: "uuid", nullable: false),
                     MovieNightEventId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsDisqualified = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -356,15 +359,21 @@ namespace WatchHive.Migrations
                 columns: new[] { "Id", "Created", "LastModified", "RoleValue" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3708), new TimeSpan(0, 0, 0, 0, 0)), 2 }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 40, DateTimeKind.Unspecified).AddTicks(8281), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 40, DateTimeKind.Unspecified).AddTicks(8281), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 40, DateTimeKind.Unspecified).AddTicks(8281), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 40, DateTimeKind.Unspecified).AddTicks(8281), new TimeSpan(0, 0, 0, 0, 0)), 2 }
                 });
 
             migrationBuilder.InsertData(
                 schema: "app",
                 table: "Users",
                 columns: new[] { "Id", "Created", "Email", "EmailVerificationToken", "EmailVerificationTokenExpiry", "EmailVerified", "FullName", "LastModified", "PasswordHash", "PasswordResetTokenExpiry", "PasswordResetTokenHash", "RoleId" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3981), new TimeSpan(0, 0, 0, 0, 0)), "admin@system.com", null, null, true, "System Administrator", new DateTimeOffset(new DateTime(2026, 3, 4, 11, 58, 55, 590, DateTimeKind.Unspecified).AddTicks(3981), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$tWyi7dhY.2J/MqiPCTIlfuW4oDIkkccZ8M8qhtHEA4lAIJwu6oc2S", null, null, new Guid("00000000-0000-0000-0000-000000000001") });
+                values: new object[,]
+                {
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 40, DateTimeKind.Unspecified).AddTicks(8619), new TimeSpan(0, 0, 0, 0, 0)), "admin@sys.com", null, null, true, "System Administrator", new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 40, DateTimeKind.Unspecified).AddTicks(8619), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$3.nO9I6hsKilr1mJKhE70eJXT86r6HG0s0IjoXYZhmWBwWMp90p5G", null, null, new Guid("00000000-0000-0000-0000-000000000001") },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 190, DateTimeKind.Unspecified).AddTicks(3508), new TimeSpan(0, 0, 0, 0, 0)), "john@app.com", null, null, true, "John Doe", new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 190, DateTimeKind.Unspecified).AddTicks(3508), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$c28oDWQFPFhXj6mo/kzrg.ei0M/HjK9Q2h9Fz3Tx243pDS.uiv4sC", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
+                    { new Guid("00000000-0000-0000-0000-000000000003"), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 190, DateTimeKind.Unspecified).AddTicks(3508), new TimeSpan(0, 0, 0, 0, 0)), "jane@app.com", null, null, true, "Jane Doe", new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 190, DateTimeKind.Unspecified).AddTicks(3508), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$eGWl57Ms8yZDsIsIlTo3XuBZ/Cq3aqgI22nslfJEHKuy9v/6f.kGO", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
+                    { new Guid("00000000-0000-0000-0000-000000000004"), new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 190, DateTimeKind.Unspecified).AddTicks(3508), new TimeSpan(0, 0, 0, 0, 0)), "po@app.com", null, null, true, "Dragon Warrior", new DateTimeOffset(new DateTime(2026, 3, 6, 9, 14, 18, 190, DateTimeKind.Unspecified).AddTicks(3508), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$PNXQuQiwNJGtAQs0wzruZ.GJbF5yo6TpLhhtBQxoe5pjG9xaRBL6m", null, null, new Guid("00000000-0000-0000-0000-000000000002") }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_MovieNightEventId",

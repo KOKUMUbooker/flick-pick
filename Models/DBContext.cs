@@ -169,6 +169,7 @@ public partial class WatchHiveDbContext : DbContext
 
         SeedRoles(modelBuilder);
         SeedAdminUser(modelBuilder);
+        SeedDemoUsers(modelBuilder);
 
         // Configure required properties and constraints
         ConfigureEntityConstraints(modelBuilder);
