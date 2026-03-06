@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Tabs, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
+	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
 	import GroupsSideBar from '@/components/groups/groups-side-bar.svelte';
@@ -13,13 +14,10 @@
 	import { onMount } from 'svelte';
 	import { apiFetch, QUERY_KEYS } from '../../api';
 	import { API_BASE_URL } from '../../api/urls';
-	import { appState, getAppUser } from '../../store';
+	import { appState, getAppUser, hubIsDisconnected } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
-	import { dbGroups } from '../../data/dbGroups';
-	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 
 	// State management
-	let groups = $state<DBGroup[]>(dbGroups); // TODO: Remove this dbGroups once intergration is complete as its just dummy data
 	let activeTab = $state('upcoming');
 	let sidebarOpen = $state(false); // Controls mobile sidebar visibility
 	let searchQuery = $state('');
@@ -29,38 +27,19 @@
 	let selectedEvent = $state<MovieNightEvent | null>(null);
 	let showEventChat = $state(false);
 
-	let events = $state<{
-		upcoming: MovieNightEvent[];
-		past: MovieNightEvent[];
-	}>({
-		upcoming: [],
-		past: []
-	});
-
 	let user = getAppUser();
-	// Filtered groups based on search
-	const filteredGroups = $derived(
-		searchQuery
-			? groups.filter(
-					(g) =>
-						g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-						g?.description?.toLowerCase().includes(searchQuery.toLowerCase())
-				)
-			: groups
-	);
 
-	let shouldFetchGroups = false;
+	let shouldFetchGroups = $state(false);
 	let _groupsQuery = createQuery<
 		null, // variables type
 		Error, // error type
-		DBGroup[] // response type
+		{ groups: DBGroup[] } // response type
 	>(() => ({
 		queryKey: [QUERY_KEYS.GROUPS],
-		queryFn: async (data) => {
+		queryFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/groups?userId=${user?.id}`, {
 				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data)
+				headers: { 'Content-Type': 'application/json' }
 			});
 		},
 		enabled: shouldFetchGroups
@@ -69,14 +48,13 @@
 	let _movieNightsQuery = createQuery<
 		null, // variables type
 		Error, // error type
-		MovieNightEvent[] // response type
+		{ groups: MovieNightEvent[] } // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS],
-		queryFn: async (data) => {
+		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id || ''],
+		queryFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights`, {
 				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data)
+				headers: { 'Content-Type': 'application/json' }
 			});
 		},
 		enabled: selectedGroup != null
@@ -87,21 +65,37 @@
 
 	// Initialize
 	onMount(async () => {
-		// 1. Connect to signalR hub
-		await appState.hubConnection.start();
+		try {
+			// 1. Fetch groups
+			shouldFetchGroups = true;
+			const groupsRes = await groupsQuery.refetch();
+			if (groupsRes.error || !groupsRes.data) return;
 
-		// 2. Fetch groups
-		shouldFetchGroups = true;
-		const groupsRes = await groupsQuery.refetch();
-		if (groupsRes.error || !groupsRes.data) return;
+			if (groupsRes.data.groups.length > 0) {
+				selectedGroup = groupsRes.data.groups[0];
+			}
 
-		if (groupsRes.data.length > 0) {
-			selectedGroup = groupsRes.data[0];
+			// 2. Connect to signalR hub
+			if (hubIsDisconnected()) await appState.hubConnection.start();
+
+			// 3. Fetch selected group data (Movie night events & their suggestions)
+			if (groupsRes.data.groups.length != 0) {
+				await movieNightsQuery.refetch();
+			}
+		} catch (err) {
+			console.error('error : ', err);
 		}
-
-		// 3. Fetch selected group data (Movie night events & their suggestions)
-		await movieNightsQuery.refetch();
 	});
+
+	const filteredGroups = $derived(
+		searchQuery && groupsQuery?.data
+			? groupsQuery.data.groups.filter(
+					(g) =>
+						g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+						g?.description?.toLowerCase().includes(searchQuery.toLowerCase())
+				)
+			: groupsQuery?.data?.groups || []
+	);
 
 	function openEventChat(event: MovieNightEvent) {
 		selectedEvent = event;
@@ -212,7 +206,7 @@
 						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
 
 						<!-- Past Events Tab -->
-						<PastEventContentTab  {openEventChat} {selectedGroup} />
+						<PastEventContentTab {openEventChat} {selectedGroup} />
 
 						<!-- Members Tab -->
 						<MembersTabContent {selectedGroup} {inviteToGroup} />
