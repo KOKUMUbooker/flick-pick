@@ -74,14 +74,21 @@ public class UserService : IUserService
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = key,
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromSeconds(30) // optional small clock skew
+                ClockSkew = TimeSpan.FromSeconds(30),
             }, out SecurityToken validatedToken);
-
+         
+            // // Debug: Print all claims
+            // foreach (var claim in claimsPrincipal.Claims)
+            // {
+            //     Console.WriteLine($"Claim Type: {claim.Type}, Value: {claim.Value}");
+            // }
+            
             // Extract claims
-            var userId = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sub);
-            var email = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Email);
+            var prefix = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims";
+            var userId = claimsPrincipal.FindFirstValue($"{prefix}/nameidentifier");
+            var email = claimsPrincipal.FindFirstValue($"{prefix}/emailaddress");
+            var role = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
             var fullName = claimsPrincipal.FindFirstValue("fullName");
-            var role = claimsPrincipal.FindFirstValue("role");
 
             if (userId == null || email == null || fullName == null || role == null) return null;
 
