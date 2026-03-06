@@ -26,7 +26,7 @@ public class TMDBController : ControllerBase
         return Ok(new { movie = ToMovieDto(movie)} );
     }
 
-    public TMDBMovieDto ToMovieDto(TMDbLib.Objects.Movies.Movie movie) 
+    private TMDBMovieDto ToMovieDto(TMDbLib.Objects.Movies.Movie movie) 
     {
         var movieDto = new TMDBMovieDto
         {
