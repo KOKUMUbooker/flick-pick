@@ -28,3 +28,10 @@ export function getAppUser() {
     return appState.user
 }
 
+export function hubIsConnected() {
+    return appState.hubConnection.state === signalR.HubConnectionState.Connected
+}
+
+export function hubIsDisconnected() {
+    return appState.hubConnection.state === signalR.HubConnectionState.Disconnected
+}
