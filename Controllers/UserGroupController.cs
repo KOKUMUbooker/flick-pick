@@ -6,7 +6,7 @@ using WatchHive.DTOs;
 using WatchHive.Models;
 
 [ApiController]
-[Route("/api/groups/")]
+[Route("/api/")]
 public class UserGroupController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
@@ -16,8 +16,8 @@ public class UserGroupController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet("{groupId}/members")]
-    public async Task<IActionResult> GetMembers([FromQuery] string userId, [FromRoute] string groupId)
+    [HttpGet("groups/{groupId}/members")]
+    public async Task<IActionResult> GetMembers([FromRoute] string groupId, [FromQuery] string userId)
     {
         if (!Guid.TryParse(userId, out var parsedUserId))
         {
@@ -27,6 +27,14 @@ public class UserGroupController : ControllerBase
         if (!Guid.TryParse(groupId, out Guid parsedGroupId))
         {
             return BadRequest(new CustomError { Message = "Invalid group id provided" });
+        }
+
+        // Check if group exists
+        bool groupExists = await _dbContext.Groups
+            .AnyAsync(g => g.Id == parsedGroupId );
+        if (!groupExists)
+        {
+             return BadRequest(new CustomError {Message = "The Group does not exist"});
         }
 
          // Check whether user is a member in the group they want to fetch its members
@@ -39,8 +47,17 @@ public class UserGroupController : ControllerBase
         }
 
         var groupMembers = await _dbContext.UserGroups
-                        .Where(ug => ug.GroupId == parsedGroupId)
-                        .ToListAsync();
+            .Where(ug => ug.GroupId == parsedGroupId)
+            .Select(ug => new UserGroupDto
+            {
+                Id = ug.Id.ToString(),
+                IsAdmin = ug.IsAdmin,
+                JoinedAt = ug.JoinedAt,
+                UserId = ug.UserId.ToString(),
+                FullName = ug.User.FullName,
+                Email = ug.User.Email
+            })
+            .ToListAsync();
 
         return Ok(new { groupMembers } );
     }
