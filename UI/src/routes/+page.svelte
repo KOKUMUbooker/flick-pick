@@ -114,8 +114,8 @@
 	<section class="relative px-4 pt-20 pb-32 md:pt-32 md:pb-48">
 		<!-- Background effects -->
 		<div class="absolute inset-0 -z-10 overflow-hidden">
-			<div class="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-			<div class="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-secondary/10 blur-3xl" />
+			<div class="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl" ></div>
+			<div class="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-secondary/10 blur-3xl" ></div>
 		</div>
 
 		<div class="container mx-auto max-w-6xl">
@@ -150,7 +150,7 @@
 
 				<!-- Stats -->
 				<div class="mx-auto grid max-w-3xl grid-cols-2 gap-6 md:grid-cols-4">
-					{#each stats as stat}
+					{#each stats as stat (stat.label)}
 						<div class="text-center">
 							<div class="mb-1 text-3xl font-bold text-foreground">{stat.value}</div>
 							<div class="text-sm text-muted-foreground">{stat.label}</div>
@@ -175,10 +175,10 @@
 				<!-- Connecting line -->
 				<div
 					class="absolute top-1/2 left-1/2 hidden h-0.5 w-full -translate-x-1/2 -translate-y-1/2 bg-border lg:block"
-				/>
+				></div>
 
 				<div class="grid gap-8 lg:grid-cols-4">
-					{#each steps as step, i}
+					{#each steps as step, i (step.title)}
 						<div class="relative">
 							<Card
 								class={`h-full border-border/50 transition-colors duration-300 hover:border-primary/30 ${i % 2 === 0 ? 'lg:mt-8' : 'lg:-mt-8'}`}
@@ -212,13 +212,13 @@
 			</div>
 
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{#each features as feature}
+				{#each features as feature (feature.title)}
 					<div
 						class="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
 					>
 						<div
-							class={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
-						/>
+							class={`absolute inset-0 bg-linear-to-br ${feature.color} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+						></div>
 						<div class="relative">
 							<div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
 								<feature.icon class="h-6 w-6 text-primary" />
@@ -236,7 +236,7 @@
 	<section class="px-4 py-20">
 		<div class="container mx-auto max-w-4xl">
 			<div
-				class="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/5 to-secondary/5 p-8 md:p-12"
+				class="relative overflow-hidden rounded-3xl border border-border bg-linear-to-br from-primary/5 to-secondary/5 p-8 md:p-12"
 			>
 				<div class="relative z-10 text-center">
 					<h2 class="mb-4 text-3xl font-bold sm:text-4xl">Ready to watch with friends?</h2>
@@ -264,11 +264,6 @@
 </div>
 
 <style>
-	/* Smooth scrolling */
-	html {
-		scroll-behavior: smooth;
-	}
-
 	/* Custom scrollbar */
 	::-webkit-scrollbar {
 		width: 10px;

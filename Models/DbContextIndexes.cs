@@ -40,5 +40,10 @@ public partial class WatchHiveDbContext : DbContext {
         modelBuilder.Entity<UserGroup>()
             .HasIndex(ug => new { ug.UserId, ug.GroupId })
             .IsUnique();
+
+        // Ensure group names created by an individual user are unique
+        modelBuilder.Entity<Group>()
+            .HasIndex(g => new { g.Name, g.CreatedById })
+            .IsUnique();
     }
 }

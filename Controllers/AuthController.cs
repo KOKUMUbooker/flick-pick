@@ -17,19 +17,22 @@ public class AuthController : ControllerBase
     private IEmailService _emailService;
     private IEmailTemplateService _templateService;
     private readonly IHostEnvironment _env;
+    private readonly IConfiguration _configuration;
 
     public AuthController(
         WatchHiveDbContext context, 
         IUserService userService, 
         IEmailService emailService,
         IEmailTemplateService templateService,
-        IHostEnvironment env
+        IHostEnvironment env,
+        IConfiguration configuration
     )
     {
         _context = context;
         _userService = userService;
         _emailService = emailService;
         _templateService = templateService;
+        _configuration = configuration;
         _env = env;
     }
 
@@ -85,11 +88,13 @@ public class AuthController : ControllerBase
 
         if (result?.Data != null)
         {
+            var refreshTknExpDays = _configuration.GetValue<int>("JwtSettings:RefreshTokenExpirationDays", 7);
+            DateTime refreshExpDateTime = DateTime.UtcNow.AddDays(refreshTknExpDays);
             // Set refresh token in HTTP-only cookie
             SetAuthTokenCookie(
                 "refreshToken",
                 result.Data.RefreshToken,
-                result.Data.AccessTokenExpiresAt
+                refreshExpDateTime
             );
 
             SetAuthTokenCookie(
@@ -111,24 +116,50 @@ public class AuthController : ControllerBase
     public IActionResult GetCurrentUser()
     {
         string accessToken = Request.Cookies["accessToken"] ?? "";
-        var user =  _userService.GetUserFromAccessToken(accessToken);
+        var user = _userService.GetUserFromAccessToken(accessToken);
         if (user == null) return Unauthorized(new CustomError { Message = "Unauthorized", Logout = true } );
 
         return Ok(new { UserDetails = user });
     }
 
     // Endpoint to obtain a new access token using a refresh token
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO refreshRequest)
+    [HttpGet("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromQuery] string clientId)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        string? refreshToken = Request.Cookies["refreshToken"];
+        if (string.IsNullOrEmpty(refreshToken)) 
+        {
+            return Unauthorized(new CustomError { Message = "Refresh token not provided"});
+        }
 
-        var authResponse = await _userService.RefreshTokenAsync(refreshRequest.RefreshToken, refreshRequest.ClientId, ipAddress);
+        var authResponse = await _userService.RefreshTokenAsync(refreshToken, clientId, ipAddress);
 
         // If refresh token or client is invalid, return 401 Unauthorized
-        if (authResponse == null) return Unauthorized(new CustomError { Message = "Invalid refresh token or client." });
+        if (authResponse == null) 
+        {
+            return Unauthorized(new CustomError { Message = "Invalid refresh token or client." });
+        }
+
+        if (authResponse != null)
+        {
+            var refreshTknExpDays = _configuration.GetValue<int>("JwtSettings:RefreshTokenExpirationDays", 7);
+            DateTime refreshExpDateTime = DateTime.UtcNow.AddDays(refreshTknExpDays);
+            // Set refresh token in HTTP-only cookie
+            SetAuthTokenCookie(
+                "refreshToken",
+                authResponse.RefreshToken,
+                refreshExpDateTime
+            );
+
+            SetAuthTokenCookie(
+                "accessToken",
+                authResponse.AccessToken,
+                authResponse.AccessTokenExpiresAt
+            );
+        }
 
         return Ok(authResponse);
     }

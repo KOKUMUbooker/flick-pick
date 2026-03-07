@@ -1,16 +1,18 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Field, FieldDescription, FieldGroup, Label } from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { cn, type WithElementRef } from '$lib/utils.js';
 	import { forgotPasswordSchema } from '@/forms';
-	import type { HTMLFormAttributes } from 'svelte/elements';
-	import HelperText from '../common/HelperText.svelte';
 	import { createMutation } from '@tanstack/svelte-query';
+	import { toast } from 'svelte-sonner';
+	import type { HTMLFormAttributes } from 'svelte/elements';
 	import { apiFetch } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
-	import { toast } from 'svelte-sonner';
+	import HelperText from '../common/HelperText.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
+ 
 	let {
 		ref = $bindable(null),
 		class: className,
@@ -112,7 +114,7 @@
 		</Field>
 		<Field>
 			<FieldDescription class="text-center">
-				<a href="/login" class="underline underline-offset-4">Back to login</a>
+				<a href={resolve("/login")} class="underline underline-offset-4">Back to login</a>
 			</FieldDescription>
 		</Field>
 	</FieldGroup>

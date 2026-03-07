@@ -1,5 +1,9 @@
-import { logOut } from "../store";
+import { logIn, logOut } from "../store";
 import { ApiError } from "../types/error";
+import type { AuthResponseData } from "./auth";
+import { API_BASE_URL } from "./urls";
+import { resolve } from "$app/paths"
+import { CLIENT_ID } from "../constants";
 
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
@@ -32,17 +36,21 @@ export async function apiFetch<T>(
 }
 
 async function refreshToken(): Promise<void> {
-    const res = await fetch("/auth/refresh", {
-        method: "POST",
-        credentials: "include"
+    const res = await fetch(`${API_BASE_URL}/api/auth/refresh-token?clientId=${CLIENT_ID}`, {
+        method: "GET",
+        credentials: "include",
     });
 
     if (!res.ok) {
         // Refresh failed → session dead
+        const err = await res.json()
         logOut();
-        window.location.href = "/login";
+        window.location.href = resolve("/login");
         throw new Error("Session expired");
     }
+
+    const authRes: AuthResponseData = await res.json();
+    logIn(authRes)
 }
 
 async function handleRefreshAndRetry<T>(

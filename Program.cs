@@ -51,9 +51,7 @@ public class Program
         {
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
-                policy.WithOrigins(
-                    "http://localhost:5173"  // Vite dev server
-                )
+                policy.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials(); // If using cookies/auth headers
@@ -61,6 +59,8 @@ public class Program
         });        
 
         var app = builder.Build();
+
+        app.UseCors("AllowSpecificOrigin");
         app.UseExceptionHandler();
 
         if (app.Environment.IsDevelopment())
@@ -75,8 +75,6 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-
-        app.UseCors("AllowSpecificOrigin");
 
         app.MapHub<MovieNightHub>("/api/movieNightHub");
 
