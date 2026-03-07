@@ -1,3 +1,5 @@
+namespace WatchHive.Controllers;
+
 using Microsoft.AspNetCore.Mvc;
 using WatchHive.DTOs;
 using TMDbLib.Client;
@@ -26,7 +28,7 @@ public class TMDBController : ControllerBase
         return Ok(new { movie = ToMovieDto(movie)} );
     }
 
-    private TMDBMovieDto ToMovieDto(TMDbLib.Objects.Movies.Movie movie) 
+    public static TMDBMovieDto ToMovieDto(TMDbLib.Objects.Movies.Movie movie) 
     {
         var movieDto = new TMDBMovieDto
         {
