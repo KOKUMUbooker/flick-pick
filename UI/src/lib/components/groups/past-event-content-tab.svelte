@@ -24,7 +24,6 @@
 			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=past`, {
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data)
 			});
 		},
 		enabled: selectedGroup != null

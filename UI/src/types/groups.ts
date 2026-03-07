@@ -7,11 +7,13 @@ export interface DBGroup {
     createdById: string
 }
 
-export interface Member {
+export interface GroupMember {
     id: number;
-    name: string;
+    email: string;
+    fullName: string;
     isAdmin: boolean;
     joinedAt: string;
+    userId: string;
 }
 
 export interface ChatMessage {

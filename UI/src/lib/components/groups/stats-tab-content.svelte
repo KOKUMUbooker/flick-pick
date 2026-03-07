@@ -10,9 +10,6 @@
 	let { selectedGroup }: StatsTabContentProps = $props();
 	// TODO: Use selected group to fetch its stats
 
-	// svelte-ignore state_referenced_locally
-	console.log('selectedGroup : ', selectedGroup);
-
 	let stats = $state({
 		moviesWatched: 0,
 		totalVotes: 0,

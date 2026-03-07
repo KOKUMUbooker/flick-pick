@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Link, Mail, MessageSquare, MoreVertical, Trash2, Users } from '@lucide/svelte';
-	import type { DBGroup, Member } from '../../../types';
+	import type { DBGroup, GroupMember,   } from '../../../types';
 	import { AvatarFallback } from '../ui/avatar';
 	import Avatar from '../ui/avatar/avatar.svelte';
 	import Badge from '../ui/badge/badge.svelte';
@@ -22,6 +22,11 @@
 	import DropdownMenu from '../ui/dropdown-menu/dropdown-menu.svelte';
 	import Separator from '../ui/separator/separator.svelte';
 	import { TabsContent } from '../ui/tabs';
+	import { createQuery } from '@tanstack/svelte-query';
+	import { QUERY_KEYS, apiFetch } from '../../../api';
+	import { API_BASE_URL } from '../../../api/urls';
+	import { getAppUser } from '../../../store';
+	import { onMount } from 'svelte';
 
 	interface MembersTabContentProps {
 		selectedGroup: DBGroup | null;
@@ -29,29 +34,47 @@
 	}
 
 	let { inviteToGroup, selectedGroup }: MembersTabContentProps = $props();
-	// TODO: Fetching of members will be done here using the selected group details
+	let user = getAppUser();
 
-	const groupMembers: Member[] = [];
-	// svelte-ignore state_referenced_locally
-	console.log(selectedGroup);
-</script>
+	let fetchMembers = $state(false)
+	let membersQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		{ groupMembers: GroupMember[] } // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.MEMBERS + selectedGroup?.id],
+		queryFn: async () => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/members?userId=${user?.id}`, {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		enabled: fetchMembers && selectedGroup != null
+	}));
+
+	onMount(async ()=>{
+		fetchMembers = true
+		if (selectedGroup != null) await membersQuery.refetch()
+	})
+
+ </script>
 
 <TabsContent value="members" class="mt-6">
 	<Card>
 		<CardHeader>
 			<CardTitle>Group Members</CardTitle>
-			<CardDescription>{groupMembers.length} people in this group</CardDescription>
+			<CardDescription>{membersQuery.data?.groupMembers?.length ?? 0} people in this group</CardDescription>
 		</CardHeader>
 		<CardContent>
 			<div class="space-y-3">
-				{#each groupMembers as member (member.id)}
+				{#each membersQuery.data?.groupMembers as member (member.id)}
 					<div class="flex items-center justify-between rounded-lg border border-border p-4">
 						<div class="flex items-center gap-3">
 							<Avatar>
-								<AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+								<AvatarFallback>{member.fullName.charAt(0)}</AvatarFallback>
 							</Avatar>
 							<div>
-								<div class="font-medium">{member.name}</div>
+								<div class="font-medium">{member.fullName}</div>
 								<div class="flex items-center gap-2 text-sm text-muted-foreground">
 									{member.isAdmin ? 'Group Admin' : 'Member'}
 									<span>•</span>

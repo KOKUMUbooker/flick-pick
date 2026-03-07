@@ -63,8 +63,17 @@ public class GroupController : ControllerBase
             CreatedById = parsedUserId,
             Description = groupDto.Description
         };
-
         await _dbContext.Groups.AddAsync(newGroup);
+
+        // Add creator as a member(admin) of the group
+        var groupMember = new UserGroup()
+        {
+            GroupId = newGroup.Id,
+            IsAdmin = true,
+            UserId = parsedUserId
+        };
+        await _dbContext.UserGroups.AddAsync(groupMember);
+
         await _dbContext.SaveChangesAsync(); 
 
         return Ok(new { message = "Group created successfully", group = newGroup.Id });
