@@ -46,16 +46,26 @@ public class GroupController : ControllerBase
             return BadRequest(new CustomError { Message = "Request initiated by a user that does not exist" });
         }
 
+        // Check for similarly named group
+        var sameGroupName = await _dbContext.Groups
+                                .Where(g => g.Name == groupDto.Name.Trim() && g.CreatedById == parsedUserId)
+                                .FirstAsync();
+        if (sameGroupName != null)
+        {
+             return BadRequest(new CustomError { Message = "You already have a group with that name" });
+        }
+
         var newGroup = new Group()
         {
-            Name = groupDto.Name,
+            Name = groupDto.Name.Trim(),
             CreatedById = parsedUserId,
             Description = groupDto.Description
         };
 
         await _dbContext.Groups.AddAsync(newGroup);
+        await _dbContext.SaveChangesAsync(); 
 
-        return Ok(new { message = "Message created successfully"});
+        return Ok(new { message = "Group created successfully", group = newGroup.Id });
     }
 
     [HttpDelete("/{groupId}/leave")]
