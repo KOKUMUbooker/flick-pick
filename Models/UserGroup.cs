@@ -1,7 +1,7 @@
 namespace WatchHive.Models;
 using System.ComponentModel.DataAnnotations;
 
-public class UserGroup
+public class UserGroup : EntityBase
 {
     [Required]
     public Guid UserId { get; set; }
