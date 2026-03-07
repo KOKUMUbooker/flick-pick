@@ -32,8 +32,6 @@
 	// TODO: Fetching of members will be done here using the selected group details
 
 	const groupMembers: Member[] = [];
-	// svelte-ignore state_referenced_locally
-	console.log(selectedGroup);
 </script>
 
 <TabsContent value="members" class="mt-6">
