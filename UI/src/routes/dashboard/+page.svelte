@@ -16,6 +16,9 @@
 	import { API_BASE_URL } from '../../api/urls';
 	import { appState, getAppUser, hubIsDisconnected } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
+	import CustomDialog from '@/components/common/CustomDialog.svelte';
+	import LoginForm from '@/components/login/login-form.svelte';
+	import AddGroupForm from '@/components/dashboard/forms/add-group-form.svelte';
 
 	// State management
 	let activeTab = $state('upcoming');
@@ -28,6 +31,11 @@
 	let showEventChat = $state(false);
 
 	let user = getAppUser();
+
+	let showAddGroupDialog = $state(false);
+	const onShowAddGroupDialogOpenChange = (open: boolean) => {
+		showAddGroupDialog = open;
+	};
 
 	let shouldFetchGroups = $state(false);
 	let _groupsQuery = createQuery<
@@ -118,7 +126,7 @@
 	}
 
 	function createNewGroup() {
-		console.log('Create new group');
+		showAddGroupDialog = true;
 	}
 
 	function toggleSidebar() {
@@ -134,6 +142,10 @@
 		return { label: 'Voting Active', variant: 'default' };
 	}
 </script>
+
+<CustomDialog bind:open={showAddGroupDialog} onOpenChange={onShowAddGroupDialogOpenChange}>
+	<AddGroupForm onOpenChange={onShowAddGroupDialogOpenChange} />
+</CustomDialog>
 
 <div class="flex min-h-screen bg-background">
 	<!-- Mobile Sidebar Overlay -->
@@ -231,6 +243,7 @@
 							<Plus class="mr-2 h-4 w-4" />
 							Create Your First Group
 						</Button>
+
 						<Button variant="outline">
 							<Users class="mr-2 h-4 w-4" />
 							Join Existing Group
