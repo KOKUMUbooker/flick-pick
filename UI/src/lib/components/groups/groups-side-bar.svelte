@@ -63,7 +63,7 @@
 				{#each filteredGroups as group (group.id)}
 					<button
 						onclick={() => (selectedGroup = group)}
-						class={`flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors ${
+						class={`flex w-full items-center justify-between rounded-lg py-1 text-left transition-colors ${
 							group.id == selectedGroup?.id
 								? 'bg-primary text-primary-foreground'
 								: 'hover:bg-muted'
