@@ -45,5 +45,10 @@ public partial class WatchHiveDbContext : DbContext {
         modelBuilder.Entity<Group>()
             .HasIndex(g => new { g.Name, g.CreatedById })
             .IsUnique();
+        
+        // Ensure a movie can only be suggested once per event.
+        modelBuilder.Entity<MovieSuggestion>()
+            .HasIndex(s => new { s.MovieNightEventId, s.MovieId })
+            .IsUnique();
     }
 }

@@ -137,7 +137,7 @@ public class MovieNightController : ControllerBase
 
         MovieNight.IsLocked = updateDto.IsLocked ?? MovieNight.IsLocked;
         MovieNight.ScheduledAt = updateDto.ScheduledAt ?? MovieNight.ScheduledAt;
-        MovieNight.SelectedMovieTmdbId = updateDto.SelectedMovieTmdbId;
+        MovieNight.SelectedMovieId = updateDto.SelectedMovieTmdbId;
 
         await _dbContext.SaveChangesAsync();
 

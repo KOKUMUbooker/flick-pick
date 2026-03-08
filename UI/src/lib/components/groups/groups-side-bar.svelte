@@ -53,7 +53,7 @@
 	</div>
 
 	<!-- Groups List -->
-	<div class="flex-1 overflow-y-auto p-2">
+	<div class="max-h-40vh flex-1 overflow-y-auto p-2">
 		{#if filteredGroups.length === 0}
 			<div class="p-4 text-center">
 				<p class="text-sm text-muted-foreground">No groups found</p>
@@ -63,7 +63,7 @@
 				{#each filteredGroups as group (group.id)}
 					<button
 						onclick={() => (selectedGroup = group)}
-						class={`flex w-full items-center justify-between rounded-lg py-1 text-left transition-colors ${
+						class={`flex w-full items-center justify-between rounded-lg p-1 text-left transition-colors ${
 							group.id == selectedGroup?.id
 								? 'bg-primary text-primary-foreground'
 								: 'hover:bg-muted'

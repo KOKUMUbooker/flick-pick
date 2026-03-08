@@ -145,6 +145,22 @@ public partial class WatchHiveDbContext : DbContext
             .HasForeignKey(ms => ms.MovieNightEventId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Movie - MovieSuggestion
+        modelBuilder.Entity<Movie>()
+            .HasMany(m => m.MovieSuggestions)
+            .WithOne(ms => ms.Movie)
+            .HasPrincipalKey(m => m.TmdbId)
+            .HasForeignKey(ms => ms.MovieId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Movie - MovieNightEvent
+        modelBuilder.Entity<Movie>()
+            .HasMany(m => m.MovieNightEvents)
+            .WithOne(mn => mn.SelectedMovie)
+            .HasForeignKey(mn => mn.SelectedMovieId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         // Many to Many
         // User - Groups -> UserGroups Joint table used to address it
