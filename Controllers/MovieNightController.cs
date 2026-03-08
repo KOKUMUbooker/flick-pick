@@ -72,20 +72,32 @@ public class MovieNightController : ControllerBase
         }
 
         // TODO: When fetching MovieNightEvent also fetch the selected movie from TMDB
-        // TODO: status query param could hold upcoming(sheduledAt > currentDate) or past(sheduledAt < currentDate OR isLocked), Ensure you handle them
+        var query = _dbContext.MovieNightEvents
+                    .Where(mn => mn.GroupId == parsedGroupId)
+                    .Include(mn => mn.MovieSuggestions)
+                        .ThenInclude(ms => ms.SuggestedBy)
+                    .Include(mn => mn.MovieNightRatings)
+                        .ThenInclude(mr => mr.User)
+                    .AsNoTracking();
 
-        var MovieNights = await _dbContext.MovieNightEvents
-             .Where(mn => mn.GroupId == parsedGroupId)
-             .Include(mn => mn.MovieSuggestions)
-             .ThenInclude(ms => ms.SuggestedBy)
-             .Include(mn => mn.MovieNightRatings)
-             .ThenInclude(mr => mr.User)
-             .AsNoTracking()
-             .ToListAsync();
+        var now = DateTimeOffset.UtcNow;
+        if (!string.IsNullOrEmpty(status))
+        {
+            if (status == "upcoming")
+            {
+                query = query.Where(mn => mn.ScheduledAt > now);
+            }
+            else if (status == "past")
+            {
+                query = query.Where(mn => mn.ScheduledAt < now || mn.IsLocked);
+            }
+        }
+
+        var movieEvents = await query.ToListAsync();
 
         // TODO: Call TMDB API to get details about the movie suggestion
 
-        return Ok(new { MovieNights });
+        return Ok(new { movieEvents });
     }
 
     [HttpGet("movie-nights/{movieNightId}")]

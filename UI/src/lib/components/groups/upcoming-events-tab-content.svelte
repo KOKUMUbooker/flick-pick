@@ -21,7 +21,7 @@
 	let _movieNightsQuery = createQuery<
 		null, // variables type
 		Error, // error type
-		{ movieNights: MovieNightEvent[] } // response type
+		{ movieEvents: MovieNightEvent[] } // response type
 	>(() => ({
 		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming'],
 		queryFn: async (data) => {
@@ -45,9 +45,9 @@
 
 <TabsContent value="upcoming" class="mt-6">
 	{#if movieNightsQuery.data != undefined}
-		{#if movieNightsQuery.data.movieNights.length > 0}
+		{#if movieNightsQuery.data.movieEvents.length > 0}
 			<div class="space-y-6">
-				{#each movieNightsQuery.data.movieNights as event (event.id)}
+				{#each movieNightsQuery.data.movieEvents as event (event.id)}
 					<EventCard {event} {openEventChat} />
 				{/each}
 			</div>
