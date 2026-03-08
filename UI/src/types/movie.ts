@@ -8,7 +8,7 @@ export interface MovieNightEvent {
     isLocked: boolean,
     selectedMovieTmdbId?: number,
     movieSuggestions: MovieSuggestion[],
-    movieRatings: MovieNightRating[],
+    movieNightRatings: MovieNightRating[],
     selectedMovie: TMDBMovieDetails
 }
 

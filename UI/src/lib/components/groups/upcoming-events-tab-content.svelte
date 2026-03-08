@@ -21,15 +21,15 @@
 	let _movieNightsQuery = createQuery<
 		null, // variables type
 		Error, // error type
-		MovieNightEvent[] // response type
+		{ movieNights: MovieNightEvent[] } // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + "upcoming"],
+		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming'],
 		queryFn: async (data) => {
 			return apiFetch(
 				`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=upcoming`,
 				{
 					method: 'GET',
-					headers: { 'Content-Type': 'application/json' },
+					headers: { 'Content-Type': 'application/json' }
 				}
 			);
 		},
@@ -45,11 +45,27 @@
 
 <TabsContent value="upcoming" class="mt-6">
 	{#if movieNightsQuery.data != undefined}
-		<div class="space-y-6">
-			{#each movieNightsQuery.data as event (event.id)}
-				<EventCard {event} {openEventChat} />
-			{/each}
-		</div>
+		{#if movieNightsQuery.data.movieNights.length > 0}
+			<div class="space-y-6">
+				{#each movieNightsQuery.data.movieNights as event (event.id)}
+					<EventCard {event} {openEventChat} />
+				{/each}
+			</div>
+		{:else}
+			<Card>
+				<CardContent class="py-12 text-center">
+					<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+					<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
+					<p class="mb-4 text-sm text-muted-foreground">
+						Plan your first movie night with the group
+					</p>
+					<Button onclick={createNewEvent}>
+						<Plus class="mr-2 h-4 w-4" />
+						Plan Movie Night
+					</Button>
+				</CardContent>
+			</Card>
+		{/if}
 	{:else}
 		<Card>
 			<CardContent class="py-12 text-center">
