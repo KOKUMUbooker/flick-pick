@@ -69,7 +69,7 @@ public class MovieSuggestionController : ControllerBase
 
         var MovieSuggestion = new MovieSuggestion
         {
-            TmdbId = createDto.TmdbId,
+            MovieId = createDto.TmdbId,
             SuggestedById = parsedUserId
         };
 

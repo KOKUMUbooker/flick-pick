@@ -21,9 +21,10 @@ public class MovieNightEvent : EntityBase
     // Lock voting when event starts
     public bool IsLocked { get; set; } = false;
 
-    public int? SelectedMovieTmdbId { get; set; }
+    public int? SelectedMovieId { get; set; }
 
     // Navigational properties
+    public Movie? SelectedMovie { get; set; }
     public Group Group { get; set; } = null!;
     public User CreatedBy {get; set; } = null!;
     public ICollection<MovieSuggestion> MovieSuggestions { get; set; } = new List<MovieSuggestion>();
