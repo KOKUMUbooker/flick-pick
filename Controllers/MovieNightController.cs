@@ -26,7 +26,7 @@ public class MovieNightController : ControllerBase
 
         if (!Guid.TryParse(movieNightDto.CreatedById, out Guid parsedUserId))
         {
-            return BadRequest(new CustomError { Message = "Invalid groupId provided" });
+            return BadRequest(new CustomError { Message = "Invalid userId provided" });
         }
 
         var groupExists = await _dbContext.Groups.FindAsync(parsedGroupId);
@@ -52,7 +52,9 @@ public class MovieNightController : ControllerBase
 
         await _dbContext.MovieNightEvents.AddAsync(movieNight);
 
-        return Ok(new { Message = "Movie night event created successfully" });
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new { Message = "Movie night event created successfully", movieNightId = movieNight.Id });
     }
 
     [HttpGet("groups/{groupId}/movie-nights")]
