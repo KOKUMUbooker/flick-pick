@@ -13,7 +13,7 @@ public class MovieNightEvent : EntityBase
     public Guid GroupId { get; set; }
 
     [Required]
-    public DateTime ScheduledAt { get; set; }
+    public DateTimeOffset ScheduledAt { get; set; }
 
     [Required]
     public Guid CreatedById {get; set;}
