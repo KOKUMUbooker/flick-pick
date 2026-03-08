@@ -3,6 +3,7 @@
 	import { Field, FieldGroup, Label } from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { cn, type WithElementRef } from '$lib/utils.js';
+	import { addGroupSchema } from '@/forms/add-group-schema';
 	import { createMutation } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import type { HTMLFormAttributes } from 'svelte/elements';
@@ -12,7 +13,6 @@
 	import { getAppUser } from '../../../../store';
 	import HelperText from '../../common/HelperText.svelte';
 	import Spinner from '../../ui/spinner/spinner.svelte';
-	import { addGroupSchema } from '@/forms/add-group-schema';
 
 	interface AddGroupFromProps extends WithElementRef<HTMLFormAttributes> {
 		onOpenChange: (open: boolean) => void;

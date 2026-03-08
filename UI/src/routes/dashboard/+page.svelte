@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Tabs, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
+	import CustomDialog from '@/components/common/CustomDialog.svelte';
+	import AddGroupForm from '@/components/dashboard/forms/add-group-form.svelte';
+	import AddMovieNightForm from '@/components/dashboard/forms/add-movie-night-form.svelte';
 	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
@@ -12,13 +15,11 @@
 	import { Calendar, Clock, Menu, Plus, Star, Users } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS } from '../../api';
 	import { API_BASE_URL } from '../../api/urls';
 	import { appState, getAppUser, hubIsDisconnected } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
-	import CustomDialog from '@/components/common/CustomDialog.svelte';
-	import LoginForm from '@/components/login/login-form.svelte';
-	import AddGroupForm from '@/components/dashboard/forms/add-group-form.svelte';
 
 	// State management
 	let activeTab = $state('upcoming');
@@ -35,6 +36,11 @@
 	let showAddGroupDialog = $state(false);
 	const onShowAddGroupDialogOpenChange = (open: boolean) => {
 		showAddGroupDialog = open;
+	};
+
+	let showAddMovieNightDialog = $state(false);
+	const onShowMovieNightDialogOpenChange = (open: boolean) => {
+		showAddMovieNightDialog = open;
 	};
 
 	let shouldFetchGroups = $state(false);
@@ -116,8 +122,10 @@
 	}
 
 	function createNewEvent() {
-		if (!selectedGroup) return;
-		console.log('Create event for group:', selectedGroup.id);
+		if (!selectedGroup) {
+			return toast.error('No group has been selected, please select one from the sidebar');
+		}
+		showAddMovieNightDialog = true;
 	}
 
 	function inviteToGroup() {
@@ -147,6 +155,9 @@
 	<AddGroupForm onOpenChange={onShowAddGroupDialogOpenChange} />
 </CustomDialog>
 
+<CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
+	<AddMovieNightForm bind:selectedGroup onOpenChange={onShowMovieNightDialogOpenChange} />
+</CustomDialog>
 <div class="flex min-h-screen bg-background">
 	<!-- Mobile Sidebar Overlay -->
 	{#if sidebarOpen}

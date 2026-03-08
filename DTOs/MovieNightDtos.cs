@@ -10,7 +10,7 @@ public class CreateMovieNightDto
     public string? Description { get; set; }
 
     [Required]
-    public DateTime ScheduledAt { get; set; }
+    public DateTimeOffset ScheduledAt { get; set; }
 
     [Required]
     public string CreatedById {get; set;} = null!;
@@ -18,7 +18,7 @@ public class CreateMovieNightDto
 
 public class UpdateMovieNightDto
 {
-    public DateTime? ScheduledAt { get; set; }
+    public DateTimeOffset? ScheduledAt { get; set; }
     public bool? IsLocked { get; set; } = false;
     public int? SelectedMovieTmdbId { get; set; }
 }
