@@ -26,16 +26,16 @@
 </script>
 
 <div class="space-y-3">
-	{#each results as movie (movie.id)}
+	{#each results as movie (movie.tmdbId)}
 		<button
 			onclick={() => onSelect(movie)}
 			class="flex w-full gap-4 rounded-lg bg-muted/50 p-3 text-left transition-colors hover:bg-muted"
 		>
 			<!-- Poster -->
 			<div class="h-24 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
-				{#if movie.poster_path}
+				{#if movie.posterPath}
 					<img
-						src={getPosterUrl(movie.poster_path)}
+						src={getPosterUrl(movie.posterPath)}
 						alt={movie.title}
 						class="h-full w-full object-cover"
 					/>
@@ -54,14 +54,14 @@
 						class="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm text-primary"
 					>
 						<Star class="h-3 w-3 fill-current" />
-						<span>{formatVoteAverage(movie.vote_average)}</span>
+						<span>{formatVoteAverage(movie.voteAverage)}</span>
 					</div>
 				</div>
 
 				<div class="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
 					<div class="flex items-center gap-1">
 						<Calendar class="h-3 w-3" />
-						<span>{formatYear(movie.release_date)}</span>
+						<span>{formatYear(movie.releaseDate)}</span>
 					</div>
 				</div>
 

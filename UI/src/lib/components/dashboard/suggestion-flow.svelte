@@ -69,12 +69,12 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					movieNightId,
-					movieId: selectedMovie.id,
+					movieId: selectedMovie.tmdbId,
 					title: selectedMovie.title,
-					posterPath: selectedMovie.poster_path,
-					releaseDate: selectedMovie.release_date,
+					posterPath: selectedMovie.posterPath,
+					releaseDate: selectedMovie.releaseDate,
 					overview: selectedMovie.overview,
-					voteAverage: selectedMovie.vote_average
+					voteAverage: selectedMovie.voteAverage
 				})
 			});
 

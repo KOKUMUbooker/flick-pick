@@ -1,18 +1,26 @@
 export interface TmdbSearchResponse {
     page: number
     results: TmdbMovieResult[]
-    total_pages: number
-    total_results: number
+    totalPages: number
+    totalResults: number
 }
 
 export interface TmdbMovieResult {
-    id: number
+    tmdbId: number
     title: string
-    poster_path: string | null
-    release_date: string | null
+    posterPath: string | null
+    releaseDate: string | null
     overview: string
-    vote_average: number
+    voteAverage: number
 }
+
+
+// public int TmdbId { get; set; }
+// public string Title { get; set; } = null!;
+// public string PosterPath { get; set; } = null!;
+// public DateTime? ReleaseDate { get; set; }
+// public string? Overview { get; set; }
+// public double? VoteAverage { get; set; }
 
 export interface MovieSuggestion {
     id: string

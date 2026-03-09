@@ -12,9 +12,9 @@
 		onCancel: () => void;
 	} = $props();
 
-	function getPosterUrl(path: string | null): string {
-		if (!path) return '/placeholder-movie.png';
-		return `https://image.tmdb.org/t/p/w300${path}`;
+	function getPosterUrl(path: string, size?: 'w342' | 'w154' | 'w780') {
+		if (!size) size = 'w342';
+		return `https://image.tmdb.org/t/p/${size}${path}`;
 	}
 
 	function formatYear(dateString: string | null): string {
@@ -24,12 +24,12 @@
 </script>
 
 <div class="space-y-6">
-	<div class="flex flex-col gap-6 md:flex-row">
+	<div class="my-4 flex flex-col gap-6 md:flex-row">
 		<!-- Poster -->
 		<div class="h-72 w-full shrink-0 overflow-hidden rounded-lg bg-muted md:w-48">
-			{#if movie.poster_path}
+			{#if movie.posterPath}
 				<img
-					src={getPosterUrl(movie.poster_path)}
+					src={getPosterUrl(movie.posterPath, 'w780')}
 					alt={movie.title}
 					class="h-full w-full object-cover"
 				/>
@@ -47,11 +47,11 @@
 			<div class="mb-4 flex items-center gap-4 text-muted-foreground">
 				<div class="flex items-center gap-1">
 					<Calendar class="h-4 w-4" />
-					<span>{formatYear(movie.release_date)}</span>
+					<span>{formatYear(movie.releaseDate)}</span>
 				</div>
 				<div class="flex items-center gap-1">
 					<Star class="h-4 w-4 fill-current text-primary" />
-					<span class="font-medium">{movie.vote_average.toFixed(1)}</span>
+					<span class="font-medium">{movie.voteAverage.toFixed(1)}</span>
 				</div>
 			</div>
 
