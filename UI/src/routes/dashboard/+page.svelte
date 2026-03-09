@@ -61,25 +61,9 @@
 		},
 		enabled: shouldFetchGroups
 	}));
-
-	let _movieNightsQuery = createQuery<
-		null, // variables type
-		Error, // error type
-		{ groups: MovieNightEvent[] } // response type
-	>(() => ({
-		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id || ''],
-		queryFn: async () => {
-			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights`, {
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' }
-			});
-		},
-		enabled: selectedGroup != null
-	}));
-
+ 
 	let groupsQuery = $state(_groupsQuery);
-	let movieNightsQuery = $state(_movieNightsQuery);
-
+ 
 	// Initialize
 	onMount(async () => {
 		try {
@@ -94,11 +78,6 @@
 
 			// 2. Connect to signalR hub
 			if (hubIsDisconnected()) await appState.hubConnection.start();
-
-			// 3. Fetch selected group data (Movie night events & their suggestions)
-			if (groupsRes.data.groups.length != 0) {
-				await movieNightsQuery.refetch();
-			}
 		} catch (err) {
 			console.error('error : ', err);
 		}

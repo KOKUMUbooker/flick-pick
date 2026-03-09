@@ -3,11 +3,8 @@ namespace WatchHive.Controllers;
 using WatchHive.DTOs;
 using TMDbLib.Client;
 using WatchHive.Models;
-using TMDbLib.Objects.Search;
-using TMDbLib.Objects.General;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 // using System.Text.Json;
 
 [ApiController]

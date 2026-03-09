@@ -26,6 +26,13 @@ public class GroupController : ControllerBase
 
         var groups = await _dbContext.Groups.
                         Where(g => g.CreatedById == parsedId)
+                        .Select(g => new  
+                        {
+                            Id = g.Id,
+                            Name = g.Name,
+                            Description = g.Description,
+                            MembersCount = g.Members.Count
+                        })
                         .AsNoTracking()
                         .ToListAsync();
 
