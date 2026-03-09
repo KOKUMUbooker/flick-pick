@@ -49,10 +49,10 @@ public class TMDBController : ControllerBase
              var search = await _tmdbClient.SearchMovieAsync(query);
 
             var missing = maxResults - results.Count;
-            Console.WriteLine(JsonSerializer.Serialize(search, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            }));
+            // Console.WriteLine(JsonSerializer.Serialize(search, new JsonSerializerOptions
+            // {
+            //     WriteIndented = true
+            // }));
 
              var tmdbResults = search?.Results
                 ?.Where(m => !results.Any(r => r.TmdbId == m.Id)) // avoid duplicates
