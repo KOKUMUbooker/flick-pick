@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { ArrowLeft, Check, Loader2, X } from '@lucide/svelte';
+	import { createQuery } from '@tanstack/svelte-query';
+	import { QUERY_KEYS, apiFetch } from '../../../api';
 	import type {
 		MovieSuggestion,
 		SearchState,
 		SuggestionFlowProps,
-		TmdbMovieResult
+		TmdbMovieResult,
+
+		TmdbSearchResponse
 	} from '../../../api/types';
-	import { dummySearchResponse } from '../../../data/mock-tmdb-res';
+	import { API_BASE_URL } from '../../../api/urls';
 	import MovieSearch from './movie-suggestion/movie-search.svelte';
 	import SearchResults from './movie-suggestion/search-results.svelte';
 	import SuggestionConfirm from './movie-suggestion/suggestion-confirm.svelte';
@@ -19,6 +23,22 @@
 	let searchResults: TmdbMovieResult[] = $state([]);
 	let isSearching = $state(false);
 	let error = $state<string | null>(null);
+
+	let shouldFetchMovies = $state(false);
+	let tmdbQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		TmdbSearchResponse // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.GROUPS + searchQuery],
+		queryFn: async () => {
+			return apiFetch(`${API_BASE_URL}/api/tmdb/movies/search?query=${encodeURIComponent(searchQuery)}`, {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' }
+			});
+		},
+		enabled: shouldFetchMovies
+	}));
 
 	// Handle search
 	async function handleSearch(query: string) {
@@ -34,12 +54,11 @@
 		currentState = 'searching';
 
 		try {
-			// const response = await fetch(`/api/movies/search?query=${encodeURIComponent(query)}`);
-			// if (!response.ok) throw new Error('Search failed');
+			if(!shouldFetchMovies) shouldFetchMovies = true
+			const res = await tmdbQuery.refetch();
+			if (res.error || !res.data) return
 
-			// const data: { results: TmdbMovieResult[] } = await response.json();
-
-			searchResults = dummySearchResponse.results;
+			searchResults = res.data.results;
 			currentState = searchResults.length > 0 ? 'results' : 'idle';
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to search movies';
