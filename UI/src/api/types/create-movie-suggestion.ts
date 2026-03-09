@@ -15,13 +15,6 @@ export interface TmdbMovieResult {
 }
 
 
-// public int TmdbId { get; set; }
-// public string Title { get; set; } = null!;
-// public string PosterPath { get; set; } = null!;
-// public DateTime? ReleaseDate { get; set; }
-// public string? Overview { get; set; }
-// public double? VoteAverage { get; set; }
-
 export interface MovieSuggestion {
     id: string
     movieId: number
