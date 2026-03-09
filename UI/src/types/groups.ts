@@ -4,7 +4,8 @@ export interface DBGroup {
     id: string;
     name: string;
     description?: string;
-    createdById: string
+    createdById: string;
+    membersCount: number
 }
 
 export interface GroupMember {

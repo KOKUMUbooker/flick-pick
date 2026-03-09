@@ -24,7 +24,7 @@
 
 <aside
 	class={`
-			fixed inset-y-0 left-0 z-50 flex
+			fixed inset-y-0 left-0 z-45 flex
 			w-80 flex-col border-r border-border bg-card
 			transition-transform duration-300 ease-in-out
 			md:static
@@ -63,7 +63,7 @@
 				{#each filteredGroups as group (group.id)}
 					<button
 						onclick={() => (selectedGroup = group)}
-						class={`flex w-full items-center justify-between rounded-lg p-1 text-left transition-colors ${
+						class={`flex w-full items-center justify-between rounded-lg p-2 text-left transition-colors ${
 							group.id == selectedGroup?.id
 								? 'bg-primary text-primary-foreground'
 								: 'hover:bg-muted'
@@ -75,6 +75,10 @@
 							</div>
 							<div class="min-w-0 flex-1">
 								<div class="truncate font-medium">{group.name}</div>
+								<div class="truncate text-xs opacity-80">
+									{group.membersCount}
+									{`member${group.membersCount > 1 ? 's' : ''}`}
+								</div>
 							</div>
 						</div>
 					</button>
