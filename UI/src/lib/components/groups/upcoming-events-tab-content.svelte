@@ -14,9 +14,15 @@
 		selectedGroup: DBGroup | null;
 		createNewEvent: () => void;
 		openEventChat: (event: MovieNightEvent) => void;
+		handleShowSuggestionFlow(event: MovieNightEvent): void;
 	}
 
-	let { createNewEvent, selectedGroup, openEventChat }: UpcomingEventsTabContentProps = $props();
+	let {
+		createNewEvent,
+		selectedGroup,
+		openEventChat,
+		handleShowSuggestionFlow
+	}: UpcomingEventsTabContentProps = $props();
 
 	let _movieNightsQuery = createQuery<
 		null, // variables type
@@ -48,7 +54,7 @@
 		{#if movieNightsQuery.data.movieEvents.length > 0}
 			<div class="space-y-6">
 				{#each movieNightsQuery.data.movieEvents as event (event.id)}
-					<EventCard {event} {openEventChat} />
+					<EventCard {event} {openEventChat} {handleShowSuggestionFlow} />
 				{/each}
 			</div>
 		{:else}

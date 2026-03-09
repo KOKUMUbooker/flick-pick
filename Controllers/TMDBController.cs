@@ -1,45 +1,96 @@
 namespace WatchHive.Controllers;
 
-using Microsoft.AspNetCore.Mvc;
 using WatchHive.DTOs;
 using TMDbLib.Client;
+using WatchHive.Models;
+using TMDbLib.Objects.Search;
+using TMDbLib.Objects.General;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+// using System.Text.Json;
 
 [ApiController]
 [Route("/api/tmdb/")]
 public class TMDBController : ControllerBase
 {
     private readonly TMDbClient _tmdbClient;
+    private readonly WatchHiveDbContext _dbContext;
 
-    public TMDBController(IConfiguration configuration)
+    public TMDBController(IConfiguration configuration, WatchHiveDbContext dbContext)
     {
         var apiKey = configuration.GetValue<string>("TMDB:ApiKey") ?? "";
-        _tmdbClient = new TMDbClient(apiKey);
+         _tmdbClient = new TMDbClient(apiKey);
+        _dbContext = dbContext;
     }
 
-    [HttpGet("movie")]
-    public async Task<IActionResult> FetchMovieDetails([FromQuery] int tmdbId)
+    [HttpGet("movies/search")]
+    public async Task<IActionResult> SearchMovies([FromQuery] string query)
     {
-        var movie = await _tmdbClient.GetMovieAsync(tmdbId);
-        if (movie == null)
+        if (string.IsNullOrWhiteSpace(query))
+            return BadRequest(new CustomError { Message = "Query is required" });
+
+        const int maxResults = 5;
+
+        // 1. Search local DB first
+         var dbMovies = await _dbContext.Movies
+            // .Where(m => m.Title.ToLower().Contains(query.ToLower()))
+            .Where(m => EF.Functions.ILike(m.Title, $"%{query}%"))
+            .Take(maxResults)
+            .ToListAsync();
+
+         var results = dbMovies
+            .Select(MapDbMovie)
+            .ToList();
+
+         // 2. If less than desired results → fetch from TMDB
+        if (results != null && results.Count < maxResults)
         {
-            return NotFound(new CustomError{ Message = "Movie not found" });
+             var search = await _tmdbClient.SearchMovieAsync(query);
+
+            var missing = maxResults - results.Count;
+            // Console.WriteLine(JsonSerializer.Serialize(search, new JsonSerializerOptions
+            // {
+            //     WriteIndented = true
+            // }));
+
+             var tmdbResults = search?.Results
+                ?.Where(m => !results.Any(r => r.TmdbId == m.Id)) // avoid duplicates
+                .Take(missing)
+                .Select(m => new TMDBMovieDto
+                {
+                    TmdbId = m.Id,
+                    Title = m.Title ?? "",
+                    PosterPath = m?.PosterPath ?? "",
+                    ReleaseDate = m?.ReleaseDate?.ToString("yyyy-MM-dd") ?? null,
+                    Overview = m?.Overview ?? "",
+                    VoteAverage = m?.VoteAverage
+                });
+
+            if (tmdbResults != null) results.AddRange(tmdbResults);
         }
-
-        return Ok(new { movie = ToMovieDto(movie)} );
-    }
-
-    public static TMDBMovieDto ToMovieDto(TMDbLib.Objects.Movies.Movie movie) 
-    {
-        var movieDto = new TMDBMovieDto
+ 
+        var response = new
         {
-            Title = movie.Title ?? "",
-            Overview = movie.Overview ?? "",
-            PosterPath = movie.PosterPath ?? "",
-            ReleaseDate = movie.ReleaseDate.ToString() ?? "",
-            Runtime = movie.Runtime ?? 0,
-            TmdbId = movie.Id
+            page = 1,
+            results = results,
+            totalPages = 1,
+            totalResults = results != null ? results.Count : 0
         };
 
-        return movieDto;
+        return Ok(response);
+    }
+
+    private static TMDBMovieDto MapDbMovie(Movie movie)
+    {
+        return new TMDBMovieDto
+        {
+            TmdbId = movie.TmdbId,
+            Title = movie.Title,
+            PosterPath = movie.PosterPath,
+            ReleaseDate = movie.ReleaseDate?.ToString("yyyy-MM-dd"),
+            Overview = movie.Overview ?? "",
+            VoteAverage = movie.VoteAverage ?? 0
+        };
     }
 }

@@ -13,11 +13,12 @@
 	} from '../ui/card';
 
 	interface EventCardProps {
-		openEventChat: (event: MovieNightEvent) => void;
 		event: MovieNightEvent;
+		openEventChat: (event: MovieNightEvent) => void;
+		handleShowSuggestionFlow(event: MovieNightEvent): void;
 	}
 
-	let { event, openEventChat }: EventCardProps = $props();
+	let { event, openEventChat, handleShowSuggestionFlow }: EventCardProps = $props();
 
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
@@ -167,7 +168,7 @@
 					<div class="font-medium">Add more options</div>
 					<div class="text-sm text-muted-foreground">Suggest movies for everyone to vote on</div>
 				</div>
-				<Button size="sm">
+				<Button size="sm" onclick={handleShowSuggestionFlow.bind(null, event)}>
 					<Plus class="mr-2 h-4 w-4" />
 					Add Movie
 				</Button>

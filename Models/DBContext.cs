@@ -12,6 +12,7 @@ public partial class WatchHiveDbContext : DbContext
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<Group> Groups { get; set; } = null!;
+    public DbSet<Movie> Movies { get; set; } = null!;
     public DbSet<UserGroup> UserGroups { get; set; } = null!;
     public DbSet<MovieNightEvent> MovieNightEvents { get; set; } = null!;
     public DbSet<MovieSuggestion> MovieSuggestions { get; set; } = null!;

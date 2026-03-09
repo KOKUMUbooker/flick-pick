@@ -20,6 +20,8 @@
 	import { API_BASE_URL } from '../../api/urls';
 	import { appState, getAppUser, hubIsDisconnected } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
+	import SuggestionFlow from '@/components/dashboard/suggestion-flow.svelte';
+	import type { MovieSuggestion } from '../../api/types';
 
 	// State management
 	let activeTab = $state('upcoming');
@@ -30,6 +32,7 @@
 	let selectedGroup = $state<DBGroup | null>(null);
 	let selectedEvent = $state<MovieNightEvent | null>(null);
 	let showEventChat = $state(false);
+	let showSuggestionFlow = $state(false);
 
 	let user = getAppUser();
 
@@ -116,6 +119,11 @@
 		showEventChat = true;
 	}
 
+	function handleShowSuggestionFlow(event: MovieNightEvent) {
+		selectedEvent = event;
+		showSuggestionFlow = true;
+	}
+
 	function closeEventChat() {
 		showEventChat = false;
 		selectedEvent = null;
@@ -149,6 +157,10 @@
 		if (new Date(event.scheduledAt) < new Date()) return { label: 'Ended', variant: 'destructive' };
 		return { label: 'Voting Active', variant: 'default' };
 	}
+
+	function handleSuggestionAdded(suggestion: MovieSuggestion) {
+		// Show success toast or notification
+	}
 </script>
 
 <CustomDialog bind:open={showAddGroupDialog} onOpenChange={onShowAddGroupDialogOpenChange}>
@@ -158,6 +170,14 @@
 <CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
 	<AddMovieNightForm bind:selectedGroup onOpenChange={onShowMovieNightDialogOpenChange} />
 </CustomDialog>
+
+{#if showSuggestionFlow && selectedEvent}
+	<SuggestionFlow
+		movieNightId={selectedEvent.id}
+		onCancel={() => (showSuggestionFlow = false)}
+		onSuggestionAdded={handleSuggestionAdded}
+	/>
+{/if}
 <div class="flex min-h-screen bg-background">
 	<!-- Mobile Sidebar Overlay -->
 	{#if sidebarOpen}
@@ -226,7 +246,12 @@
 						</TabsList>
 
 						<!-- Upcoming Events Tab -->
-						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
+						<UpcomingEventsTabContent
+							{selectedGroup}
+							{openEventChat}
+							{createNewEvent}
+							{handleShowSuggestionFlow}
+						/>
 
 						<!-- Past Events Tab -->
 						<PastEventContentTab {openEventChat} {selectedGroup} />
