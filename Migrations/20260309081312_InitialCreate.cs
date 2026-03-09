@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,6 +16,24 @@ namespace WatchHive.Migrations
         {
             migrationBuilder.EnsureSchema(
                 name: "app");
+
+            migrationBuilder.CreateTable(
+                name: "Movie",
+                schema: "app",
+                columns: table => new
+                {
+                    TmdbId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    PosterPath = table.Column<string>(type: "text", nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Overview = table.Column<string>(type: "text", nullable: true),
+                    VoteAverage = table.Column<double>(type: "double precision", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Movie", x => x.TmdbId);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Roles",
@@ -180,7 +199,7 @@ namespace WatchHive.Migrations
                     ScheduledAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: false),
                     IsLocked = table.Column<bool>(type: "boolean", nullable: false),
-                    SelectedMovieTmdbId = table.Column<int>(type: "integer", nullable: true),
+                    SelectedMovieId = table.Column<int>(type: "integer", nullable: true),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -194,6 +213,13 @@ namespace WatchHive.Migrations
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MovieNightEvents_Movie_SelectedMovieId",
+                        column: x => x.SelectedMovieId,
+                        principalSchema: "app",
+                        principalTable: "Movie",
+                        principalColumn: "TmdbId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_MovieNightEvents_Users_CreatedById",
                         column: x => x.CreatedById,
@@ -242,7 +268,7 @@ namespace WatchHive.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     MovieNightEventId = table.Column<Guid>(type: "uuid", nullable: false),
                     Message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 3, 8, 13, 45, 40, 990, DateTimeKind.Utc).AddTicks(8049)),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 3, 9, 8, 13, 11, 615, DateTimeKind.Utc).AddTicks(3913)),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -301,7 +327,7 @@ namespace WatchHive.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TmdbId = table.Column<int>(type: "integer", nullable: false),
+                    MovieId = table.Column<int>(type: "integer", nullable: false),
                     SuggestedById = table.Column<Guid>(type: "uuid", nullable: false),
                     MovieNightEventId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDisqualified = table.Column<bool>(type: "boolean", nullable: false),
@@ -318,6 +344,13 @@ namespace WatchHive.Migrations
                         principalTable: "MovieNightEvents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MovieSuggestions_Movie_MovieId",
+                        column: x => x.MovieId,
+                        principalSchema: "app",
+                        principalTable: "Movie",
+                        principalColumn: "TmdbId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_MovieSuggestions_Users_SuggestedById",
                         column: x => x.SuggestedById,
@@ -362,8 +395,8 @@ namespace WatchHive.Migrations
                 columns: new[] { "Id", "Created", "LastModified", "RoleValue" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 39, 921, DateTimeKind.Unspecified).AddTicks(1034), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 39, 921, DateTimeKind.Unspecified).AddTicks(1034), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 39, 921, DateTimeKind.Unspecified).AddTicks(1034), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 39, 921, DateTimeKind.Unspecified).AddTicks(1034), new TimeSpan(0, 0, 0, 0, 0)), 2 }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 56, DateTimeKind.Unspecified).AddTicks(1914), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 56, DateTimeKind.Unspecified).AddTicks(1914), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 56, DateTimeKind.Unspecified).AddTicks(1914), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 56, DateTimeKind.Unspecified).AddTicks(1914), new TimeSpan(0, 0, 0, 0, 0)), 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -372,10 +405,10 @@ namespace WatchHive.Migrations
                 columns: new[] { "Id", "Created", "Email", "EmailVerificationToken", "EmailVerificationTokenExpiry", "EmailVerified", "FullName", "LastModified", "PasswordHash", "PasswordResetTokenExpiry", "PasswordResetTokenHash", "RoleId" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 39, 921, DateTimeKind.Unspecified).AddTicks(1658), new TimeSpan(0, 0, 0, 0, 0)), "admin@sys.com", null, null, true, "System Administrator", new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 39, 921, DateTimeKind.Unspecified).AddTicks(1658), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$V0aufQvoMF/C2N2X8FVW3.tt35Ld8e9pER/Mbf4NkO2bwmCFzwnIy", null, null, new Guid("00000000-0000-0000-0000-000000000001") },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 40, 220, DateTimeKind.Unspecified).AddTicks(560), new TimeSpan(0, 0, 0, 0, 0)), "john@app.com", null, null, true, "John Doe", new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 40, 220, DateTimeKind.Unspecified).AddTicks(560), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$yP1cD5aEomUkF6ETfh2N.uKpmrElG6CSA1OSkG5.EciEQer6Npqru", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
-                    { new Guid("00000000-0000-0000-0000-000000000003"), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 40, 220, DateTimeKind.Unspecified).AddTicks(560), new TimeSpan(0, 0, 0, 0, 0)), "jane@app.com", null, null, true, "Jane Doe", new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 40, 220, DateTimeKind.Unspecified).AddTicks(560), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$KS1hQjWqD78yl3Lz1Tc4yeRelmoYhhRfnngZAQJH5LNe49SUSSNvq", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
-                    { new Guid("00000000-0000-0000-0000-000000000004"), new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 40, 220, DateTimeKind.Unspecified).AddTicks(560), new TimeSpan(0, 0, 0, 0, 0)), "po@app.com", null, null, true, "Dragon Warrior", new DateTimeOffset(new DateTime(2026, 3, 8, 13, 45, 40, 220, DateTimeKind.Unspecified).AddTicks(560), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$w5QDl6aGnDBapuPOV5aDIebsS8flBcwR.csc5yQ2wKZL3gwFIRaEW", null, null, new Guid("00000000-0000-0000-0000-000000000002") }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 56, DateTimeKind.Unspecified).AddTicks(2191), new TimeSpan(0, 0, 0, 0, 0)), "admin@sys.com", null, null, true, "System Administrator", new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 56, DateTimeKind.Unspecified).AddTicks(2191), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$/Lj3ING9CXjumwNKXeENTOuH.X/Y0e6cGYYBWuQHfcRFro7C2quxC", null, null, new Guid("00000000-0000-0000-0000-000000000001") },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 191, DateTimeKind.Unspecified).AddTicks(6045), new TimeSpan(0, 0, 0, 0, 0)), "john@app.com", null, null, true, "John Doe", new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 191, DateTimeKind.Unspecified).AddTicks(6045), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$K9Ox0Ml6U1i3hGEqP..kRO19MalQoMv2vT6XrTyY1PRsVrwmjw6Vi", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
+                    { new Guid("00000000-0000-0000-0000-000000000003"), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 191, DateTimeKind.Unspecified).AddTicks(6045), new TimeSpan(0, 0, 0, 0, 0)), "jane@app.com", null, null, true, "Jane Doe", new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 191, DateTimeKind.Unspecified).AddTicks(6045), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$8yBMVhAo2susgWIPF915G.OhLyeIm92vmtZWDBG2G6UlnT8WW4P0u", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
+                    { new Guid("00000000-0000-0000-0000-000000000004"), new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 191, DateTimeKind.Unspecified).AddTicks(6045), new TimeSpan(0, 0, 0, 0, 0)), "po@app.com", null, null, true, "Dragon Warrior", new DateTimeOffset(new DateTime(2026, 3, 9, 8, 13, 11, 191, DateTimeKind.Unspecified).AddTicks(6045), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$khZsEwZ/b4BHGK6Ig1qiD./7a9vz9XsuXRx3gnyl0wbg/Ubscrb1m", null, null, new Guid("00000000-0000-0000-0000-000000000002") }
                 });
 
             migrationBuilder.CreateIndex(
@@ -428,6 +461,12 @@ namespace WatchHive.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MovieNightEvents_SelectedMovieId",
+                schema: "app",
+                table: "MovieNightEvents",
+                column: "SelectedMovieId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MovieNightRatings_MovieNightEventId",
                 schema: "app",
                 table: "MovieNightRatings",
@@ -447,10 +486,17 @@ namespace WatchHive.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieSuggestions_MovieNightEventId",
+                name: "IX_MovieSuggestions_MovieId",
                 schema: "app",
                 table: "MovieSuggestions",
-                column: "MovieNightEventId");
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MovieSuggestions_MovieNightEventId_MovieId",
+                schema: "app",
+                table: "MovieSuggestions",
+                columns: new[] { "MovieNightEventId", "MovieId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MovieSuggestions_SuggestedById",
@@ -576,6 +622,10 @@ namespace WatchHive.Migrations
 
             migrationBuilder.DropTable(
                 name: "Groups",
+                schema: "app");
+
+            migrationBuilder.DropTable(
+                name: "Movie",
                 schema: "app");
 
             migrationBuilder.DropTable(
