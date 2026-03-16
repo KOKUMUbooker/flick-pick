@@ -32,7 +32,7 @@ public partial class WatchHiveDbContext : DbContext {
         modelBuilder.Entity<User>().HasData(
             new User
             {
-                Id = RoleConstants.AdminRoleId,
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 Email = "admin@sys.com",
                 FullName = "System Administrator",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
