@@ -47,11 +47,11 @@
 			<div class="mb-4 flex items-center gap-4 text-muted-foreground">
 				<div class="flex items-center gap-1">
 					<Calendar class="h-4 w-4" />
-					<span>{formatYear(movie.releaseDate)}</span>
+					<span>{movie.releaseDate ? formatYear(movie.releaseDate) :"N/A"}</span>
 				</div>
 				<div class="flex items-center gap-1">
 					<Star class="h-4 w-4 fill-current text-primary" />
-					<span class="font-medium">{movie.voteAverage.toFixed(1)}</span>
+					<span class="font-medium">{movie.voteAverage ? movie.voteAverage.toFixed(1) : "N/A"}</span>
 				</div>
 			</div>
 

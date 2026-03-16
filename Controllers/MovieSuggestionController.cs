@@ -6,7 +6,7 @@ using WatchHive.Models;
 namespace WatchHive.Controllers;
 
 [ApiController]
-[Route("/api/movie-nights/")]
+[Route("/api/")]
 public class MovieSuggestionController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
@@ -16,7 +16,7 @@ public class MovieSuggestionController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet("{movieNightId}/suggestions")]
+    [HttpGet("movie-nights/{movieNightId}/suggestions")]
     public async Task<IActionResult> GetMovieNightSuggestions([FromRoute] string movieNightId)
     {
         if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
@@ -26,13 +26,42 @@ public class MovieSuggestionController : ControllerBase
         
         var MovieNightSuggestions = await _dbContext.MovieSuggestions  
                             .Where(ms => ms.MovieNightEventId == parsedMovieNightId)
+                            .Select(ms => new 
+                            {
+                                Id = ms.Id.ToString(),
+                                MovieId = ms.MovieId,
+                                MovieNightEventId = ms.MovieNightEventId,
+                                IsDisqualified = ms.IsDisqualified,
+                                SuggestedBy = new
+                                {
+                                    fullName = ms.SuggestedBy.FullName,
+                                    email = ms.SuggestedBy.Email
+                                },
+                                Movie = new TMDBMovieDto
+                                {
+                                    TmdbId = ms.Movie.TmdbId,
+                                    Title = ms.Movie.Title,
+                                    PosterPath = ms.Movie.PosterPath,
+                                    ReleaseDate = ms.Movie.ReleaseDate.ToString(),
+                                    Overview = ms.Movie.Overview,
+                                    VoteAverage = ms.Movie.VoteAverage
+                                },
+                                Votes = ms.Votes.Select(v => new 
+                                {
+                                    VoteType = v.VoteType,
+                                    User = new {
+                                        fullName = v.User.FullName,
+                                        email = v.User.Email
+                                    }
+                                }).ToList()
+                            })
                             .AsNoTracking()
                             .ToListAsync();
 
         return Ok(new {MovieNightSuggestions});
     }
 
-    [HttpPost("{movieNightId}/suggestion")]
+    [HttpPost("movie-nights/{movieNightId}/suggestion")]
     public async Task<IActionResult> CreateMovieNightSuggestion([FromRoute] string movieNightId, [FromBody] CreateMovieSuggestionDto createDto)
     {
         if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
@@ -50,30 +79,45 @@ public class MovieSuggestionController : ControllerBase
         {
             return NotFound(new CustomError{ Message = "The user creating the movie night does not exist" });
         }
-        
+         
         var MovieNight = await _dbContext.MovieNightEvents.FindAsync(parsedMovieNightId);
         if (MovieNight == null)
         {
             return NotFound(new CustomError { Message = "Movie night event not found" } );
         }
-
+ 
         // Check if user already made a suggestion
         var previousSuggestion = await _dbContext.MovieSuggestions
-            .Where(ms => ms.SuggestedById == parsedUserId && ms.MovieNightEventId == parsedMovieNightId)
-            .FirstAsync();
-
-        if (previousSuggestion != null)
+            .AnyAsync(ms => ms.SuggestedById == parsedUserId && ms.MovieNightEventId == parsedMovieNightId);
+ 
+        if (previousSuggestion)
         {
             return BadRequest(new CustomError { Message = "Only one suggestion allowed per user in a Movie Night" });
         }
+ 
+        // Create the movie first
+        var SelectedMovie = new Movie {
+            TmdbId = createDto.SelectedMovie.TmdbId,
+            Title = createDto.SelectedMovie.Title,
+            PosterPath = createDto.SelectedMovie.PosterPath,
+            ReleaseDate = createDto.SelectedMovie.ReleaseDate != null
+                    ? DateTime.SpecifyKind(DateTime.Parse(createDto.SelectedMovie.ReleaseDate), DateTimeKind.Utc)
+                    : null,
+            Overview  = createDto.SelectedMovie.Overview, 
+            VoteAverage  = createDto.SelectedMovie.VoteAverage,
+        };
+        await  _dbContext.Movies.AddAsync(SelectedMovie);
 
         var MovieSuggestion = new MovieSuggestion
         {
-            MovieId = createDto.TmdbId,
-            SuggestedById = parsedUserId
+            MovieId = createDto.SelectedMovie.TmdbId,
+            SuggestedById = parsedUserId,
+            MovieNightEventId = parsedMovieNightId
         };
 
         await  _dbContext.MovieSuggestions.AddAsync(MovieSuggestion);
+
+        await _dbContext.SaveChangesAsync();
 
         return Ok(new { Message = "Movie suggestion created successfully"});
     }

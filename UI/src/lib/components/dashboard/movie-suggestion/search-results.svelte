@@ -54,14 +54,14 @@
 						class="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm text-primary"
 					>
 						<Star class="h-3 w-3 fill-current" />
-						<span>{formatVoteAverage(movie.voteAverage)}</span>
+						<span>{formatVoteAverage(movie?.voteAverage || 0)}</span>
 					</div>
 				</div>
 
 				<div class="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
 					<div class="flex items-center gap-1">
 						<Calendar class="h-3 w-3" />
-						<span>{formatYear(movie.releaseDate)}</span>
+						<span>{movie?.releaseDate ?formatYear(movie?.releaseDate) :""}</span>
 					</div>
 				</div>
 

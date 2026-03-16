@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { ArrowLeft, Check, Loader2, X } from '@lucide/svelte';
-	import { createQuery } from '@tanstack/svelte-query';
-	import { QUERY_KEYS, apiFetch } from '../../../api';
+	import { createMutation } from '@tanstack/svelte-query';
+	import { toast } from 'svelte-sonner';
+	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
 	import type {
-		MovieSuggestion,
-		SearchState,
+ 		SearchState,
 		SuggestionFlowProps,
 		TmdbMovieResult,
-
 		TmdbSearchResponse
 	} from '../../../api/types';
 	import { API_BASE_URL } from '../../../api/urls';
+	import { getAppUser } from '../../../store';
 	import MovieSearch from './movie-suggestion/movie-search.svelte';
 	import SearchResults from './movie-suggestion/search-results.svelte';
 	import SuggestionConfirm from './movie-suggestion/suggestion-confirm.svelte';
 
-	let { movieNightId, onCancel, onSuggestionAdded }: SuggestionFlowProps = $props();
+	let { movieNightId, onCancel, onSuggestionAdded ,movieEventId}: SuggestionFlowProps = $props();
 
 	let currentState: SearchState = $state('idle');
 	let searchQuery = $state('');
@@ -23,22 +23,24 @@
 	let searchResults: TmdbMovieResult[] = $state([]);
 	let isSearching = $state(false);
 	let error = $state<string | null>(null);
+	let user = getAppUser();
 
-	let shouldFetchMovies = $state(false);
-	let tmdbQuery = createQuery<
-		null, // variables type
-		Error, // error type
-		TmdbSearchResponse // response type
-	>(() => ({
-		queryKey: [QUERY_KEYS.GROUPS + searchQuery],
-		queryFn: async () => {
-			return apiFetch(`${API_BASE_URL}/api/tmdb/movies/search?query=${encodeURIComponent(searchQuery)}`, {
+	async function searchMovies(query: string): Promise<TmdbSearchResponse> {
+		return queryClient.fetchQuery({
+			queryKey: [QUERY_KEYS.TMDB_MOVIES + searchQuery],
+			queryFn: async () => {
+			const response = await apiFetch<TmdbSearchResponse>(
+				`${API_BASE_URL}/api/tmdb/movies/search?query=${encodeURIComponent(query)}`,
+				{
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' }
-			});
-		},
-		enabled: shouldFetchMovies
-	}));
+				}
+			);
+			return response;
+			},
+			staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+		});
+	}
 
 	// Handle search
 	async function handleSearch(query: string) {
@@ -54,53 +56,64 @@
 		currentState = 'searching';
 
 		try {
-			if(!shouldFetchMovies) shouldFetchMovies = true
-			const res = await tmdbQuery.refetch();
-			if (res.error || !res.data) return
+ 			const res = await searchMovies(query)
+ 			if (!res){
+				currentState = 'idle';
+ 				return
+			}
 
-			searchResults = res.data.results;
+			searchResults = res.results;
 			currentState = searchResults.length > 0 ? 'results' : 'idle';
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to search movies';
+			console.error(error)
 			currentState = 'idle';
 		} finally {
 			isSearching = false;
-		}
+  		}
 	}
-
+ 
 	// Handle movie selection
 	function handleSelectMovie(movie: TmdbMovieResult) {
 		selectedMovie = movie;
 		currentState = 'confirming';
 	}
 
+	let movieSuggestionMutation = createMutation<
+		{ message :string }, // response type
+		Error, // error type
+		{ SelectedMovie : TmdbMovieResult, SuggestedById : string} // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/movie-nights/${movieNightId}/suggestion`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+ 			await queryClient.invalidateQueries({ queryKey: [ QUERY_KEYS.MOVIE_SUGGESTIONS + movieEventId ] });
+		}
+	}));
+
 	// Handle suggestion confirmation
 	async function handleConfirmSuggestion() {
 		if (!selectedMovie) return;
 
-		currentState = 'success';
+		currentState = 'confirming';
 		error = null;
 
 		try {
+			if (!user) return toast.error("No user found, please log in",{richColors:true})
+
 			// Create suggestion
-			const response = await fetch('/api/movie-night/suggestions', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					movieNightId,
-					movieId: selectedMovie.tmdbId,
-					title: selectedMovie.title,
-					posterPath: selectedMovie.posterPath,
-					releaseDate: selectedMovie.releaseDate,
-					overview: selectedMovie.overview,
-					voteAverage: selectedMovie.voteAverage
-				})
+			const res = await movieSuggestionMutation.mutateAsync({
+					SelectedMovie : selectedMovie,
+					SuggestedById : user.id
 			});
 
-			if (!response.ok) throw new Error('Failed to create suggestion');
-
-			const suggestion: MovieSuggestion = await response.json();
-			onSuggestionAdded(suggestion);
+			toast.success(res.message,{richColors:true})
+			onSuggestionAdded();
 
 			// Reset after success
 			setTimeout(() => {

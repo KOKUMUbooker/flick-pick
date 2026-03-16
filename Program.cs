@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
+using Scalar.AspNetCore;
 using dotenv.net;
 using WatchHive.Models;
 using WatchHive.Services;
@@ -16,9 +17,8 @@ public class Program
 
         builder.Services.AddExceptionHandler<AppExceptionHandler>();
         builder.Services.AddProblemDetails();
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
         builder.Services.AddSignalR();
+        builder.Services.AddOpenApi();
 
         if (builder.Environment.IsDevelopment())
         {
@@ -65,8 +65,8 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.MapOpenApi();
+            app.MapScalarApiReference();
         }
 
         app.UseDefaultFiles();
