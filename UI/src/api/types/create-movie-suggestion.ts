@@ -1,3 +1,5 @@
+import type { DBGroup } from "../../types"
+
 export interface TmdbSearchResponse {
     page: number
     results: TmdbMovieResult[]
@@ -6,14 +8,13 @@ export interface TmdbSearchResponse {
 }
 
 export interface TmdbMovieResult {
-    tmdbId: number
-    title: string
-    posterPath: string | null
-    releaseDate: string | null
-    overview: string
-    voteAverage: number
+    tmdbId: number;
+    title: string;
+    posterPath?: string;
+    releaseDate?: string
+    overview?: string
+    voteAverage?: number
 }
-
 
 export interface MovieSuggestion {
     id: string
@@ -34,9 +35,10 @@ export interface MovieNightSuggestion extends MovieSuggestion {
 }
 
 export interface SuggestionFlowProps {
+    selectedGroup: DBGroup | null;
     movieNightId: string
     onCancel: () => void
-    onSuggestionAdded: (suggestion: MovieSuggestion) => void
+    onSuggestionAdded: () => void
 }
 
 export type SearchState = 'idle' | 'searching' | 'results' | 'confirming' | 'success'

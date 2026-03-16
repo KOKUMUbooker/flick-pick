@@ -47,10 +47,11 @@
 	onMount(async () => {
 		await movieNightsQuery.refetch();
 	});
+console.log("movieNightsQuery.data : ",movieNightsQuery?.data)
 </script>
 
 <TabsContent value="upcoming" class="mt-6">
-	{#if movieNightsQuery.data != undefined}
+	{#if movieNightsQuery.data}
 		{#if movieNightsQuery.data.movieEvents.length > 0}
 			<div class="space-y-6">
 				{#each movieNightsQuery.data.movieEvents as event (event.id)}

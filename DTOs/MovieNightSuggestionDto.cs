@@ -7,10 +7,11 @@ namespace WatchHive.DTOs;
 public class CreateMovieSuggestionDto
 {
     [Required]
-    public int TmdbId { get; set; }
+    public MovieCreateDto SelectedMovie { get; set; } = null!;
 
     [Required]
     public string SuggestedById { get; set; } = null!; 
+
 }
 
 public class MovieSuggestionDto

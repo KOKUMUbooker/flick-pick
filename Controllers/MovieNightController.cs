@@ -74,10 +74,6 @@ public class MovieNightController : ControllerBase
         // TODO: When fetching MovieNightEvent also fetch the selected movie from TMDB
         var query = _dbContext.MovieNightEvents
                     .Where(mn => mn.GroupId == parsedGroupId)
-                    .Include(mn => mn.MovieSuggestions)
-                        .ThenInclude(ms => ms.SuggestedBy)
-                    .Include(mn => mn.MovieNightRatings)
-                        .ThenInclude(mr => mr.User)
                     .AsNoTracking();
 
         var now = DateTimeOffset.UtcNow;
@@ -94,8 +90,6 @@ public class MovieNightController : ControllerBase
         }
 
         var movieEvents = await query.ToListAsync();
-
-        // TODO: Call TMDB API to get details about the movie suggestion
 
         return Ok(new { movieEvents });
     }

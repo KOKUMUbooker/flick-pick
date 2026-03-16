@@ -4,6 +4,7 @@
 	import CustomDialog from '@/components/common/CustomDialog.svelte';
 	import AddGroupForm from '@/components/dashboard/forms/add-group-form.svelte';
 	import AddMovieNightForm from '@/components/dashboard/forms/add-movie-night-form.svelte';
+	import SuggestionFlow from '@/components/dashboard/suggestion-flow.svelte';
 	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
@@ -20,8 +21,6 @@
 	import { API_BASE_URL } from '../../api/urls';
 	import { appState, getAppUser, hubIsDisconnected } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
-	import SuggestionFlow from '@/components/dashboard/suggestion-flow.svelte';
-	import type { MovieSuggestion } from '../../api/types';
 
 	// State management
 	let activeTab = $state('upcoming');
@@ -136,10 +135,6 @@
 		if (new Date(event.scheduledAt) < new Date()) return { label: 'Ended', variant: 'destructive' };
 		return { label: 'Voting Active', variant: 'default' };
 	}
-
-	function handleSuggestionAdded(suggestion: MovieSuggestion) {
-		// Show success toast or notification
-	}
 </script>
 
 <CustomDialog bind:open={showAddGroupDialog} onOpenChange={onShowAddGroupDialogOpenChange}>
@@ -152,9 +147,10 @@
 
 {#if showSuggestionFlow && selectedEvent}
 	<SuggestionFlow
+		selectedGroup={selectedGroup}
 		movieNightId={selectedEvent.id}
 		onCancel={() => (showSuggestionFlow = false)}
-		onSuggestionAdded={handleSuggestionAdded}
+		onSuggestionAdded={()=>(showSuggestionFlow = false)}
 	/>
 {/if}
 <div class="flex min-h-screen bg-background">

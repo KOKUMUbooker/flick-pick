@@ -7,8 +7,6 @@ export interface MovieNightEvent {
     createdById: string,
     isLocked: boolean,
     selectedMovieTmdbId?: number,
-    movieSuggestions: MovieSuggestion[],
-    movieNightRatings: MovieNightRating[],
     selectedMovie: TMDBMovieDetails
 }
 
@@ -54,3 +52,5 @@ export enum VoteType {
     Downvote = 2,
     Veto = 3
 }
+
+
