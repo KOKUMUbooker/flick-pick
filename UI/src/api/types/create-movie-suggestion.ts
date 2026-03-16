@@ -35,7 +35,7 @@ export interface MovieNightSuggestion extends MovieSuggestion {
 }
 
 export interface SuggestionFlowProps {
-    selectedGroup: DBGroup | null;
+    movieEventId: string;
     movieNightId: string
     onCancel: () => void
     onSuggestionAdded: () => void

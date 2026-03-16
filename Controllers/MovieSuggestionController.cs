@@ -28,25 +28,30 @@ public class MovieSuggestionController : ControllerBase
                             .Where(ms => ms.MovieNightEventId == parsedMovieNightId)
                             .Select(ms => new 
                             {
+                                Id = ms.Id.ToString(),
                                 MovieId = ms.MovieId,
-                                SuggestedById = ms.SuggestedById,
                                 MovieNightEventId = ms.MovieNightEventId,
                                 IsDisqualified = ms.IsDisqualified,
-                                Movie = new MovieDto
+                                SuggestedBy = new
                                 {
-                                    TmdbId = ms.Movie.TmdbId.ToString(),
+                                    fullName = ms.SuggestedBy.FullName,
+                                    email = ms.SuggestedBy.Email
+                                },
+                                Movie = new TMDBMovieDto
+                                {
+                                    TmdbId = ms.Movie.TmdbId,
                                     Title = ms.Movie.Title,
                                     PosterPath = ms.Movie.PosterPath,
-                                    ReleaseDate = ms.Movie.ReleaseDate,
+                                    ReleaseDate = ms.Movie.ReleaseDate.ToString(),
                                     Overview = ms.Movie.Overview,
                                     VoteAverage = ms.Movie.VoteAverage
                                 },
                                 Votes = ms.Votes.Select(v => new 
                                 {
                                     VoteType = v.VoteType,
-                                    UserId = new {
-                                        fullName = v.FullName,
-                                        email = v.Email
+                                    User = new {
+                                        fullName = v.User.FullName,
+                                        email = v.User.Email
                                     }
                                 }).ToList()
                             })
@@ -69,32 +74,27 @@ public class MovieSuggestionController : ControllerBase
             return BadRequest(new CustomError { Message = "Invalid groupId provided" });
         }
 
-        Console.WriteLine("===================== 1 ============================");
         var userExist = await _dbContext.Users.FindAsync(parsedUserId);
         if (userExist == null)
         {
             return NotFound(new CustomError{ Message = "The user creating the movie night does not exist" });
         }
-        Console.WriteLine("===================== 2 ============================");
-        
+         
         var MovieNight = await _dbContext.MovieNightEvents.FindAsync(parsedMovieNightId);
         if (MovieNight == null)
         {
             return NotFound(new CustomError { Message = "Movie night event not found" } );
         }
-        Console.WriteLine("===================== 3 ============================");
-
+ 
         // Check if user already made a suggestion
         var previousSuggestion = await _dbContext.MovieSuggestions
             .AnyAsync(ms => ms.SuggestedById == parsedUserId && ms.MovieNightEventId == parsedMovieNightId);
-        Console.WriteLine("===================== 4 ============================");
-
+ 
         if (previousSuggestion)
         {
             return BadRequest(new CustomError { Message = "Only one suggestion allowed per user in a Movie Night" });
         }
-        Console.WriteLine("===================== 5 ============================ ");
-
+ 
         // Create the movie first
         var SelectedMovie = new Movie {
             TmdbId = createDto.SelectedMovie.TmdbId,

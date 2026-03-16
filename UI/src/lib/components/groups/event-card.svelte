@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { Edit, MessageSquare, Plus, ThumbsDown, ThumbsUp, XCircle } from '@lucide/svelte';
-	import { VoteType, type MovieNightEvent } from '../../../types';
+	import { createQuery } from '@tanstack/svelte-query';
+	import { QUERY_KEYS, apiFetch } from '../../../api';
+	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
+	import { API_BASE_URL } from '../../../api/urls';
+	import { VoteType, type DBGroup, type MovieNightEvent } from '../../../types';
 	import Badge from '../ui/badge/badge.svelte';
 	import Button from '../ui/button/button.svelte';
 	import {
@@ -11,15 +15,17 @@
 		CardHeader,
 		CardTitle
 	} from '../ui/card';
+	import SuggestionFlow from '../dashboard/suggestion-flow.svelte';
 
 	interface EventCardProps {
+		selectedGroup: DBGroup | null;
 		event: MovieNightEvent;
 		openEventChat: (event: MovieNightEvent) => void;
-		handleShowSuggestionFlow(event: MovieNightEvent): void;
-	}
+ 	}
 
-	let { event, openEventChat, handleShowSuggestionFlow }: EventCardProps = $props();
+	let { selectedGroup,event, openEventChat,   }: EventCardProps = $props();
 
+	let showSuggestionFlow = $state(false)
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -32,8 +38,36 @@
 	function canVote(event: MovieNightEvent): boolean {
 		return !event.isLocked && new Date(event.scheduledAt) > new Date();
 	}
+
+	let _movieSuggestionQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		{ movieNightSuggestions: FetchedMovieSuggestion[] } // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.MOVIE_SUGGESTIONS + event.id ],
+		queryFn: async () => {
+			return apiFetch(
+				`${API_BASE_URL}/api/movie-nights/${event.id}/suggestions`,
+				{
+					method: 'GET',
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
+		},
+ 	}));
+
+	let movieSuggestionQuery = $state(_movieSuggestionQuery);
+	console.log("movieSuggestionQuery : ",movieSuggestionQuery)
 </script>
 
+{#if showSuggestionFlow}
+	<SuggestionFlow
+		movieEventId = {event.id}
+ 		movieNightId={event.id}
+		onCancel={() => (showSuggestionFlow = false)}
+		onSuggestionAdded={()=>(showSuggestionFlow = false)}
+	/>
+{/if}
 <Card class="overflow-hidden pt-0">
 	<CardHeader class="bg-muted/50 py-4">
 		<div class="flex items-center justify-between">
@@ -73,17 +107,17 @@
 			<div class="mb-6">
 				<h3 class="mb-4 font-semibold">Cast Your Vote</h3>
 				<div class="space-y-3">
-					{#each event.movieSuggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
+					{#each movieSuggestionQuery.data?.movieNightSuggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
 						<div class="rounded-lg border border-border p-4">
 							<div class="mb-3 flex items-center justify-between">
 								<div class="flex items-center gap-3">
 									<img
-										src={`https://image.tmdb.org/t/p/w92${suggestion.movieDetails?.posterPath}`}
-										alt={suggestion.movieDetails?.title}
+										src={`https://image.tmdb.org/t/p/w92${suggestion.movie?.posterPath}`}
+										alt={suggestion.movie?.title}
 										class="h-12 w-8 rounded object-cover"
 									/>
 									<div>
-										<span class="font-medium">{suggestion.movieDetails?.title}</span>
+										<span class="font-medium">{suggestion.movie?.title}</span>
 										<span class="ml-2 text-sm text-muted-foreground">
 											Added by {suggestion.suggestedBy.fullName}
 										</span>
@@ -140,20 +174,20 @@
 						</div>
 					{/each}
 
-					{#if event.movieSuggestions.some((s) => s.isDisqualified)}
+					{#if movieSuggestionQuery.data?.movieNightSuggestions.some((s) => s.isDisqualified)}
 						<div class="mt-4">
 							<h4 class="mb-2 text-sm font-medium text-muted-foreground">Disqualified (Vetoed)</h4>
-							{#each event.movieSuggestions.filter((s) => s.isDisqualified) as suggestion (suggestion.id)}
+							{#each movieSuggestionQuery.data?.movieNightSuggestions.filter((s) => s.isDisqualified) as suggestion (suggestion.id)}
 								<div
 									class="rounded-lg border border-destructive/30 bg-destructive/5 p-3 opacity-60"
 								>
 									<div class="flex items-center gap-3">
 										<img
-											src={`https://image.tmdb.org/t/p/w92${suggestion.movieDetails?.posterPath}`}
-											alt={suggestion.movieDetails?.title}
+											src={`https://image.tmdb.org/t/p/w92${suggestion.movie?.posterPath}`}
+											alt={suggestion.movie?.title}
 											class="h-10 w-7 rounded object-cover"
 										/>
-										<span class="font-medium line-through">{suggestion.movieDetails?.title}</span>
+										<span class="font-medium line-through">{suggestion.movie?.title}</span>
 										<Badge variant="destructive" class="ml-auto">Vetoed</Badge>
 									</div>
 								</div>
@@ -168,7 +202,7 @@
 					<div class="font-medium">Add more options</div>
 					<div class="text-sm text-muted-foreground">Suggest movies for everyone to vote on</div>
 				</div>
-				<Button size="sm" onclick={handleShowSuggestionFlow.bind(null, event)}>
+				<Button size="sm" onclick={()=>showSuggestionFlow = true}>
 					<Plus class="mr-2 h-4 w-4" />
 					Add Movie
 				</Button>

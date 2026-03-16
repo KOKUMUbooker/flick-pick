@@ -15,7 +15,7 @@
 	import SearchResults from './movie-suggestion/search-results.svelte';
 	import SuggestionConfirm from './movie-suggestion/suggestion-confirm.svelte';
 
-	let { movieNightId, onCancel, onSuggestionAdded ,selectedGroup}: SuggestionFlowProps = $props();
+	let { movieNightId, onCancel, onSuggestionAdded ,movieEventId}: SuggestionFlowProps = $props();
 
 	let currentState: SearchState = $state('idle');
 	let searchQuery = $state('');
@@ -85,14 +85,14 @@
 		{ SelectedMovie : TmdbMovieResult, SuggestedById : string} // variables type
 	>(() => ({
 		mutationFn: async (data) => {
-			return apiFetch(`/api/movie-nights/${movieNightId}/suggestion`, {
+			return apiFetch(`${API_BASE_URL}/api/movie-nights/${movieNightId}/suggestion`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
 			});
 		},
 		onSuccess: async () => {
- 			await queryClient.invalidateQueries({ queryKey: [ QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming' ] });
+ 			await queryClient.invalidateQueries({ queryKey: [ QUERY_KEYS.MOVIE_SUGGESTIONS + movieEventId ] });
 		}
 	}));
 
@@ -100,7 +100,7 @@
 	async function handleConfirmSuggestion() {
 		if (!selectedMovie) return;
 
-		currentState = 'success';
+		currentState = 'confirming';
 		error = null;
 
 		try {

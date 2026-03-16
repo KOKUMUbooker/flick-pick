@@ -31,8 +31,7 @@
 	let selectedGroup = $state<DBGroup | null>(null);
 	let selectedEvent = $state<MovieNightEvent | null>(null);
 	let showEventChat = $state(false);
-	let showSuggestionFlow = $state(false);
-
+ 
 	let user = getAppUser();
 
 	let showAddGroupDialog = $state(false);
@@ -97,10 +96,7 @@
 		showEventChat = true;
 	}
 
-	function handleShowSuggestionFlow(event: MovieNightEvent) {
-		selectedEvent = event;
-		showSuggestionFlow = true;
-	}
+	
 
 	function closeEventChat() {
 		showEventChat = false;
@@ -145,14 +141,6 @@
 	<AddMovieNightForm bind:selectedGroup onOpenChange={onShowMovieNightDialogOpenChange} />
 </CustomDialog>
 
-{#if showSuggestionFlow && selectedEvent}
-	<SuggestionFlow
-		selectedGroup={selectedGroup}
-		movieNightId={selectedEvent.id}
-		onCancel={() => (showSuggestionFlow = false)}
-		onSuggestionAdded={()=>(showSuggestionFlow = false)}
-	/>
-{/if}
 <div class="flex min-h-screen bg-background">
 	<!-- Mobile Sidebar Overlay -->
 	{#if sidebarOpen}
@@ -225,8 +213,7 @@
 							{selectedGroup}
 							{openEventChat}
 							{createNewEvent}
-							{handleShowSuggestionFlow}
-						/>
+ 						/>
 
 						<!-- Past Events Tab -->
 						<PastEventContentTab {openEventChat} {selectedGroup} />

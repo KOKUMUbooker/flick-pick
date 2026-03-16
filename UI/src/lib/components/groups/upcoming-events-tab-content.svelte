@@ -14,15 +14,13 @@
 		selectedGroup: DBGroup | null;
 		createNewEvent: () => void;
 		openEventChat: (event: MovieNightEvent) => void;
-		handleShowSuggestionFlow(event: MovieNightEvent): void;
-	}
+ 	}
 
 	let {
 		createNewEvent,
 		selectedGroup,
 		openEventChat,
-		handleShowSuggestionFlow
-	}: UpcomingEventsTabContentProps = $props();
+ 	}: UpcomingEventsTabContentProps = $props();
 
 	let _movieNightsQuery = createQuery<
 		null, // variables type
@@ -47,7 +45,8 @@
 	onMount(async () => {
 		await movieNightsQuery.refetch();
 	});
-console.log("movieNightsQuery.data : ",movieNightsQuery?.data)
+
+	 
 </script>
 
 <TabsContent value="upcoming" class="mt-6">
@@ -55,7 +54,7 @@ console.log("movieNightsQuery.data : ",movieNightsQuery?.data)
 		{#if movieNightsQuery.data.movieEvents.length > 0}
 			<div class="space-y-6">
 				{#each movieNightsQuery.data.movieEvents as event (event.id)}
-					<EventCard {event} {openEventChat} {handleShowSuggestionFlow} />
+					<EventCard {event} {openEventChat} selectedGroup={selectedGroup} />
 				{/each}
 			</div>
 		{:else}
