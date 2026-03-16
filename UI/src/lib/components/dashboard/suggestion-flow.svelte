@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { ArrowLeft, Check, Loader2, X } from '@lucide/svelte';
-	import { createQuery } from '@tanstack/svelte-query';
-	import { QUERY_KEYS, apiFetch } from '../../../api';
+	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
 	import type {
 		MovieSuggestion,
 		SearchState,
@@ -24,21 +23,22 @@
 	let isSearching = $state(false);
 	let error = $state<string | null>(null);
 
-	let shouldFetchMovies = $state(false);
-	let tmdbQuery = createQuery<
-		null, // variables type
-		Error, // error type
-		TmdbSearchResponse // response type
-	>(() => ({
-		queryKey: [QUERY_KEYS.GROUPS + searchQuery],
-		queryFn: async () => {
-			return apiFetch(`${API_BASE_URL}/api/tmdb/movies/search?query=${encodeURIComponent(searchQuery)}`, {
+	async function searchMovies(query: string): Promise<TmdbSearchResponse> {
+		return queryClient.fetchQuery({
+			queryKey: [QUERY_KEYS.TMDB_MOVIES + searchQuery],
+			queryFn: async () => {
+			const response = await apiFetch<TmdbSearchResponse>(
+				`${API_BASE_URL}/api/tmdb/movies/search?query=${encodeURIComponent(query)}`,
+				{
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' }
-			});
-		},
-		enabled: shouldFetchMovies
-	}));
+				}
+			);
+			return response;
+			},
+			staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+		});
+	}
 
 	// Handle search
 	async function handleSearch(query: string) {
@@ -54,20 +54,23 @@
 		currentState = 'searching';
 
 		try {
-			if(!shouldFetchMovies) shouldFetchMovies = true
-			const res = await tmdbQuery.refetch();
-			if (res.error || !res.data) return
+ 			const res = await searchMovies(query)
+ 			if (!res){
+				currentState = 'idle';
+ 				return
+			}
 
-			searchResults = res.data.results;
+			searchResults = res.results;
 			currentState = searchResults.length > 0 ? 'results' : 'idle';
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to search movies';
+			console.log("error : ",error)
 			currentState = 'idle';
 		} finally {
 			isSearching = false;
-		}
+  		}
 	}
-
+ 
 	// Handle movie selection
 	function handleSelectMovie(movie: TmdbMovieResult) {
 		selectedMovie = movie;

@@ -41,7 +41,6 @@
 		placeholder="Search for a movie..."
 		value={query}
 		oninput={handleInput}
-		disabled={isSearching}
-		class="w-full rounded-lg border bg-background py-3 pr-4 pl-10 focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+ 		class="w-full rounded-lg border bg-background py-3 pr-4 pl-10 focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
 	/>
 </div>
