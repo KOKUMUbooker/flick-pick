@@ -49,6 +49,8 @@ public class VoteController : ControllerBase
 
         await _dbContext.Votes.AddAsync(vote);
 
+        await _dbContext.SaveChangesAsync();
+
         return Ok(new { Message = "Vote created successfully" });
     }
 }
