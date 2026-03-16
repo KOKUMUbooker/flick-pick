@@ -7,6 +7,7 @@
 	import type { DBGroup, MovieNightEvent } from '../../../types';
 	import Button from '../ui/button/button.svelte';
 	import { Card, CardContent } from '../ui/card';
+	import Skeleton from '../ui/skeleton/skeleton.svelte';
 	import { TabsContent } from '../ui/tabs';
 	import EventCard from './event-card.svelte';
 
@@ -50,21 +51,41 @@
 </script>
 
 <TabsContent value="upcoming" class="mt-6">
-	{#if movieNightsQuery.data}
-		{#if movieNightsQuery.data.movieEvents.length > 0}
-			<div class="space-y-6">
-				{#each movieNightsQuery.data.movieEvents as event (event.id)}
-					<EventCard {event} {openEventChat} selectedGroup={selectedGroup} />
-				{/each}
-			</div>
+	{#if movieNightsQuery.isFetching || movieNightsQuery.isPending}
+		<div class="grid space-y-2">
+			{#each [1,2,3] as count (count)}
+				<Skeleton class="h-64" />
+			{/each}
+		</div>
+	{:else}
+		{#if movieNightsQuery.data}
+			{#if movieNightsQuery.data.movieEvents.length > 0}
+				<div class="space-y-6">
+					{#each movieNightsQuery.data.movieEvents as event (event.id)}
+						<EventCard {event} {openEventChat} selectedGroup={selectedGroup} />
+					{/each}
+				</div>
+			{:else}
+				<Card>
+					<CardContent class="py-12 text-center">
+						<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+						<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
+						<p class="mb-4 text-sm text-muted-foreground">
+							Plan your first movie night with the group
+						</p>
+						<Button onclick={createNewEvent}>
+							<Plus class="mr-2 h-4 w-4" />
+							Plan Movie Night
+						</Button>
+					</CardContent>
+				</Card>
+			{/if}
 		{:else}
 			<Card>
 				<CardContent class="py-12 text-center">
 					<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 					<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
-					<p class="mb-4 text-sm text-muted-foreground">
-						Plan your first movie night with the group
-					</p>
+					<p class="mb-4 text-sm text-muted-foreground">Plan your first movie night with the group</p>
 					<Button onclick={createNewEvent}>
 						<Plus class="mr-2 h-4 w-4" />
 						Plan Movie Night
@@ -72,17 +93,6 @@
 				</CardContent>
 			</Card>
 		{/if}
-	{:else}
-		<Card>
-			<CardContent class="py-12 text-center">
-				<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-				<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
-				<p class="mb-4 text-sm text-muted-foreground">Plan your first movie night with the group</p>
-				<Button onclick={createNewEvent}>
-					<Plus class="mr-2 h-4 w-4" />
-					Plan Movie Night
-				</Button>
-			</CardContent>
-		</Card>
 	{/if}
+	
 </TabsContent>

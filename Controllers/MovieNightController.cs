@@ -71,12 +71,12 @@ public class MovieNightController : ControllerBase
             return NotFound(new CustomError{ Message = "The movie night's group does not exist" });
         }
 
-        // TODO: When fetching MovieNightEvent also fetch the selected movie from TMDB
-        var query = _dbContext.MovieNightEvents
-                    .Where(mn => mn.GroupId == parsedGroupId)
-                    .AsNoTracking();
-
         var now = DateTimeOffset.UtcNow;
+
+        var query = _dbContext.MovieNightEvents
+            .Where(mn => mn.GroupId == parsedGroupId)
+            .AsNoTracking();
+
         if (!string.IsNullOrEmpty(status))
         {
             if (status == "upcoming")
@@ -89,9 +89,36 @@ public class MovieNightController : ControllerBase
             }
         }
 
-        var movieEvents = await query.ToListAsync();
+        var movieEvents = await query
+            .Select(mn => new MovieNightEventDto
+            {
+                Id = mn.Id,
+                Name = mn.Name,
+                Description = mn.Description,
+                ScheduledAt = mn.ScheduledAt,
+                IsLocked = mn.IsLocked,
 
-        return Ok(new { movieEvents });
+                SelectedMovie = mn.SelectedMovie == null ? null : new TMDBMovieDto
+                {
+                    TmdbId = mn.SelectedMovie.TmdbId,
+                    Title = mn.SelectedMovie.Title,
+                    PosterPath = mn.SelectedMovie.PosterPath,
+                    ReleaseDate = mn.SelectedMovie.ReleaseDate.ToString(),
+                    Overview = mn.SelectedMovie.Overview,
+                    VoteAverage = mn.SelectedMovie.VoteAverage
+                },
+
+                AverageRating = status == "past"
+                    ? mn.MovieNightRatings.Average(r => (double?)r.Rating)
+                    : null,
+
+                TotalRatings = status == "past"
+                    ? mn.MovieNightRatings.Count
+                    : 0
+            })
+            .ToListAsync();
+
+            return Ok(new { movieEvents });
     }
 
     [HttpGet("movie-nights/{movieNightId}")]

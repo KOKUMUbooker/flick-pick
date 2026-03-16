@@ -8,6 +8,8 @@ export interface MovieNightEvent {
     isLocked: boolean,
     selectedMovieTmdbId?: number,
     selectedMovie: TMDBMovieDetails
+    totalRatings: number,
+    averageRating: number
 }
 
 export interface MovieNightRating {

@@ -96,8 +96,6 @@
 		showEventChat = true;
 	}
 
-	
-
 	function closeEventChat() {
 		showEventChat = false;
 		selectedEvent = null;
@@ -157,6 +155,7 @@
 		{toggleSidebar}
 		{filteredGroups}
 		{createNewGroup}
+		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
 		bind:searchQuery
 		bind:selectedGroup
 	/>

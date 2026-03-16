@@ -2,6 +2,7 @@
 	import { ChevronLeft, Plus, Search, Users } from '@lucide/svelte';
 	import type { DBGroup } from '../../../types';
 	import Button from '../ui/button/button.svelte';
+	import Skeleton from '../ui/skeleton/skeleton.svelte';
 
 	interface GroupsSideBarProps {
 		searchQuery: string;
@@ -10,6 +11,7 @@
 		filteredGroups: DBGroup[];
 		toggleSidebar: () => void;
 		createNewGroup: () => void;
+		isFetching: boolean;
 	}
 
 	let {
@@ -18,7 +20,8 @@
 		createNewGroup,
 		filteredGroups,
 		selectedGroup = $bindable(),
-		searchQuery = $bindable()
+		searchQuery = $bindable(),
+		isFetching
 	}: GroupsSideBarProps = $props();
 </script>
 
@@ -54,36 +57,44 @@
 
 	<!-- Groups List -->
 	<div class="max-h-40vh flex-1 overflow-y-auto p-2">
-		{#if filteredGroups.length === 0}
-			<div class="p-4 text-center">
-				<p class="text-sm text-muted-foreground">No groups found</p>
-			</div>
-		{:else}
-			<div class="space-y-1">
-				{#each filteredGroups as group (group.id)}
-					<button
-						onclick={() => (selectedGroup = group)}
-						class={`flex w-full items-center justify-between rounded-lg p-2 text-left transition-colors ${
-							group.id == selectedGroup?.id
-								? 'bg-primary text-primary-foreground'
-								: 'hover:bg-muted'
-						}`}
-					>
-						<div class="flex items-center gap-3 overflow-hidden">
-							<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-								<Users class="h-5 w-5" />
-							</div>
-							<div class="min-w-0 flex-1">
-								<div class="truncate font-medium">{group.name}</div>
-								<div class="truncate text-xs opacity-80">
-									{group.membersCount}
-									{`member${group.membersCount > 1 ? 's' : ''}`}
-								</div>
-							</div>
-						</div>
-					</button>
+		{#if isFetching}
+			<div class="grid space-y-2">
+				{#each [1,2,3,4,5] as count (count)}
+					<Skeleton class="h-16" />
 				{/each}
 			</div>
+		{:else}
+			{#if filteredGroups.length === 0}
+				<div class="p-4 text-center">
+					<p class="text-sm text-muted-foreground">No groups found</p>
+				</div>
+			{:else}
+				<div class="space-y-1">
+					{#each filteredGroups as group (group.id)}
+						<button
+							onclick={() => (selectedGroup = group)}
+							class={`flex w-full items-center justify-between rounded-lg p-2 text-left transition-colors ${
+								group.id == selectedGroup?.id
+									? 'bg-primary text-primary-foreground'
+									: 'hover:bg-muted'
+							}`}
+						>
+							<div class="flex items-center gap-3 overflow-hidden">
+								<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+									<Users class="h-5 w-5" />
+								</div>
+								<div class="min-w-0 flex-1">
+									<div class="truncate font-medium">{group.name}</div>
+									<div class="truncate text-xs opacity-80">
+										{group.membersCount}
+										{`member${group.membersCount > 1 ? 's' : ''}`}
+									</div>
+								</div>
+							</div>
+						</button>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</div>
 
