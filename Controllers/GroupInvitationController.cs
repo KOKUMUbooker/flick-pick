@@ -16,6 +16,40 @@ public class GroupInvitationController : ControllerBase
         _dbContext = dbContext;
     }
 
+    [HttpGet("group/invites")]
+    public async Task<IActionResult> GetGroupInvites([FromQuery] string userId)
+    {
+           if (!Guid.TryParse(userId, out Guid parsedUserId))
+        {
+            return BadRequest(new CustomError {Message = "Invalid user id provided"});
+        }
+
+        var invitations = await _dbContext.GroupInvitations
+                    .Where(gi => gi.InviteeUserId == parsedUserId || gi.CreatedById == parsedUserId)
+                    .AsNoTracking()
+                    .Select(gi => new
+                    {
+                        Id = gi.Id,
+                        Group = new
+                        {
+                            Name = gi.Group.Name
+                        },
+                        Invitee = new
+                        {
+                            FullName = gi.Invitee.FullName,
+                            Email = gi.Invitee.Email
+                        },
+                        CreatedBy = new
+                        {
+                            FullName = gi.CreatedBy.FullName,
+                            Email = gi.CreatedBy.Email
+                        }
+                    })
+                    .ToListAsync();
+
+        return Ok(new { invitations } );
+    }
+
     [HttpPost("group/{groupId}/invite")]
     public async Task<IActionResult> CreateGroupInvitation([FromRoute] string groupId, [FromBody] CreateInvitationDto inviteDto)
     {
@@ -79,7 +113,7 @@ public class GroupInvitationController : ControllerBase
         return Ok(new { Message , InvitationId = invitation.Id });
     }
 
-    [HttpGet("/groups/invite")]
+    [HttpGet("groups/invite")]
     public async Task<IActionResult> GetGroupsToJoin(
         [FromQuery] string userId,
         [FromQuery] string query,
@@ -191,7 +225,7 @@ public class GroupInvitationController : ControllerBase
         });
     }
 
-    [HttpGet("/users/invite")]
+    [HttpGet("users/invite")]
     public async Task<IActionResult> GetUsersToJoinGroup(
         [FromQuery] string groupId,
         [FromQuery] string query,
