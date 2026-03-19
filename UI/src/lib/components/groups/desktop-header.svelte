@@ -22,15 +22,17 @@
 			</p>
 		</div>
 
-		<div class="flex items-center gap-2">
-			<Button size="sm" variant="outline" onclick={props.inviteToGroup}>
-				<Users class="mr-2 h-4 w-4" />
-				Invite
-			</Button>
-			<Button size="sm" onclick={props.createNewEvent}>
-				<Plus class="mr-2 h-4 w-4" />
-				New Event
-			</Button>
-		</div>
+		{#if props.selectedGroup?.isUserAdmin}
+			<div class="flex items-center gap-2">
+				<Button size="sm" variant="outline" onclick={props.inviteToGroup}>
+					<Users class="mr-2 h-4 w-4" />
+					Send invite
+				</Button>
+				<Button size="sm" onclick={props.createNewEvent}>
+					<Plus class="mr-2 h-4 w-4" />
+					New Event
+				</Button>
+			</div>
+		{/if}
 	</div>
 </header>
