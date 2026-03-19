@@ -18,5 +18,5 @@ public class Group : EntityBase
     public User CreatedBy { get; set; } = null!;
     public ICollection<UserGroup> Members { get; set; } = new List<UserGroup>();
     public ICollection<MovieNightEvent> MovieNightEvents { get; set; } = new List<MovieNightEvent>();
-    public ICollection<GroupInvite> GroupInvites { get; set; } = new List<GroupInvite>();
+    public ICollection<GroupInvitation> GroupInvitations { get; set; } = new List<GroupInvitation>();
 }

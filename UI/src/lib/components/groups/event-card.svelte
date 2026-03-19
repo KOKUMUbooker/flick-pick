@@ -39,11 +39,6 @@
 	}
 
 	function canVote(event: MovieNightEvent): boolean {
-		if (event.isLocked) {
-			toast.error('Movie event has been locked by the admin', { richColors: true });
-		} else if (new Date(event.scheduledAt) > new Date()) {
-			toast.error('The date the event was scheduled at has passed', { richColors: true });
-		}
 		return !event.isLocked && new Date(event.scheduledAt) > new Date();
 	}
 
