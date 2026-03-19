@@ -18,7 +18,9 @@ public class GroupInvitation : EntityBase
     [Required]
     public Guid CreatedById { get; set; }
 
-    public bool InviteeAccepted { get; set; } = false;
+    // By default, its true but on rejection, will be set to false & user can later decide to delete
+    // On approve, the entire item will be deleted
+    public bool InviteeAccepted { get; set; } = true;
 
     // Navigation properties
     public Group Group { get; set; } = null!;

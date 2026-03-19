@@ -1,0 +1,81 @@
+namespace WatchHive.Controllers;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WatchHive.DTOs;
+using WatchHive.Models;
+
+[ApiController]
+[Route("/api/")]
+public class GroupInvitationController : ControllerBase
+{
+    private readonly WatchHiveDbContext _dbContext;
+
+    public GroupInvitationController(WatchHiveDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    [HttpPost("group/{groupId}/invite")]
+    public async Task<IActionResult> CreateGroupInvitation([FromRoute] string groupId, [FromBody] CreateInvitationDto inviteDto)
+    {
+        if (!Guid.TryParse(groupId, out Guid parsedGroupId))
+        {
+            return BadRequest(new CustomError {Message = "Invalid group id provided"});
+        }
+
+        if (!Guid.TryParse(inviteDto.InviteeUserId, out Guid parsedInviteeUserId)) 
+        {
+            return BadRequest(new CustomError {Message = "Invalid invitee user id provided"});
+        }
+
+        if (!Guid.TryParse(inviteDto.CreatedById, out Guid parsedCreatedById)) 
+        {
+            return BadRequest(new CustomError {Message = "Invalid creator id provided"});
+        }
+
+        var groupExists = await _dbContext.Groups.AnyAsync(g => g.Id == parsedGroupId);
+        if (!groupExists) return NotFound(new CustomError {Message="The group does not exist"} );
+        
+        var inviteeExists = await _dbContext.Users.AnyAsync(u => u.Id == parsedInviteeUserId);
+        if (!inviteeExists) return NotFound(new CustomError {Message="The invitee does not exist"} );
+        
+        if (parsedInviteeUserId != parsedCreatedById)
+        {
+            var creatorExists = await _dbContext.Users.AnyAsync(u => u.Id == parsedCreatedById);
+            if (!creatorExists) return NotFound(new CustomError {Message="The request creator does not exist"} );
+        }
+
+        // Check for an unresolved group invitation
+        var invitationExists = await _dbContext.GroupInvitations
+                    .AnyAsync(gi => gi.InviteeUserId == parsedInviteeUserId && gi.GroupId == parsedGroupId);
+        if (invitationExists)
+        {
+            return BadRequest(new CustomError{Message = "An earlier invitation had been sent. No new invitations allowed until the initial is resolved" });
+        }
+
+        // Check if user is already a member
+        var isAlreadyAMember = await _dbContext.UserGroups
+                .AnyAsync(m => m.GroupId == parsedGroupId && m.UserId == parsedInviteeUserId);
+        if (isAlreadyAMember)
+        {
+            return BadRequest(new CustomError{Message="The user is already a member in the group"});
+        }
+
+        var invitation = new GroupInvitation
+        {
+            InviteeUserId = parsedInviteeUserId,
+            CreatedById = parsedCreatedById,
+            GroupId = parsedGroupId
+        };
+
+        await _dbContext.GroupInvitations.AddAsync(invitation);
+
+        await _dbContext.SaveChangesAsync();
+
+        var Message =  "Group invitation created successfully";
+        if (parsedCreatedById == parsedInviteeUserId) Message = "Join request created successfully";
+
+        return Ok(new { Message , InvitationId = invitation.Id });
+    }
+}
