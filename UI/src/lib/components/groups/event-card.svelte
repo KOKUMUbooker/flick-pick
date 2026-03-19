@@ -1,7 +1,15 @@
 <script lang="ts">
-	import { Edit, MessageSquare, Plus, ThumbsDown, ThumbsUp, XCircle } from '@lucide/svelte';
+	import {
+		Edit,
+		Eye,
+		MessageSquare,
+		Plus,
+		ThumbsDown,
+		ThumbsUp,
+		Trash,
+		XCircle
+	} from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { toast } from 'svelte-sonner';
 	import { QUERY_KEYS, apiFetch } from '../../../api';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
@@ -149,38 +157,56 @@
 								</div>
 							</div>
 
-							<div class="flex gap-2">
-								<Button
-									size="sm"
-									variant="outline"
-									class="flex-1"
-									disabled={!canVote(event)}
-									onclick={() => {}}
-								>
-									<ThumbsUp class="mr-2 h-4 w-4" />
-									Upvote
-								</Button>
-								<Button
-									size="sm"
-									variant="outline"
-									class="flex-1"
-									disabled={!canVote(event)}
-									onclick={() => {}}
-								>
-									<ThumbsDown class="mr-2 h-4 w-4" />
-									Downvote
-								</Button>
-								<Button
-									size="sm"
-									variant="outline"
-									class="flex-1"
-									disabled={!canVote(event)}
-									onclick={() => {}}
-								>
-									<XCircle class="mr-2 h-4 w-4" />
-									Veto
-								</Button>
-							</div>
+							{#if suggestion.suggestedBy.email !== user?.email}
+								<div class="flex gap-2">
+									<Button
+										size="sm"
+										variant="outline"
+										class="flex-1"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<ThumbsUp class="mr-2 h-4 w-4" />
+										Upvote
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										class="flex-1"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<ThumbsDown class="mr-2 h-4 w-4" />
+										Downvote
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										class="flex-1"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<XCircle class="mr-2 h-4 w-4" />
+										Veto
+									</Button>
+								</div>
+							{:else}
+								<div class="flex justify-end gap-2">
+									<Button size="sm" variant="outline" disabled={!canVote(event)} onclick={() => {}}>
+										<Eye class="mr-2 h-4 w-4" />
+										View Movie details
+									</Button>
+									<Button
+										size="sm"
+										variant="destructive"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<Trash class="mr-2 h-4 w-4" />
+										Delete suggestion
+									</Button>
+								</div>
+							{/if}
 						</div>
 					{/each}
 
