@@ -13,6 +13,7 @@ public partial class WatchHiveDbContext : DbContext
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<Group> Groups { get; set; } = null!;
+    public DbSet<GroupInvitation> GroupInvitations { get; set; } = null!;
     public DbSet<Movie> Movies { get; set; } = null!;
     public DbSet<UserGroup> UserGroups { get; set; } = null!;
     public DbSet<MovieNightEvent> MovieNightEvents { get; set; } = null!;
@@ -68,14 +69,22 @@ public partial class WatchHiveDbContext : DbContext
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
         
-        // User - GroupInvites
+        // User(InvitationCreator) - GroupInivitation
         modelBuilder.Entity<User>()
-            .HasMany(u => u.GroupInvites)
-            .WithOne(gi => gi.User)
-            .HasForeignKey(gi => gi.CreatedById)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(u => u.InvitationsCreated)
+                .WithOne(gi => gi.CreatedBy)
+                .HasForeignKey(gi => gi.CreatedById)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         
+        // User(Invitee) - GroupInivitation
+        modelBuilder.Entity<User>()
+                .HasMany(u => u.InvitationRequests)
+                .WithOne(gi => gi.Invitee)
+                .HasForeignKey(gi => gi.InviteeUserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
         // User - MovieNightRating
         modelBuilder.Entity<User>()
             .HasMany(u => u.MovieNightRatings)
@@ -116,9 +125,9 @@ public partial class WatchHiveDbContext : DbContext
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Group - GroupInvites
+        // Group - GroupInvitations
         modelBuilder.Entity<Group>()
-            .HasMany(g => g.GroupInvites)
+            .HasMany(g => g.GroupInvitations)
             .WithOne(gi => gi.Group)
             .HasForeignKey(gi => gi.GroupId)
             .IsRequired()

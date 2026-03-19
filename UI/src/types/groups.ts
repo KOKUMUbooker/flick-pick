@@ -5,7 +5,8 @@ export interface DBGroup {
     name: string;
     description?: string;
     createdById: string;
-    membersCount: number
+    membersCount: number;
+    isUserAdmin: boolean;
 }
 
 export interface GroupMember {

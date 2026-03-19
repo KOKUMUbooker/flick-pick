@@ -117,6 +117,16 @@ public class MovieSuggestionController : ControllerBase
 
         await  _dbContext.MovieSuggestions.AddAsync(MovieSuggestion);
 
+        // Automatically create an upvote by the suggestor for the suggestion
+        var upVote = new Vote
+        {
+            VoteType = VoteType.Upvote,
+            MovieSuggestionId = MovieSuggestion.Id,
+            UserId = parsedUserId,
+        };
+
+        await _dbContext.Votes.AddAsync(upVote);
+
         await _dbContext.SaveChangesAsync();
 
         return Ok(new { Message = "Movie suggestion created successfully"});

@@ -1,10 +1,21 @@
 <script lang="ts">
-	import { Edit, MessageSquare, Plus, ThumbsDown, ThumbsUp, XCircle } from '@lucide/svelte';
+	import {
+		Edit,
+		Eye,
+		MessageSquare,
+		Plus,
+		ThumbsDown,
+		ThumbsUp,
+		Trash,
+		XCircle
+	} from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { QUERY_KEYS, apiFetch } from '../../../api';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
+	import { getAppUser } from '../../../store';
 	import { VoteType, type DBGroup, type MovieNightEvent } from '../../../types';
+	import SuggestionFlow from '../dashboard/suggestion-flow.svelte';
 	import Badge from '../ui/badge/badge.svelte';
 	import Button from '../ui/button/button.svelte';
 	import {
@@ -15,17 +26,17 @@
 		CardHeader,
 		CardTitle
 	} from '../ui/card';
-	import SuggestionFlow from '../dashboard/suggestion-flow.svelte';
 
 	interface EventCardProps {
 		selectedGroup: DBGroup | null;
 		event: MovieNightEvent;
 		openEventChat: (event: MovieNightEvent) => void;
- 	}
+	}
 
-	let { selectedGroup,event, openEventChat,   }: EventCardProps = $props();
+	let { selectedGroup, event, openEventChat }: EventCardProps = $props();
+	let user = getAppUser();
 
-	let showSuggestionFlow = $state(false)
+	let showSuggestionFlow = $state(false);
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -44,28 +55,31 @@
 		Error, // error type
 		{ movieNightSuggestions: FetchedMovieSuggestion[] } // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.MOVIE_SUGGESTIONS + event.id ],
+		queryKey: [QUERY_KEYS.MOVIE_SUGGESTIONS + event.id],
 		queryFn: async () => {
-			return apiFetch(
-				`${API_BASE_URL}/api/movie-nights/${event.id}/suggestions`,
-				{
-					method: 'GET',
-					headers: { 'Content-Type': 'application/json' }
-				}
-			);
-		},
- 	}));
+			return apiFetch(`${API_BASE_URL}/api/movie-nights/${event.id}/suggestions`, {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+	}));
 
 	let movieSuggestionQuery = $state(_movieSuggestionQuery);
-	console.log("movieSuggestionQuery : ",movieSuggestionQuery)
+	let hasGivenSuggestion = $derived(
+		movieSuggestionQuery?.data
+			? movieSuggestionQuery.data.movieNightSuggestions.find(
+					(ms) => ms.suggestedBy.email == user?.email
+				)
+			: true
+	);
 </script>
 
 {#if showSuggestionFlow}
 	<SuggestionFlow
-		movieEventId = {event.id}
- 		movieNightId={event.id}
+		movieEventId={event.id}
+		movieNightId={event.id}
 		onCancel={() => (showSuggestionFlow = false)}
-		onSuggestionAdded={()=>(showSuggestionFlow = false)}
+		onSuggestionAdded={() => (showSuggestionFlow = false)}
 	/>
 {/if}
 <Card class="overflow-hidden pt-0">
@@ -108,7 +122,9 @@
 				<h3 class="mb-4 font-semibold">Cast Your Vote</h3>
 				<div class="space-y-3">
 					{#each movieSuggestionQuery.data?.movieNightSuggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
-						<div class="rounded-lg border border-border p-4">
+						<div
+							class={`rounded-lg border border-border ${user?.email == suggestion.suggestedBy.email ? 'bg-primary/15' : ''} p-4`}
+						>
 							<div class="mb-3 flex items-center justify-between">
 								<div class="flex items-center gap-3">
 									<img
@@ -119,7 +135,9 @@
 									<div>
 										<span class="font-medium">{suggestion.movie?.title}</span>
 										<span class="ml-2 text-sm text-muted-foreground">
-											Added by {suggestion.suggestedBy.fullName}
+											Added by {user?.email == suggestion.suggestedBy.email
+												? 'You'
+												: suggestion.suggestedBy.fullName}
 										</span>
 									</div>
 								</div>
@@ -139,38 +157,56 @@
 								</div>
 							</div>
 
-							<div class="flex gap-2">
-								<Button
-									size="sm"
-									variant="outline"
-									class="flex-1"
-									disabled={!canVote(event)}
-									onclick={() => {}}
-								>
-									<ThumbsUp class="mr-2 h-4 w-4" />
-									Upvote
-								</Button>
-								<Button
-									size="sm"
-									variant="outline"
-									class="flex-1"
-									disabled={!canVote(event)}
-									onclick={() => {}}
-								>
-									<ThumbsDown class="mr-2 h-4 w-4" />
-									Downvote
-								</Button>
-								<Button
-									size="sm"
-									variant="outline"
-									class="flex-1"
-									disabled={!canVote(event)}
-									onclick={() => {}}
-								>
-									<XCircle class="mr-2 h-4 w-4" />
-									Veto
-								</Button>
-							</div>
+							{#if suggestion.suggestedBy.email !== user?.email}
+								<div class="flex gap-2">
+									<Button
+										size="sm"
+										variant="outline"
+										class="flex-1"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<ThumbsUp class="mr-2 h-4 w-4" />
+										Upvote
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										class="flex-1"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<ThumbsDown class="mr-2 h-4 w-4" />
+										Downvote
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										class="flex-1"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<XCircle class="mr-2 h-4 w-4" />
+										Veto
+									</Button>
+								</div>
+							{:else}
+								<div class="flex justify-end gap-2">
+									<Button size="sm" variant="outline" disabled={!canVote(event)} onclick={() => {}}>
+										<Eye class="mr-2 h-4 w-4" />
+										View Movie details
+									</Button>
+									<Button
+										size="sm"
+										variant="destructive"
+										disabled={!canVote(event)}
+										onclick={() => {}}
+									>
+										<Trash class="mr-2 h-4 w-4" />
+										Delete suggestion
+									</Button>
+								</div>
+							{/if}
 						</div>
 					{/each}
 
@@ -197,16 +233,18 @@
 				</div>
 			</div>
 
-			<div class="flex items-center justify-between rounded-lg bg-muted p-4">
-				<div>
-					<div class="font-medium">Add more options</div>
-					<div class="text-sm text-muted-foreground">Suggest movies for everyone to vote on</div>
+			{#if !hasGivenSuggestion}
+				<div class="flex items-center justify-between rounded-lg bg-muted p-4">
+					<div>
+						<div class="font-medium">Add more options</div>
+						<div class="text-sm text-muted-foreground">Suggest movies for everyone to vote on</div>
+					</div>
+					<Button size="sm" onclick={() => (showSuggestionFlow = true)}>
+						<Plus class="mr-2 h-4 w-4" />
+						Add Movie
+					</Button>
 				</div>
-				<Button size="sm" onclick={()=>showSuggestionFlow = true}>
-					<Plus class="mr-2 h-4 w-4" />
-					Add Movie
-				</Button>
-			</div>
+			{/if}
 		{:else if event.selectedMovie}
 			<!-- Scheduled Event Details -->
 			<div class="space-y-4">

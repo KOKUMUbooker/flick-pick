@@ -19,22 +19,23 @@ public class GroupController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetGroups([FromQuery] string userId) 
     {
-        if (!Guid.TryParse(userId, out var parsedId))
+        if (!Guid.TryParse(userId, out var parsedUserId))
         {
             return BadRequest(new CustomError { Message = "Invalid userId provided"});
         }
 
         var groups = await _dbContext.Groups.
-                        Where(g => g.CreatedById == parsedId)
-                        .Select(g => new  
-                        {
-                            Id = g.Id,
-                            Name = g.Name,
-                            Description = g.Description,
-                            MembersCount = g.Members.Count
-                        })
-                        .AsNoTracking()
-                        .ToListAsync();
+                    Where(g => g.Members.Any(m => m.UserId == parsedUserId))
+                    .Select(g => new  
+                    {
+                        Id = g.Id,
+                        Name = g.Name,
+                        Description = g.Description,
+                        MembersCount = g.Members.Count,
+                        IsUserAdmin = g.Members.Any(m => m.IsAdmin && m.UserId == parsedUserId)
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
 
         return Ok(new { groups });
     }

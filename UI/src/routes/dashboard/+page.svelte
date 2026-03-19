@@ -4,7 +4,6 @@
 	import CustomDialog from '@/components/common/CustomDialog.svelte';
 	import AddGroupForm from '@/components/dashboard/forms/add-group-form.svelte';
 	import AddMovieNightForm from '@/components/dashboard/forms/add-movie-night-form.svelte';
-	import SuggestionFlow from '@/components/dashboard/suggestion-flow.svelte';
 	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
@@ -31,7 +30,7 @@
 	let selectedGroup = $state<DBGroup | null>(null);
 	let selectedEvent = $state<MovieNightEvent | null>(null);
 	let showEventChat = $state(false);
- 
+
 	let user = getAppUser();
 
 	let showAddGroupDialog = $state(false);
@@ -59,9 +58,9 @@
 		},
 		enabled: shouldFetchGroups
 	}));
- 
+
 	let groupsQuery = $state(_groupsQuery);
- 
+
 	// Initialize
 	onMount(async () => {
 		try {
@@ -208,11 +207,7 @@
 						</TabsList>
 
 						<!-- Upcoming Events Tab -->
-						<UpcomingEventsTabContent
-							{selectedGroup}
-							{openEventChat}
-							{createNewEvent}
- 						/>
+						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
 
 						<!-- Past Events Tab -->
 						<PastEventContentTab {openEventChat} {selectedGroup} />

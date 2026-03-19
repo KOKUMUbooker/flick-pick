@@ -29,5 +29,6 @@ public class User : EntityBase
     public ICollection<MoviePreference> MoviePreferences { get; set; } = new List<MoviePreference>();
     public ICollection<ChatMessage> ChatMessages { get; set; } = new List<ChatMessage>();
     public ICollection<Group> CreatedGroups { get; set; } = new List<Group>();
-    public ICollection<GroupInvite> GroupInvites { get; set; } = new List<GroupInvite>();
+    public ICollection<GroupInvitation> InvitationRequests { get; set; } = new List<GroupInvitation>();
+    public ICollection<GroupInvitation> InvitationsCreated { get; set; } = new List<GroupInvitation>();
 }

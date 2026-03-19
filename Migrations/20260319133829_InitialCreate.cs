@@ -155,32 +155,38 @@ namespace WatchHive.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroupInvite",
+                name: "GroupInvitations",
                 schema: "app",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     GroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    InviteeUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: false),
-                    Token = table.Column<string>(type: "text", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsRevoked = table.Column<bool>(type: "boolean", nullable: false),
+                    InviteeAccepted = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupInvite", x => x.Id);
+                    table.PrimaryKey("PK_GroupInvitations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GroupInvite_Groups_GroupId",
+                        name: "FK_GroupInvitations_Groups_GroupId",
                         column: x => x.GroupId,
                         principalSchema: "app",
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GroupInvite_Users_CreatedById",
+                        name: "FK_GroupInvitations_Users_CreatedById",
                         column: x => x.CreatedById,
+                        principalSchema: "app",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupInvitations_Users_InviteeUserId",
+                        column: x => x.InviteeUserId,
                         principalSchema: "app",
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -268,7 +274,7 @@ namespace WatchHive.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     MovieNightEventId = table.Column<Guid>(type: "uuid", nullable: false),
                     Message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 3, 16, 12, 14, 15, 743, DateTimeKind.Utc).AddTicks(3594)),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2026, 3, 19, 13, 38, 27, 879, DateTimeKind.Utc).AddTicks(6452)),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -395,8 +401,8 @@ namespace WatchHive.Migrations
                 columns: new[] { "Id", "Created", "LastModified", "RoleValue" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 109, DateTimeKind.Unspecified).AddTicks(8073), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 109, DateTimeKind.Unspecified).AddTicks(8073), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 109, DateTimeKind.Unspecified).AddTicks(8073), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 109, DateTimeKind.Unspecified).AddTicks(8073), new TimeSpan(0, 0, 0, 0, 0)), 2 }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 26, 789, DateTimeKind.Unspecified).AddTicks(9797), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 26, 789, DateTimeKind.Unspecified).AddTicks(9797), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 26, 789, DateTimeKind.Unspecified).AddTicks(9797), new TimeSpan(0, 0, 0, 0, 0)), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 26, 789, DateTimeKind.Unspecified).AddTicks(9797), new TimeSpan(0, 0, 0, 0, 0)), 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -405,10 +411,10 @@ namespace WatchHive.Migrations
                 columns: new[] { "Id", "Created", "Email", "EmailVerificationToken", "EmailVerificationTokenExpiry", "EmailVerified", "FullName", "LastModified", "PasswordHash", "PasswordResetTokenExpiry", "PasswordResetTokenHash", "RoleId" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 110, DateTimeKind.Unspecified).AddTicks(8623), new TimeSpan(0, 0, 0, 0, 0)), "admin@sys.com", null, null, true, "System Administrator", new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 110, DateTimeKind.Unspecified).AddTicks(8623), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$WrjZlZ5tAwPhs.ey1P55DeIBGcuirM5E5qbzTstbFFz67jdhVHvuS", null, null, new Guid("00000000-0000-0000-0000-000000000001") },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 349, DateTimeKind.Unspecified).AddTicks(5373), new TimeSpan(0, 0, 0, 0, 0)), "john@app.com", null, null, true, "John Doe", new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 349, DateTimeKind.Unspecified).AddTicks(5373), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$wbFb7RB8OJXdxxmXjO2VHOvbjVrwgjCHfTxLtQ4Exnc5LEjgS9HtO", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
-                    { new Guid("00000000-0000-0000-0000-000000000003"), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 349, DateTimeKind.Unspecified).AddTicks(5373), new TimeSpan(0, 0, 0, 0, 0)), "jane@app.com", null, null, true, "Jane Doe", new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 349, DateTimeKind.Unspecified).AddTicks(5373), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$ImC5HucEy2xNGylD5yNpS./3Z2vQGsWKu637tG2MW0u6N8ZSH6s.u", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
-                    { new Guid("00000000-0000-0000-0000-000000000004"), new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 349, DateTimeKind.Unspecified).AddTicks(5373), new TimeSpan(0, 0, 0, 0, 0)), "po@app.com", null, null, true, "Dragon Warrior", new DateTimeOffset(new DateTime(2026, 3, 16, 12, 14, 15, 349, DateTimeKind.Unspecified).AddTicks(5373), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$GUDIzHRl4VeBIfCI.X4h7O2werJO5OtiXV76gGcTSTK.zIqOGkVZq", null, null, new Guid("00000000-0000-0000-0000-000000000002") }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 26, 792, DateTimeKind.Unspecified).AddTicks(4075), new TimeSpan(0, 0, 0, 0, 0)), "admin@sys.com", null, null, true, "System Administrator", new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 26, 792, DateTimeKind.Unspecified).AddTicks(4075), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$8KoE9x9b1B/edK8nmZW7eO2sxEkTXxwjhUzo9h8ruAWwjKnDxM4Se", null, null, new Guid("00000000-0000-0000-0000-000000000001") },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 27, 126, DateTimeKind.Unspecified).AddTicks(8664), new TimeSpan(0, 0, 0, 0, 0)), "john@app.com", null, null, true, "John Doe", new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 27, 126, DateTimeKind.Unspecified).AddTicks(8664), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$4Op1sDrRHy640A/.vgH2SOBxEOVzPnBKiytsKFRnw9NlJZg2J8Gtu", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
+                    { new Guid("00000000-0000-0000-0000-000000000003"), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 27, 126, DateTimeKind.Unspecified).AddTicks(8664), new TimeSpan(0, 0, 0, 0, 0)), "jane@app.com", null, null, true, "Jane Doe", new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 27, 126, DateTimeKind.Unspecified).AddTicks(8664), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$8DGBesWOmuuFmwfpdm1agePG9S.80BJ6m7L2SH.vnHAEmt.ANv0HG", null, null, new Guid("00000000-0000-0000-0000-000000000002") },
+                    { new Guid("00000000-0000-0000-0000-000000000004"), new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 27, 126, DateTimeKind.Unspecified).AddTicks(8664), new TimeSpan(0, 0, 0, 0, 0)), "po@app.com", null, null, true, "Dragon Warrior", new DateTimeOffset(new DateTime(2026, 3, 19, 13, 38, 27, 126, DateTimeKind.Unspecified).AddTicks(8664), new TimeSpan(0, 0, 0, 0, 0)), "$2a$11$5tIRx9srJRMdN9uqQh4WEeC33ptaET6dYRqllLMHKHTULNgmgjUzq", null, null, new Guid("00000000-0000-0000-0000-000000000002") }
                 });
 
             migrationBuilder.CreateIndex(
@@ -424,16 +430,22 @@ namespace WatchHive.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupInvite_CreatedById",
+                name: "IX_GroupInvitations_CreatedById",
                 schema: "app",
-                table: "GroupInvite",
+                table: "GroupInvitations",
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupInvite_GroupId",
+                name: "IX_GroupInvitations_GroupId",
                 schema: "app",
-                table: "GroupInvite",
+                table: "GroupInvitations",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupInvitations_InviteeUserId",
+                schema: "app",
+                table: "GroupInvitations",
+                column: "InviteeUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_CreatedById",
@@ -589,7 +601,7 @@ namespace WatchHive.Migrations
                 schema: "app");
 
             migrationBuilder.DropTable(
-                name: "GroupInvite",
+                name: "GroupInvitations",
                 schema: "app");
 
             migrationBuilder.DropTable(
