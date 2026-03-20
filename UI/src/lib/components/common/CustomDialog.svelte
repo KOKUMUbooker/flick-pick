@@ -1,23 +1,33 @@
 <script lang="ts">
  import * as Dialog from "$lib/components/ui/dialog/index.js";
  import type { Snippet } from "svelte";
+ import Button from "../ui/button/button.svelte";
+ import Spinner from "../ui/spinner/spinner.svelte";
 
  interface Header  {
-        title: string;
-        description?: string
+    title: string;
+    description?: string
+ }
+ interface Actions {
+    proceedTxt? : string;
+    cancelTxt? : string;
+    onProceed : () => void;
+    onCancel? : () => void;
  }
  
  interface CustomDialogProps {
     open: boolean;
     onOpenChange: (open:boolean) => void;
     children: Snippet<[]>;
+    isLoading?: boolean;
     header? : Header,
-    width? : "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl"
+    width? : "sm" | "lg" | "xl" | "2xl" | "3xl" | "4xl",
+    actions? : Actions
  }
- let {open = $bindable(),onOpenChange,children,header,width="sm"}:CustomDialogProps = $props()
+ let {open = $bindable(),onOpenChange,children,header,width="lg",actions,isLoading}:CustomDialogProps = $props()
 </script>
  
-<Dialog.Root {onOpenChange} {open}>
+<Dialog.Root {onOpenChange} {open} >
  <form>
   <Dialog.Content  class={`sm:max-w-${width}`}>
   {#if header}
@@ -33,6 +43,17 @@
 
     {@render children()}
 
+    {#if actions}
+        <Dialog.Footer>
+            <Button disabled={isLoading} variant="outline" onclick={actions.onCancel || onOpenChange.bind(null,false)}>{actions.cancelTxt || "Cancel"}</Button>
+            <Button disabled={isLoading} variant="default" onclick={actions.onProceed}>
+                {#if isLoading}
+					<Spinner />
+                {/if}
+                {actions.proceedTxt || "Proceed"}
+            </Button>
+        </Dialog.Footer>
+    {/if}
 </Dialog.Content>
- </form>
+</form>
 </Dialog.Root>
