@@ -11,14 +11,15 @@
     open: boolean;
     onOpenChange: (open:boolean) => void;
     children: Snippet<[]>;
-    header? : Header
+    header? : Header,
+    width? : "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl"
  }
- let {open = $bindable(),onOpenChange,children,header}:CustomDialogProps = $props()
+ let {open = $bindable(),onOpenChange,children,header,width="sm"}:CustomDialogProps = $props()
 </script>
  
 <Dialog.Root {onOpenChange} {open}>
  <form>
-  <Dialog.Content  class="sm:max-w-106.25">
+  <Dialog.Content  class={`sm:max-w-${width}`}>
   {#if header}
     <Dialog.Header>
         <Dialog.Title>{header.title}</Dialog.Title>
