@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Calendar, Clock, Star, Users } from '@lucide/svelte';
+	import { Calendar, Clock, Star, UserPlus, Users } from '@lucide/svelte';
 	let { activeTab = $bindable<string>() } = $props();
 </script>
 
@@ -27,11 +27,11 @@
 			<span class="text-xs">Members</span>
 		</button>
 		<button
-			onclick={() => (activeTab = 'stats')}
-			class={`flex flex-col items-center gap-1 ${activeTab === 'stats' ? 'text-primary' : 'text-muted-foreground'}`}
+			onclick={() => (activeTab = 'invites')}
+			class={`flex flex-col items-center gap-1 ${activeTab === 'invites' ? 'text-primary' : 'text-muted-foreground'}`}
 		>
-			<Star class="h-5 w-5" />
-			<span class="text-xs">Stats</span>
+			<UserPlus class="h-5 w-5" />
+			<span class="text-xs">Invites</span>
 		</button>
 	</div>
 </nav>
