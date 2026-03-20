@@ -20,3 +20,32 @@ export interface GroupInvitationItem {
 }
 
 export type GroupInvitationStatus = "pending" | "approved" | "cancelled"
+
+// Fetched groups to join 
+export interface GroupToJoin {
+    id: string,
+    name: string
+    description: string,
+    memberCount: number,
+    creatorFullName: string,
+    creatorEmail: string,
+    createdAt: string
+}
+
+export interface FetchGroupsToJoinQueryData {
+    userId: string,
+    query: string,
+    cursor?: string,
+    limit?: number,
+    direction: CursorDirection
+}
+
+export type CursorDirection = "next" | "prev"
+
+export interface FetchGroupsToJoinRes {
+    results: GroupToJoin[],
+    nextCursor: string,
+    prevCursor: string,
+    hasNextPage: boolean,
+    hasPrevPage: boolean
+}
