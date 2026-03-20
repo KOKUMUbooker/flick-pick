@@ -4,15 +4,18 @@
 	import CustomDialog from '@/components/common/CustomDialog.svelte';
 	import AddGroupForm from '@/components/dashboard/forms/add-group-form.svelte';
 	import AddMovieNightForm from '@/components/dashboard/forms/add-movie-night-form.svelte';
+	import SearchJoinGroupsFlow from '@/components/dashboard/search-join-groups-flow.svelte';
+	import SearchUsersToInviteFlow from '@/components/dashboard/search-users-to-invite-flow.svelte';
 	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
 	import GroupsSideBar from '@/components/groups/groups-side-bar.svelte';
+	import InvitesTabContent from '@/components/groups/invites-tab-content.svelte';
 	import MembersTabContent from '@/components/groups/members-tab-content.svelte';
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
-	import StatsTabContent from '@/components/groups/stats-tab-content.svelte';
 	import UpcomingEventsTabContent from '@/components/groups/upcoming-events-tab-content.svelte';
-	import { Calendar, Clock, Menu, Plus, Star, Users } from '@lucide/svelte';
+	import TabsContent from '@/components/ui/tabs/tabs-content.svelte';
+	import { Calendar, Clock, MailPlus, Menu, Plus, UserPlus, Users } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -25,6 +28,10 @@
 	let activeTab = $state('upcoming');
 	let sidebarOpen = $state(false); // Controls mobile sidebar visibility
 	let searchQuery = $state('');
+
+	let showPendingInvitesDialog = $state(false) 
+	let showJoinGroupsDialog = $state(false) 
+	let showSendInviteDialog = $state(false) 
 
 	// Track selected event for chat view
 	let selectedGroup = $state<DBGroup | null>(null);
@@ -49,7 +56,7 @@
 		Error, // error type
 		{ groups: DBGroup[] } // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.GROUPS],
+		queryKey: [QUERY_KEYS.GROUPS + user?.id || ""],
 		queryFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/groups?userId=${user?.id}`, {
 				method: 'GET',
@@ -130,6 +137,20 @@
 	}
 </script>
 
+{#if showSendInviteDialog}
+	<SearchUsersToInviteFlow selectedGroup={selectedGroup} onCancel={()=>showSendInviteDialog=false} onGroupSelectConfirm={()=>showSendInviteDialog=false}/>
+{/if}
+
+{#if showJoinGroupsDialog}
+ 	<SearchJoinGroupsFlow onCancel={()=>showJoinGroupsDialog=false} onGroupSelectConfirm={()=>showJoinGroupsDialog=false}/>
+{/if}
+
+<CustomDialog bind:open={showPendingInvitesDialog} width="4xl" onOpenChange={()=>showPendingInvitesDialog=false}>
+	<div class="mt-6">
+		<InvitesTabContent selectedGroup={null} allowAutomaticFetch={true}/>
+	</div>
+</CustomDialog>
+
 <CustomDialog bind:open={showAddGroupDialog} onOpenChange={onShowAddGroupDialogOpenChange}>
 	<AddGroupForm onOpenChange={onShowAddGroupDialogOpenChange} />
 </CustomDialog>
@@ -177,7 +198,7 @@
 
 		{#if selectedGroup}
 			<!-- Desktop Group Header -->
-			<DesktopHeader {selectedGroup} {createNewEvent} {inviteToGroup} />
+			<DesktopHeader {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog} />
 
 			<!-- Main Content Area -->
 			<div class="p-4 md:p-6">
@@ -200,9 +221,9 @@
 								<Users class="mr-2 h-4 w-4" />
 								Members
 							</TabsTrigger>
-							<TabsTrigger value="stats">
-								<Star class="mr-2 h-4 w-4" />
-								Stats
+							<TabsTrigger value="invites">
+								<UserPlus class="mr-2 h-4 w-4" />
+								Invites
 							</TabsTrigger>
 						</TabsList>
 
@@ -215,8 +236,10 @@
 						<!-- Members Tab -->
 						<MembersTabContent {selectedGroup} {inviteToGroup} />
 
-						<!-- Stats Tab -->
-						<StatsTabContent {selectedGroup} />
+						<!-- Invites Tab -->
+						 <TabsContent value="invites" class="mt-6">
+							<InvitesTabContent {selectedGroup} />
+						 </TabsContent>
 					</Tabs>
 				{/if}
 			</div>
@@ -236,9 +259,13 @@
 							Create Your First Group
 						</Button>
 
-						<Button variant="outline">
+						<Button variant="secondary" onclick={()=>showJoinGroupsDialog=true}>
 							<Users class="mr-2 h-4 w-4" />
 							Join Existing Group
+						</Button>
+						<Button variant="outline" onclick={()=>showPendingInvitesDialog=true}>
+							<MailPlus  class="mr-2 h-4 w-4" />
+							Check pending invites
 						</Button>
 					</div>
 				</div>

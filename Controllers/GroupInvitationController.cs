@@ -16,6 +16,133 @@ public class GroupInvitationController : ControllerBase
         _dbContext = dbContext;
     }
 
+    [HttpGet("group/invites")]
+    public async Task<IActionResult> GetGroupInvites([FromQuery] string userId)
+    {
+           if (!Guid.TryParse(userId, out Guid parsedUserId))
+        {
+            return BadRequest(new CustomError {Message = "Invalid user id provided"});
+        }
+
+        var invitations = await _dbContext.GroupInvitations
+                    .Where(gi => gi.InviteeUserId == parsedUserId || gi.CreatedById == parsedUserId)
+                    .AsNoTracking()
+                    .Select(gi => new
+                    {
+                        Id = gi.Id,
+                        Group = new
+                        {
+                            Name = gi.Group.Name,
+                            Description = gi.Group.Description ?? "",
+                        },
+                        Invitee = new
+                        {
+                            FullName = gi.Invitee.FullName,
+                            Email = gi.Invitee.Email
+                        },
+                        CreatedBy = new
+                        {
+                            FullName = gi.CreatedBy.FullName,
+                            Email = gi.CreatedBy.Email
+                        },
+                        Status = gi.Status
+                    })
+                    .ToListAsync();
+
+        return Ok(new { invitations } );
+    }
+
+    [HttpDelete("invitation/{invitationId}")]
+    public async Task<IActionResult> DeleteInvitation([FromRoute] Guid invitationId, [FromBody] DeleteInvitationDto deleteDto)
+    {
+        var invitation = await _dbContext.GroupInvitations.FindAsync(invitationId);
+        var message = "Invitation deleted successfully";
+        if (invitation == null)
+        {
+            return Ok(new {message});
+        }
+        
+        if (!Guid.TryParse(deleteDto.Initiator, out Guid parsedInitiator))
+        {
+            return BadRequest(new CustomError {Message = "Invalid initiator provided"});
+        }
+
+        if (invitation.CreatedById != parsedInitiator)
+        {
+            return BadRequest(new CustomError {Message = "Only the creator of the invitation can delete it"});
+        }
+
+        await _dbContext.GroupInvitations
+            .Where(gi => gi.Id == invitationId)
+            .ExecuteDeleteAsync();
+
+        return Ok(new {message});
+    }
+
+    /*
+      On approval - The invitation item gets deleted
+      On cancel   - If the initiator is the invitation creator, delete the item
+                  - Otherwise, just mark it as cancelled
+    */
+    [HttpPatch("invite/{invitationId}/status-update")]
+    public async Task<IActionResult> UpdateInvitationStatus([FromRoute] Guid invitationId ,[FromBody] UpdateInvitationDto updateDto)
+    {
+        var invitation = await _dbContext.GroupInvitations.FindAsync(invitationId);
+        if (invitation == null)
+        {
+            return BadRequest(new CustomError{ Message = "The invitation has already been processed. Proceed to confirm your membership in the group" } );
+        }
+
+        if (!(updateDto.Status == "cancelled" || updateDto.Status == "approved"  || updateDto.Status == "rejected"))
+        {
+            return BadRequest(new CustomError{ Message = "You can only cancel or approve an invitation" });
+        }
+
+        if (!Guid.TryParse(updateDto.Initiator, out Guid parsedInitiator))
+        {
+            return BadRequest(new CustomError {Message = "Invalid initiator provided"});
+        }
+
+        // if initiator is not the creator of the invitation or the invitation invitee, cancel request
+        if (!(invitation.CreatedById == parsedInitiator ||  invitation.InviteeUserId == parsedInitiator))
+        {
+            return BadRequest(new CustomError { Message = "You are not authorized to update this invitation" } );
+        } 
+
+        if (invitation.Status == "cancelled")
+        {
+            return BadRequest(new CustomError{ Message = "Invitation has already been cancelled" });
+        }
+
+        if (updateDto.Status == "approved")
+        {
+            // Create member entry for the user
+            var membership = new UserGroup
+            {
+                GroupId = invitation.GroupId,
+                UserId = invitation.InviteeUserId,
+            };
+
+            await _dbContext.UserGroups.AddAsync(membership);
+       
+            await _dbContext.GroupInvitations
+                .Where(gi => gi.Id == invitationId)
+                .ExecuteDeleteAsync();
+            
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Invitation accepted successfully" });
+        } 
+        else // status == "cancelled"
+        {
+            await _dbContext.GroupInvitations
+                .Where(gi => gi.Id == invitationId)
+                .ExecuteDeleteAsync();
+
+            return Ok(new { message = "Invitation cancelled successfully" });
+        }
+    }
+
     [HttpPost("group/{groupId}/invite")]
     public async Task<IActionResult> CreateGroupInvitation([FromRoute] string groupId, [FromBody] CreateInvitationDto inviteDto)
     {
@@ -47,9 +174,11 @@ public class GroupInvitationController : ControllerBase
         }
 
         // Check for an unresolved group invitation
-        var invitationExists = await _dbContext.GroupInvitations
-                    .AnyAsync(gi => gi.InviteeUserId == parsedInviteeUserId && gi.GroupId == parsedGroupId);
-        if (invitationExists)
+        var pendingInvitationExists = await _dbContext.GroupInvitations
+                    .AnyAsync(gi => gi.InviteeUserId == parsedInviteeUserId 
+                                    && gi.GroupId == parsedGroupId
+                                    && gi.Status == "pending");
+        if (pendingInvitationExists)
         {
             return BadRequest(new CustomError{Message = "An earlier invitation had been sent. No new invitations allowed until the initial is resolved" });
         }
@@ -77,231 +206,5 @@ public class GroupInvitationController : ControllerBase
         if (parsedCreatedById == parsedInviteeUserId) Message = "Join request created successfully";
 
         return Ok(new { Message , InvitationId = invitation.Id });
-    }
-
-    [HttpGet("/groups/invite")]
-    public async Task<IActionResult> GetGroupsToJoin(
-        [FromQuery] string userId,
-        [FromQuery] string query,
-        [FromQuery] Guid? cursor,
-        [FromQuery] int? limit,
-        [FromQuery] string direction = "next" // "next" | "prev"
-    )
-    {
-        if (!Guid.TryParse(userId, out Guid parsedUserId))
-        {
-            return BadRequest(new CustomError { Message = "Invalid user id provided" });
-        }
-
-        var userExists = await _dbContext.Users.AnyAsync(u => u.Id == parsedUserId);
-        if (!userExists)
-        {
-            return NotFound(new CustomError { Message = "The user does not exist" });
-        }
-
-        limit ??= 10;
-
-        // Base query (reused everywhere)
-        var baseQuery = _dbContext.Groups
-            .Where(g => !g.Members.Any(m => m.UserId == parsedUserId));
-
-        if (!string.IsNullOrEmpty(query))
-        {
-            baseQuery = baseQuery.Where(g =>
-                EF.Functions.Like(g.Name, $"%{query}%")
-            );
-        }
-
-        // Apply cursor filter
-        if (cursor.HasValue)
-        {
-            if (direction == "next")
-            {
-                baseQuery = baseQuery.Where(g => g.Id > cursor.Value);
-            }
-            else if (direction == "prev")
-            {
-                baseQuery = baseQuery.Where(g => g.Id < cursor.Value);
-            }
-        }
-
-        // Apply ordering
-        var orderedQuery = direction == "prev"
-            ? baseQuery.OrderByDescending(g => g.Id)
-            : baseQuery.OrderBy(g => g.Id);
-
-        var groups = await orderedQuery
-            .Take(limit.Value + 1)
-            .Select(g => new
-            {
-                Id = g.Id,
-                Name = g.Name,
-                Description = g.Description
-            })
-            .AsNoTracking()
-            .ToListAsync();
-
-        bool hasMoreInDirection = groups.Count > limit.Value;
-
-        if (hasMoreInDirection)
-        {
-            groups = groups.Take(limit.Value).ToList();
-        }
-
-        // Reverse back if prev
-        if (direction == "prev")
-        {
-            groups.Reverse();
-        }
-
-        Guid? nextCursor = null;
-        Guid? prevCursor = null;
-
-        if (groups.Any())
-        {
-            nextCursor = groups.Last().Id;
-            prevCursor = groups.First().Id;
-        }
-
-        // Accurate hasNext / hasPrev
-        bool hasNextPage = false;
-        bool hasPrevPage = false;
-
-        if (groups.Any())
-        {
-            var firstId = groups.First().Id;
-            var lastId = groups.Last().Id;
-
-            hasPrevPage = await baseQuery
-                .Where(g => g.Id < firstId)
-                .AnyAsync();
-
-            hasNextPage = await baseQuery
-                .Where(g => g.Id > lastId)
-                .AnyAsync();
-        }
-
-        return Ok(new
-        {
-            results = groups,
-            nextCursor,
-            prevCursor,
-            hasNextPage,
-            hasPrevPage
-        });
-    }
-
-    [HttpGet("/users/invite")]
-    public async Task<IActionResult> GetUsersToJoinGroup(
-        [FromQuery] string groupId,
-        [FromQuery] string query,
-        [FromQuery] Guid? cursor,
-        [FromQuery] int? limit,
-        [FromQuery] string direction = "next" // "next" | "prev"
-    )
-    {
-        if (!Guid.TryParse(groupId, out Guid parsedGroupId))
-        {
-            return BadRequest(new CustomError { Message = "Invalid group id provided" });
-        }
-
-        var groupExists = await _dbContext.Groups.AnyAsync(g => g.Id == parsedGroupId);
-        if (!groupExists)
-        {
-            return NotFound(new CustomError { Message = "The group does not exist" });
-        }
-
-        limit ??= 10;
-
-        // Base query (users NOT in group)
-        var baseQuery = _dbContext.Users
-            .Where(u => !u.UserGroups.Any(ug => ug.GroupId == parsedGroupId));
-
-        // Search filter (safe for EF)
-        if (!string.IsNullOrEmpty(query))
-        {
-            baseQuery = baseQuery.Where(u =>
-                EF.Functions.Like(u.FullName, $"%{query}%") ||
-                EF.Functions.Like(u.Email, $"%{query}%")
-            );
-        }
-
-        // Cursor filter
-        if (cursor.HasValue)
-        {
-            if (direction == "next")
-            {
-                baseQuery = baseQuery.Where(u => u.Id > cursor.Value);
-            }
-            else if (direction == "prev")
-            {
-                baseQuery = baseQuery.Where(u => u.Id < cursor.Value);
-            }
-        }
-
-        // Ordering
-        var orderedQuery = direction == "prev"
-            ? baseQuery.OrderByDescending(u => u.Id)
-            : baseQuery.OrderBy(u => u.Id);
-
-        var users = await orderedQuery
-            .Take(limit.Value + 1)
-            .Select(u => new
-            {
-                Id = u.Id,
-                FullName = u.FullName,
-                Email = u.Email
-            })
-            .AsNoTracking()
-            .ToListAsync();
-
-        bool hasMoreInDirection = users.Count > limit.Value;
-
-        if (hasMoreInDirection)
-        {
-            users = users.Take(limit.Value).ToList();
-        }
-
-        // Reverse back for prev
-        if (direction == "prev")
-        {
-            users.Reverse();
-        }
-
-        Guid? nextCursor = null;
-        Guid? prevCursor = null;
-
-        if (users.Count != 0)
-        {
-            nextCursor = users.Last().Id;
-            prevCursor = users.First().Id;
-        }
-
-        // Accurate pagination flags
-        bool hasNextPage = false;
-        bool hasPrevPage = false;
-
-        if (users.Count != 0)
-        {
-            var firstId = users.First().Id;
-            var lastId = users.Last().Id;
-
-            hasPrevPage = await baseQuery
-                .Where(u => u.Id < firstId)
-                .AnyAsync();
-
-            hasNextPage = await baseQuery
-                .Where(u => u.Id > lastId)
-                .AnyAsync();
-        }
-
-        return Ok(new
-        {
-            results = users,
-            nextCursor,
-            prevCursor,
-            hasNextPage,
-            hasPrevPage
-        });
     }
 }
