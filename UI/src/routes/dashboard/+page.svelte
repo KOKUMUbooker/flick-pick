@@ -11,6 +11,7 @@
 	import InvitesTabContent from '@/components/groups/invites-tab-content.svelte';
 	import MembersTabContent from '@/components/groups/members-tab-content.svelte';
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
+	import SearchJoinGroupsFlow from '@/components/groups/search-join-groups-flow.svelte';
 	import UpcomingEventsTabContent from '@/components/groups/upcoming-events-tab-content.svelte';
 	import TabsContent from '@/components/ui/tabs/tabs-content.svelte';
 	import { Calendar, Clock, MailPlus, Menu, Plus, UserPlus, Users } from '@lucide/svelte';
@@ -28,6 +29,7 @@
 	let searchQuery = $state('');
 
 	let showPendingInvitesDialog = $state(false) 
+	let showJoinGroupsDialog = $state(false) 
 
 	// Track selected event for chat view
 	let selectedGroup = $state<DBGroup | null>(null);
@@ -133,6 +135,10 @@
 	}
 </script>
 
+{#if showJoinGroupsDialog}
+ 	<SearchJoinGroupsFlow onCancel={()=>showJoinGroupsDialog=false} onGroupSelectConfirm={()=>showJoinGroupsDialog=false}/>
+{/if}
+
 <CustomDialog bind:open={showPendingInvitesDialog} width="4xl" onOpenChange={()=>showPendingInvitesDialog=false}>
 	<div class="mt-6">
 		<InvitesTabContent selectedGroup={null} allowAutomaticFetch={true}/>
@@ -186,7 +192,7 @@
 
 		{#if selectedGroup}
 			<!-- Desktop Group Header -->
-			<DesktopHeader {selectedGroup} {createNewEvent} {inviteToGroup} />
+			<DesktopHeader {selectedGroup} {createNewEvent} {inviteToGroup} bind:showJoinGroupsDialog={showJoinGroupsDialog} />
 
 			<!-- Main Content Area -->
 			<div class="p-4 md:p-6">
@@ -247,7 +253,7 @@
 							Create Your First Group
 						</Button>
 
-						<Button variant="secondary">
+						<Button variant="secondary" onclick={()=>showJoinGroupsDialog=true}>
 							<Users class="mr-2 h-4 w-4" />
 							Join Existing Group
 						</Button>
