@@ -88,10 +88,18 @@
 				body: JSON.stringify(data)
 			});
 		},
-        onSuccess: async () => {
+        onSuccess: async (res,data) => {
 			await queryClient.invalidateQueries({
 				queryKey: [QUERY_KEYS.GROUP_INVITES + user?.id || "" + selectedGroup?.id || ""],
 			});
+            if (data.Status === "approved") { // Refetch members & groups
+                await queryClient.invalidateQueries({
+                    queryKey: [QUERY_KEYS.MEMBERS + selectedGroup?.id],
+                });
+                await queryClient.invalidateQueries({
+                    queryKey: [QUERY_KEYS.GROUPS + user?.id],
+                });
+            }
 		}
 	}));
 
