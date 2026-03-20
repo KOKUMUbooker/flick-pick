@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { ArrowLeft, Check, Loader2, X } from "@lucide/svelte";
+	import { createMutation } from "@tanstack/svelte-query";
+	import { toast } from "svelte-sonner";
 	import { apiFetch, QUERY_KEYS, queryClient } from "../../../api";
-	import type { FetchGroupsToJoinQueryData, FetchGroupsToJoinRes, GroupToJoin, SearchState } from "../../../api/types";
+	import type { CreateInvitationData, CreateInvitationRes, FetchGroupsToJoinQueryData, FetchGroupsToJoinRes, GroupToJoin, SearchState } from "../../../api/types";
 	import { API_BASE_URL } from "../../../api/urls";
 	import { getAppUser } from "../../../store";
 	import SearchBar from "../common/SearchBar.svelte";
@@ -76,9 +78,28 @@
 		currentState = 'confirming';
 	}
 
-    // Handle group selection confirmation
+	let createInvitationMutation = createMutation<
+		CreateInvitationRes, // response type
+		Error, // error type
+		CreateInvitationData // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/group/${selectedGroupToJoin?.id || ""}/invite`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		}
+	}));
+
+	// Handle group selection confirmation
 	async function handleConfirmGroupSelection() {
-		onGroupSelectConfirm()
+		if (!user) return toast.error("Ensure you're logged in before proceeding", {richColors : true} )
+		if (!selectedGroupToJoin) return toast.error("No group has been selected", {richColors : true} )
+
+		const res = await createInvitationMutation.mutateAsync({CreatedById : user.id, InviteeUserId : user.id })
+		toast.success(res.message,{richColors:true});
+		onGroupSelectConfirm();
 	}
 
     // Handle back button

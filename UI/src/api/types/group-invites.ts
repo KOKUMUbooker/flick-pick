@@ -73,3 +73,14 @@ export interface FetchUsersToInviteRes {
     hasNextPage: boolean,
     hasPrevPage: boolean
 }
+
+// CreateGroupInvitation
+export interface CreateInvitationData {
+    InviteeUserId: string;
+    CreatedById: string;
+}
+
+export interface CreateInvitationRes {
+    message: string;
+    invitationId: string
+}
