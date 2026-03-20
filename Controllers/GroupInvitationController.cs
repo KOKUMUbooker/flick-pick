@@ -128,25 +128,18 @@ public class GroupInvitationController : ControllerBase
             await _dbContext.GroupInvitations
                 .Where(gi => gi.Id == invitationId)
                 .ExecuteDeleteAsync();
+            
+            await _dbContext.SaveChangesAsync();
 
-            return Ok(new { message = "Invitation approved successfully" });
+            return Ok(new { message = "Invitation accepted successfully" });
         } 
         else // status == "cancelled"
         {
-            // If initiator is the the creator, delete it automatically
-            if (parsedInitiator == invitation.CreatedById)
-            {
-                await _dbContext.GroupInvitations
-                    .Where(gi => gi.Id == invitationId)
-                    .ExecuteDeleteAsync();
-            }
-            else
-            {
-                invitation.Status = "cancelled";
-                await _dbContext.SaveChangesAsync();
-            } 
+            await _dbContext.GroupInvitations
+                .Where(gi => gi.Id == invitationId)
+                .ExecuteDeleteAsync();
 
-            return Ok(new { message = "Invitation approved successfully" });
+            return Ok(new { message = "Invitation cancelled successfully" });
         }
     }
 
