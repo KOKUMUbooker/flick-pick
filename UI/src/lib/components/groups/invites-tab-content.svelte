@@ -13,12 +13,14 @@
 		X,
 		XCircle
 	} from '@lucide/svelte';
-	import { createQuery } from '@tanstack/svelte-query';
-	import { QUERY_KEYS, apiFetch } from '../../../api';
-	import type { GroupInvitationItem, GroupInvitationStatus, GroupInvitationsRes } from '../../../api/types/group-invites';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
+	import { toast } from 'svelte-sonner';
+	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
+	import type { GroupInvitationItem, GroupInvitationStatus, GroupInvitationsRes, UpdateInvitationData, UpdateInvitationRes } from '../../../api/types/group-invites';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { getAppUser } from '../../../store';
 	import type { DBGroup } from '../../../types';
+	import CustomDialog from '../common/CustomDialog.svelte';
 	import { Badge } from '../ui/badge';
 	import { Button } from '../ui/button';
 	import { Card, CardContent } from '../ui/card';
@@ -37,7 +39,7 @@
 		Error, // error type
 		GroupInvitationsRes // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.GROUP_INVITES + user?.id || ""],
+		queryKey: [QUERY_KEYS.GROUP_INVITES + user?.id || "" + selectedGroup?.id || ""],
 		queryFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/group/invites?userId=${encodeURIComponent(user?.id || "")}`, {
 				method: 'GET',
@@ -49,6 +51,9 @@
 
 	let invitesQuery = $state(_invitesTabQuery);
     let isGettingInvites = $derived(invitesQuery.isPending || invitesQuery.isFetching);
+    let selectedInvitation = $state<GroupInvitationItem | null>(null)
+    let showConfirmPrompt = $state(false)
+    let action = $state<GroupInvitationStatus | null>(null)
 
     // Helper functions to determine invitation type
     function isAdminInvite(invitation: GroupInvitationItem): boolean {
@@ -71,22 +76,66 @@
         return config;
     }
 
-    // Action placeholders
-    function handleAccept(invitation: GroupInvitationItem) {
-        console.log('Accept invitation:', invitation);
-        // TODO: Implement accept logic
+    let updateInvitationMutation = createMutation<
+		UpdateInvitationRes, // response type
+		Error, // error type
+		UpdateInvitationData // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/invite/${data.InvitationId}/status-update`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+        onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.GROUP_INVITES + user?.id || "" + selectedGroup?.id || ""],
+			});
+		}
+	}));
+
+     function handleAccept(invitation: GroupInvitationItem) {
+        selectedInvitation = invitation;
+        showConfirmPrompt = true;
+        action = "approved";
     }
 
     function handleCancel(invitation: GroupInvitationItem) {
-        console.log('Cancel invitation:', invitation);
-        // TODO: Implement cancel logic
+        selectedInvitation = invitation;
+        showConfirmPrompt = true;
+        action = "cancelled";
+    }
+
+    async function handeleStatusUpdate() {
+        if (!user) return toast.error("Please login before proceeding",{richColors:true})
+        if (!action) return toast.error("Ensure you clicked approve or cancel button",{richColors:true})
+        if (!selectedInvitation) return toast.error("No invitation has been selected",{richColors:true})
+
+        const res = await updateInvitationMutation.mutateAsync({Initiator:user.id,Status:action,InvitationId:selectedInvitation?.id})
+        toast.success(res.message,{richColors:true});
+        onUpdateOpenChange(false)
     }
 
     function handleRefetch() {
         invitesQuery.refetch();
     }
+
+    function onUpdateOpenChange(show:boolean) {
+        if (show) showConfirmPrompt = true
+        else {
+            showConfirmPrompt = false
+            selectedInvitation = null
+            action = null
+        }
+    }
 </script>
 
+{#if showConfirmPrompt && selectedInvitation}
+    <CustomDialog open={showConfirmPrompt} actions={{onProceed:handeleStatusUpdate}} header={{title:`${action=="approved"? "Approve": "Cancel"} invitation`}} onOpenChange={onUpdateOpenChange}>
+        <p>Are you sure you want to {action == "approved"? "approve" : "cancel"} this invitation?</p>
+    </CustomDialog>
+{/if}
 <div>
     {#if isGettingInvites}
         <!-- Skeletons -->
