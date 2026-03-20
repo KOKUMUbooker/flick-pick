@@ -44,7 +44,8 @@ public class GroupInvitationController : ControllerBase
                         {
                             FullName = gi.CreatedBy.FullName,
                             Email = gi.CreatedBy.Email
-                        }
+                        },
+                        Status = gi.Status
                     })
                     .ToListAsync();
 
