@@ -84,3 +84,25 @@ export interface CreateInvitationRes {
     message: string;
     invitationId: string
 }
+
+
+// Update Invitation status
+export interface UpdateInvitationData {
+    Initiator: string;
+    Status: GroupInvitationStatus,
+    InvitationId: string
+}
+
+export interface UpdateInvitationRes {
+    message: string
+}
+
+// Delete invitation
+export interface DeleteInvitationData {
+    InvitationId: string;
+    Initiator: string;
+}
+
+export interface DeleteInvitationRes {
+    message: string
+}
