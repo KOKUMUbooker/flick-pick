@@ -6,10 +6,15 @@
 	interface DesktopHeaderProps {
 		selectedGroup: DBGroup | null;
 		createNewEvent: () => void;
-		inviteToGroup: () => void;
-		showJoinGroupsDialog: boolean;
+ 		showJoinGroupsDialog: boolean;
+		showSendInviteDialog: boolean;
 	}
-	let {createNewEvent, inviteToGroup,selectedGroup,showJoinGroupsDialog = $bindable()}: DesktopHeaderProps = $props();
+	let {
+		createNewEvent,
+ 		selectedGroup,
+		showJoinGroupsDialog = $bindable(),
+		showSendInviteDialog = $bindable()
+	}: DesktopHeaderProps = $props();
 </script>
 
 <header
@@ -29,7 +34,7 @@
 					<MailPlus class="mr-2 h-4 w-4" />
 					Join Request
 				</Button>
-				<Button size="sm" variant="outline" onclick={inviteToGroup}>
+				<Button size="sm" variant="outline" onclick={()=>showSendInviteDialog = true}>
 					<Users class="mr-2 h-4 w-4" />
 					Send invite
 				</Button>

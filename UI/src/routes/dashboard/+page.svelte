@@ -4,6 +4,8 @@
 	import CustomDialog from '@/components/common/CustomDialog.svelte';
 	import AddGroupForm from '@/components/dashboard/forms/add-group-form.svelte';
 	import AddMovieNightForm from '@/components/dashboard/forms/add-movie-night-form.svelte';
+	import SearchJoinGroupsFlow from '@/components/dashboard/search-join-groups-flow.svelte';
+	import SearchUsersToInviteFlow from '@/components/dashboard/search-users-to-invite-flow.svelte';
 	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
@@ -11,7 +13,6 @@
 	import InvitesTabContent from '@/components/groups/invites-tab-content.svelte';
 	import MembersTabContent from '@/components/groups/members-tab-content.svelte';
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
-	import SearchJoinGroupsFlow from '@/components/dashboard/search-join-groups-flow.svelte';
 	import UpcomingEventsTabContent from '@/components/groups/upcoming-events-tab-content.svelte';
 	import TabsContent from '@/components/ui/tabs/tabs-content.svelte';
 	import { Calendar, Clock, MailPlus, Menu, Plus, UserPlus, Users } from '@lucide/svelte';
@@ -30,6 +31,7 @@
 
 	let showPendingInvitesDialog = $state(false) 
 	let showJoinGroupsDialog = $state(false) 
+	let showSendInviteDialog = $state(false) 
 
 	// Track selected event for chat view
 	let selectedGroup = $state<DBGroup | null>(null);
@@ -135,6 +137,10 @@
 	}
 </script>
 
+{#if showSendInviteDialog}
+	<SearchUsersToInviteFlow selectedGroup={selectedGroup} onCancel={()=>showSendInviteDialog=false} onGroupSelectConfirm={()=>showSendInviteDialog=false}/>
+{/if}
+
 {#if showJoinGroupsDialog}
  	<SearchJoinGroupsFlow onCancel={()=>showJoinGroupsDialog=false} onGroupSelectConfirm={()=>showJoinGroupsDialog=false}/>
 {/if}
@@ -192,7 +198,7 @@
 
 		{#if selectedGroup}
 			<!-- Desktop Group Header -->
-			<DesktopHeader {selectedGroup} {createNewEvent} {inviteToGroup} bind:showJoinGroupsDialog={showJoinGroupsDialog} />
+			<DesktopHeader {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog} />
 
 			<!-- Main Content Area -->
 			<div class="p-4 md:p-6">
