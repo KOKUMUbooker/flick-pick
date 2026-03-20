@@ -23,7 +23,6 @@
 	import { Button } from '../ui/button';
 	import { Card, CardContent } from '../ui/card';
 	import Skeleton from '../ui/skeleton/skeleton.svelte';
-	import { TabsContent } from '../ui/tabs';
 
 	interface InvitesTabContentProps {
 		selectedGroup: DBGroup | null;
