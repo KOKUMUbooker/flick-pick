@@ -52,6 +52,104 @@ public class GroupInvitationController : ControllerBase
         return Ok(new { invitations } );
     }
 
+    [HttpDelete("invitation/{invitationId}")]
+    public async Task<IActionResult> DeleteInvitation([FromRoute] Guid invitationId, [FromBody] DeleteInvitationDto deleteDto)
+    {
+        var invitation = await _dbContext.GroupInvitations.FindAsync(invitationId);
+        var message = "Invitation deleted successfully";
+        if (invitation == null)
+        {
+            return Ok(new {message});
+        }
+        
+        if (!Guid.TryParse(deleteDto.Initiator, out Guid parsedInitiator))
+        {
+            return BadRequest(new CustomError {Message = "Invalid initiator provided"});
+        }
+
+        if (invitation.CreatedById != parsedInitiator)
+        {
+            return BadRequest(new CustomError {Message = "Only the creator of the invitation can delete it"});
+        }
+
+        await _dbContext.GroupInvitations
+            .Where(gi => gi.Id == invitationId)
+            .ExecuteDeleteAsync();
+
+        return Ok(new {message});
+    }
+
+    /*
+      On approval - The invitation item gets deleted
+      On cancel   - If the initiator is the invitation creator, delete the item
+                  - Otherwise, just mark it as cancelled
+    */
+    [HttpPatch("invite/{invitationId}/status-update")]
+    public async Task<IActionResult> UpdateInvitationStatus([FromRoute] Guid invitationId ,[FromBody] UpdateInvitationDto updateDto)
+    {
+        var invitation = await _dbContext.GroupInvitations.FindAsync(invitationId);
+        if (invitation == null)
+        {
+            return BadRequest(new CustomError{ Message = "The invitation has already been processed. Proceed to confirm your membership in the group" } );
+        }
+
+        if (!(updateDto.Status == "cancelled" || updateDto.Status == "approved"  || updateDto.Status == "rejected"))
+        {
+            return BadRequest(new CustomError{ Message = "You can only cancel or approve an invitation" });
+        }
+
+        if (!Guid.TryParse(updateDto.Initiator, out Guid parsedInitiator))
+        {
+            return BadRequest(new CustomError {Message = "Invalid initiator provided"});
+        }
+
+        // if initiator is not the creator of the invitation or the invitation invitee, cancel request
+        if (!(invitation.CreatedById == parsedInitiator ||  invitation.InviteeUserId == parsedInitiator))
+        {
+            return BadRequest(new CustomError { Message = "You are not authorized to update this invitation" } );
+        } 
+
+        if (invitation.Status == "cancelled")
+        {
+            return BadRequest(new CustomError{ Message = "Invitation has already been cancelled" });
+        }
+
+        if (updateDto.Status == "approved")
+        {
+            // Create member entry for the user
+            var membership = new UserGroup
+            {
+                GroupId = invitation.GroupId,
+                UserId = invitation.InviteeUserId,
+            };
+
+            await _dbContext.UserGroups.AddAsync(membership);
+       
+            await _dbContext.GroupInvitations
+                .Where(gi => gi.Id == invitationId)
+                .ExecuteDeleteAsync();
+
+            return Ok(new { message = "Invitation approved successfully" });
+        } 
+        else // status == "cancelled"
+        {
+            // If initiator is the the creator, delete it automatically
+            if (parsedInitiator == invitation.CreatedById)
+            {
+                await _dbContext.GroupInvitations
+                    .Where(gi => gi.Id == invitationId)
+                    .ExecuteDeleteAsync();
+            }
+            else
+            {
+                invitation.Status = "cancelled";
+                await _dbContext.SaveChangesAsync();
+            } 
+
+            return Ok(new { message = "Invitation approved successfully" });
+        }
+    }
+
     [HttpPost("group/{groupId}/invite")]
     public async Task<IActionResult> CreateGroupInvitation([FromRoute] string groupId, [FromBody] CreateInvitationDto inviteDto)
     {
