@@ -116,7 +116,7 @@ public class GroupInvitationController : ControllerBase
         return Ok(new { Message , InvitationId = invitation.Id });
     }
 
-    [HttpGet("groups/invite")]
+    [HttpGet("groups/invite/search")]
     public async Task<IActionResult> GetGroupsToJoin(
         [FromQuery] string userId,
         [FromQuery] string query,
@@ -145,7 +145,8 @@ public class GroupInvitationController : ControllerBase
         if (!string.IsNullOrEmpty(query))
         {
             baseQuery = baseQuery.Where(g =>
-                EF.Functions.Like(g.Name, $"%{query}%")
+                // EF.Functions.Like(g.Name, $"%{query}%") // Doesn't seem to work, investigate later
+                g.Name.ToLower().Contains(query.ToLower())
             );
         }
 
@@ -173,7 +174,11 @@ public class GroupInvitationController : ControllerBase
             {
                 Id = g.Id,
                 Name = g.Name,
-                Description = g.Description
+                Description = g.Description,
+                MemberCount = g.Members.Count,
+                CreatorFullName = g.CreatedBy.FullName,
+                CreatorEmail = g.CreatedBy.FullName,
+                CreatedAt = g.Created
             })
             .AsNoTracking()
             .ToListAsync();
@@ -194,7 +199,7 @@ public class GroupInvitationController : ControllerBase
         Guid? nextCursor = null;
         Guid? prevCursor = null;
 
-        if (groups.Any())
+        if (groups.Count != 0)
         {
             nextCursor = groups.Last().Id;
             prevCursor = groups.First().Id;
@@ -204,7 +209,7 @@ public class GroupInvitationController : ControllerBase
         bool hasNextPage = false;
         bool hasPrevPage = false;
 
-        if (groups.Any())
+        if (groups.Count != 0)
         {
             var firstId = groups.First().Id;
             var lastId = groups.Last().Id;
@@ -258,8 +263,11 @@ public class GroupInvitationController : ControllerBase
         if (!string.IsNullOrEmpty(query))
         {
             baseQuery = baseQuery.Where(u =>
-                EF.Functions.Like(u.FullName, $"%{query}%") ||
-                EF.Functions.Like(u.Email, $"%{query}%")
+                // EF.Functions.Like(u.FullName, $"%{query}%") ||
+                // EF.Functions.Like(u.Email, $"%{query}%")
+                
+                u.FullName.ToLower().Contains(query.ToLower()) ||
+                u.Email.ToLower().Contains(query.ToLower()) 
             );
         }
 
