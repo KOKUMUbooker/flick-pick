@@ -89,6 +89,11 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
 			});
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.GROUP_INVITES + user?.id || "" + selectedGroupToJoin?.id || ""],
+			});
 		}
 	}));
 
