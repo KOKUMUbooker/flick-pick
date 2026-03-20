@@ -56,7 +56,7 @@
 		Error, // error type
 		{ groups: DBGroup[] } // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.GROUPS],
+		queryKey: [QUERY_KEYS.GROUPS + user?.id || ""],
 		queryFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/groups?userId=${user?.id}`, {
 				method: 'GET',

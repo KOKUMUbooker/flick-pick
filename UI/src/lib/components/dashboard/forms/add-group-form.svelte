@@ -44,7 +44,7 @@
 			});
 		},
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GROUPS] });
+			await queryClient.invalidateQueries({ queryKey:  [QUERY_KEYS.GROUPS + user?.id || ""] });
 		}
 	}));
 	const user = getAppUser();
