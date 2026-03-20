@@ -159,7 +159,7 @@ public class GroupInvitationSearchController : ControllerBase
 
         // Base query (users NOT in group)
         var baseQuery = _dbContext.Users
-            .Where(u => !u.UserGroups.Any(ug => ug.GroupId == groupId || ug.UserId == userId));
+            .Where(u => !u.UserGroups.Any(ug => (ug.GroupId == groupId || ug.UserId == userId)) && u.Role.RoleValue != RoleEnum.Admin);
 
         // Search filter (safe for EF)
         if (!string.IsNullOrEmpty(query))
