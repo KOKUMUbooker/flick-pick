@@ -5,9 +5,9 @@
 	import { API_BASE_URL } from "../../../api/urls";
 	import { getAppUser } from "../../../store";
 	import SearchBar from "../common/SearchBar.svelte";
-	import GroupSearchResults from "../dashboard/group-search/group-search-results.svelte";
+	import GroupSearchResults from "./group-search/group-search-results.svelte";
 	import { useId } from "bits-ui";
-	import GroupSelectionConfirmation from "../dashboard/group-search/group-selection-confirmation.svelte";
+	import GroupSelectionConfirmation from "./group-search/group-selection-confirmation.svelte";
 
 	interface SearchJoinGroupsFlowProps {
 		onCancel: ()=>void

@@ -11,7 +11,7 @@
 	import InvitesTabContent from '@/components/groups/invites-tab-content.svelte';
 	import MembersTabContent from '@/components/groups/members-tab-content.svelte';
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
-	import SearchJoinGroupsFlow from '@/components/groups/search-join-groups-flow.svelte';
+	import SearchJoinGroupsFlow from '@/components/dashboard/search-join-groups-flow.svelte';
 	import UpcomingEventsTabContent from '@/components/groups/upcoming-events-tab-content.svelte';
 	import TabsContent from '@/components/ui/tabs/tabs-content.svelte';
 	import { Calendar, Clock, MailPlus, Menu, Plus, UserPlus, Users } from '@lucide/svelte';
