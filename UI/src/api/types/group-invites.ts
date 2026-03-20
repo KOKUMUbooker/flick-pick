@@ -49,3 +49,27 @@ export interface FetchGroupsToJoinRes {
     hasNextPage: boolean,
     hasPrevPage: boolean
 }
+
+// Fetched users to send invites
+export interface FetchedUsersToInviteQueryData {
+    groupId: string,
+    userId: string,
+    query: string,
+    cursor?: string,
+    limit?: number,
+    direction: CursorDirection
+}
+
+export interface UserToInvite {
+    id: string;
+    fullName: string;
+    email: string
+}
+
+export interface FetchUsersToInviteRes {
+    results: UserToInvite[],
+    nextCursor: string,
+    prevCursor: string,
+    hasNextPage: boolean,
+    hasPrevPage: boolean
+}

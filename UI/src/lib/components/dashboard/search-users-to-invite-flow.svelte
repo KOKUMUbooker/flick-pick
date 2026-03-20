@@ -1,34 +1,36 @@
 <script lang="ts">
 	import { ArrowLeft, Check, Loader2, X } from "@lucide/svelte";
 	import { apiFetch, QUERY_KEYS, queryClient } from "../../../api";
-	import type { FetchGroupsToJoinQueryData, FetchGroupsToJoinRes, GroupToJoin, SearchState } from "../../../api/types";
+	import type { FetchedUsersToInviteQueryData, FetchUsersToInviteRes, SearchState, UserToInvite } from "../../../api/types";
 	import { API_BASE_URL } from "../../../api/urls";
 	import { getAppUser } from "../../../store";
+	import type { DBGroup } from "../../../types";
 	import SearchBar from "../common/SearchBar.svelte";
-	import GroupSearchResults from "./group-search/group-search-results.svelte";
-	import GroupSelectionConfirmation from "./group-search/group-selection-confirmation.svelte";
+	import UserSelectionConfirmation from "./user-search/user-selection-confirmation.svelte";
+	import UserToInviteSearchResults from "./user-search/user-to-invite-search-results.svelte";
 
-	interface SearchJoinGroupsFlowProps {
+	interface SearchUsersToInviteFlowProps {
+		selectedGroup: DBGroup | null;
 		onCancel: ()=>void
 		onGroupSelectConfirm: ()=>void
 	}
 
-	let {onCancel,onGroupSelectConfirm} : SearchJoinGroupsFlowProps = $props()
+	let { onCancel, onGroupSelectConfirm, selectedGroup } : SearchUsersToInviteFlowProps = $props()
     let searchQuery = $state("")
     let currentState: SearchState = $state('idle');
-    let selectedGroupToJoin: GroupToJoin | null = $state(null);
-	let searchResults: FetchGroupsToJoinRes | null = $state(null);
+    let selectedUserToInvite: UserToInvite | null = $state(null);
+	let searchResults: FetchUsersToInviteRes | null = $state(null);
 	let isSearching = $state(false);
 	let error = $state<string | null>(null);
 	let user = getAppUser();
 
-    async function searchGroups(data: FetchGroupsToJoinQueryData): Promise<FetchGroupsToJoinRes> {
-        const {direction="next",query,userId,cursor,limit=10} = data;
+    async function searchUsersToInvite(data: FetchedUsersToInviteQueryData): Promise<FetchUsersToInviteRes> {
+        const { direction = "next", query, userId, cursor, limit = 10 } = data;
 		return queryClient.fetchQuery({
-            queryKey: [QUERY_KEYS.GROUPS_TO_JOIN + query],
+            queryKey: [QUERY_KEYS.USERS_TO_INVITE + query + selectedGroup?.id ],
             queryFn: async () => {
-                const response = await apiFetch<FetchGroupsToJoinRes>(
-                    `${API_BASE_URL}/api/groups/invite/search?query=${query}&userId=${encodeURIComponent(userId)}&direction=${direction}&cursor=${encodeURIComponent(cursor || "")}&limit=${limit}`,
+                const response = await apiFetch<FetchUsersToInviteRes>(
+                    `${API_BASE_URL}/api/users/invite/search?groupId=${encodeURIComponent(selectedGroup?.id || "")}&query=${query}&userId=${encodeURIComponent(userId)}&direction=${direction}&cursor=${encodeURIComponent(cursor || "")}&limit=${limit}`,
                     {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json' }
@@ -53,8 +55,13 @@
             error = null;
             currentState = 'searching';
 
-           const res = await searchGroups({ query, userId:user?.id || "", direction:"next" })
-           if (!res){
+           const res = await searchUsersToInvite({ 
+				query, 
+		    	direction:"next",
+				userId:user?.id || "",
+				groupId:selectedGroup?.id || ''
+			})
+           if (!res) {
 				currentState = 'idle';
  				return
 			}
@@ -70,14 +77,14 @@
         }
     }
 
-    // Handle group selection
-	function handleSelectGroup(group: GroupToJoin) {
-		selectedGroupToJoin = group;
+    // Handle user selection
+	function handleSelectUserToInvite(user: UserToInvite) {
+		selectedUserToInvite = user;
 		currentState = 'confirming';
 	}
 
-    // Handle group selection confirmation
-	async function handleConfirmGroupSelection() {
+    // Handle user selection confirmation
+	async function handleConfirmUserToInvite() {
 		onGroupSelectConfirm()
 	}
 
@@ -85,7 +92,7 @@
 	function handleBack() {
 		if (currentState === 'confirming') {
 			currentState = 'results';
-			selectedGroupToJoin = null;
+			selectedUserToInvite = null;
 		} else if (currentState === 'results') {
 			currentState = 'idle';
 			searchQuery = '';
@@ -116,11 +123,11 @@
 					{/if}
 					<h2 class="text-lg font-semibold">
 						{#if currentState === 'confirming'}
-							Confirm Group Selection
+							Confirm User Selection
 						{:else if currentState === 'success'}
-							Group join request sent successfully
+							User invitation sent successfully
 						{:else}
-							Search for a group to join
+							Search for a user to invite to the group : {selectedGroup?.name}
 						{/if}
 					</h2>
 				</div>
@@ -148,11 +155,11 @@
 						</div>
 						<h3 class="mb-2 text-xl font-semibold">Group successfully </h3>
 						<p class="text-muted-foreground">
-							A join request has been successfully sent to the group {selectedGroupToJoin?.name}
+							An invite has been successfully sent to {selectedUserToInvite?.fullName}
 						</p>
 					</div>
 				{:else}
-					 <SearchBar {onSearch} query={searchQuery} placeholder="Start typing the group name..."/>
+					 <SearchBar {onSearch} query={searchQuery} placeholder="Start typing the user name..."/>
 
 					{#if currentState === 'searching'}
 						<div class="flex justify-center py-12">
@@ -161,13 +168,14 @@
 					{/if}
 
 					{#if currentState === 'results'}
-						<GroupSearchResults results={searchResults} searchQuery={searchQuery} userId={user?.id || ""} onSelect={handleSelectGroup} searchGroups={searchGroups}/>
+						<UserToInviteSearchResults results={searchResults} searchQuery={searchQuery} userId={user?.id || ""} onSelect={handleSelectUserToInvite}  groupId={selectedGroup?.id || ""} searchUsersToInvite={searchUsersToInvite} />
 					{/if}
 
-					{#if currentState === 'confirming' && selectedGroupToJoin}
-						<GroupSelectionConfirmation
-							group={selectedGroupToJoin}
-							onConfirm={handleConfirmGroupSelection}
+					{#if currentState === 'confirming' && selectedUserToInvite}
+						<UserSelectionConfirmation
+							user={selectedUserToInvite}
+							group={selectedGroup}
+							onConfirm={handleConfirmUserToInvite}
 							onCancel={() => handleBack()}
 						/>
 					{/if}
