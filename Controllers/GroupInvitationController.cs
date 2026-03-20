@@ -233,21 +233,23 @@ public class GroupInvitationController : ControllerBase
         });
     }
 
-    [HttpGet("users/invite")]
+    [HttpGet("users/invite/search")]
     public async Task<IActionResult> GetUsersToJoinGroup(
-        [FromQuery] string groupId,
         [FromQuery] string query,
+        [FromQuery] Guid groupId,
+        [FromQuery] Guid userId,
         [FromQuery] Guid? cursor,
         [FromQuery] int? limit,
         [FromQuery] string direction = "next" // "next" | "prev"
     )
     {
-        if (!Guid.TryParse(groupId, out Guid parsedGroupId))
+        var userExists = await _dbContext.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
         {
-            return BadRequest(new CustomError { Message = "Invalid group id provided" });
+            return NotFound(new CustomError { Message = "The user does not exist" });
         }
 
-        var groupExists = await _dbContext.Groups.AnyAsync(g => g.Id == parsedGroupId);
+        var groupExists = await _dbContext.Groups.AnyAsync(g => g.Id == groupId);
         if (!groupExists)
         {
             return NotFound(new CustomError { Message = "The group does not exist" });
@@ -257,7 +259,7 @@ public class GroupInvitationController : ControllerBase
 
         // Base query (users NOT in group)
         var baseQuery = _dbContext.Users
-            .Where(u => !u.UserGroups.Any(ug => ug.GroupId == parsedGroupId));
+            .Where(u => !u.UserGroups.Any(ug => ug.GroupId == groupId || ug.UserId == userId));
 
         // Search filter (safe for EF)
         if (!string.IsNullOrEmpty(query))
