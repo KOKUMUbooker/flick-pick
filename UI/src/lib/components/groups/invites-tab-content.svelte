@@ -1,12 +1,12 @@
 <script lang="ts">
 	import {
 		AlertCircle,
-		Ban,
 		Check,
 		CheckCircle,
 		Clock,
 		LogIn,
 		Mail,
+		MailPlus,
 		RefreshCw,
 		UserPlus,
 		Users,
@@ -38,7 +38,7 @@
 		GroupInvitationsRes // response type
 	>(() => ({
 		queryKey: [QUERY_KEYS.GROUP_INVITES + user?.id || ""],
-		queryFn: async (data) => {
+		queryFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/group/invites?userId=${encodeURIComponent(user?.id || "")}`, {
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' }
@@ -82,11 +82,6 @@
         // TODO: Implement cancel logic
     }
 
-    function handleReject(invitation: GroupInvitationItem) {
-        console.log('Reject invitation:', invitation);
-        // TODO: Implement reject logic
-    }
-
     function handleRefetch() {
         invitesQuery.refetch();
     }
@@ -123,23 +118,23 @@
             <div class="space-y-4">
                 {#each invitesQuery.data.invitations as invitation (invitation.id)}
                     {@const statusConfig = getStatusBadge(invitation.status)}
-                    {@const isAdmin = isAdminInvite(invitation)}
-                    {@const isRequest = isUserRequest(invitation)}
+                    {@const isAdminInvitation = isAdminInvite(invitation)}
+                    {@const isJoinRequest = isUserRequest(invitation)}
                     
-                    <Card class="group transition-all hover:shadow-md hover:border-primary/20">
+                    <Card class="group transition-all hover:shadow-md hover:border-primary">
                         <CardContent class="p-6">
                             <div class="flex flex-col md:flex-row md:items-start gap-4">
                                 <!-- Icon/Avatar -->
                                 <div class="hidden md:block">
                                     <div class={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                                        isAdmin 
+                                        isAdminInvitation 
                                             ? 'bg-primary/10 text-primary' 
                                             : 'bg-purple-500/10 text-purple-500'
                                     }`}>
-                                        {#if isAdmin}
+                                        {#if isAdminInvitation}
                                             <UserPlus class="h-5 w-5" />
                                         {:else}
-                                            <LogIn class="h-5 w-5" />
+                                            <MailPlus class="h-5 w-5" />
                                         {/if}
                                     </div>
                                 </div>
@@ -154,15 +149,15 @@
                                                     <statusConfig.icon class="h-3 w-3" />
                                                     {statusConfig.label}
                                                 </Badge>
-                                                {#if isAdmin}
+                                                {#if isAdminInvitation}
                                                     <Badge variant="secondary" class="gap-1">
                                                         <UserPlus class="h-3 w-3" />
-                                                        Admin Invite
+                                                        Admin Sent Invitation
                                                     </Badge>
                                                 {:else}
                                                     <Badge variant="secondary" class="gap-1">
-                                                        <LogIn class="h-3 w-3" />
-                                                        Join Request
+                                                        <MailPlus class="h-3 w-3" />
+                                                        Personal Join Request
                                                     </Badge>
                                                 {/if}
                                             </div>
@@ -179,7 +174,7 @@
                                                     <span class="text-muted-foreground">{invitation.group.name}</span>
                                                 </div>
                                                 
-                                                {#if isAdmin}
+                                                {#if isAdminInvitation}
                                                     <!-- Admin inviting someone -->
                                                     <div class="flex items-center gap-2">
                                                         <UserPlus class="h-4 w-4 text-muted-foreground" />
@@ -207,40 +202,35 @@
                                 <!-- Actions -->
                                 <div class="flex flex-row md:flex-col gap-2 md:ml-auto">
                                     {#if invitation.status === 'pending'}
-                                        {#if isAdmin}
-                                            <!-- Admin Invite: Cancel -->
-                                            <Button 
-                                                size="sm" 
-                                                variant="outline"
-                                                class="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                onclick={() => handleCancel(invitation)}
-                                            >
-                                                <Ban class="h-4 w-4 md:mr-2" />
-                                                <span class="hidden md:inline">Cancel</span>
-                                            </Button>
-                                        {:else}
-                                            <!-- User Request: Accept/Reject -->
+                                    <!-- User Request: Accept/Reject -->
                                             <div class="flex gap-2">
-                                                <Button 
-                                                    size="sm"
-                                                    class="bg-green-600 hover:bg-green-700 text-white"
-                                                    onclick={() => handleAccept(invitation)}
-                                                >
-                                                    <Check class="h-4 w-4 md:mr-2" />
-                                                    <span class="hidden md:inline">Accept</span>
-                                                </Button>
+                                                {#if 
+                                                    (user?.email === invitation.invitee.email && !isJoinRequest) ||
+                                                    (isAdminInvitation && selectedGroup?.isUserAdmin && invitation.createdBy.email != user?.email)
+                                                 }
+                                                    <Button 
+                                                        size="sm"
+                                                        class="bg-green-600 hover:bg-green-700 text-white"
+                                                        onclick={() => handleAccept(invitation)}
+                                                    >
+                                                        <Check class="h-4 w-4 md:mr-2" />
+                                                        <span class="hidden md:inline">Accept</span>
+                                                    </Button>
+                                                {/if}
+                                                
                                                 <Button 
                                                     size="sm" 
                                                     variant="outline"
                                                     class="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                    onclick={() => handleReject(invitation)}
+                                                    onclick={() => handleCancel(invitation)}
                                                 >
                                                     <X class="h-4 w-4 md:mr-2" />
-                                                    <span class="hidden md:inline">Reject</span>
+                                                    <span class="hidden md:inline">
+                                                        Cancel
+                                                    </span>
                                                 </Button>
                                             </div>
-                                        {/if}
-                                    {/if}
+                                     {/if}
                                 </div>
                             </div>
                         </CardContent>
