@@ -32,7 +32,8 @@ public class GroupInvitationController : ControllerBase
                         Id = gi.Id,
                         Group = new
                         {
-                            Name = gi.Group.Name
+                            Name = gi.Group.Name,
+                            Description = gi.Group.Description ?? "",
                         },
                         Invitee = new
                         {
@@ -81,9 +82,11 @@ public class GroupInvitationController : ControllerBase
         }
 
         // Check for an unresolved group invitation
-        var invitationExists = await _dbContext.GroupInvitations
-                    .AnyAsync(gi => gi.InviteeUserId == parsedInviteeUserId && gi.GroupId == parsedGroupId);
-        if (invitationExists)
+        var pendingInvitationExists = await _dbContext.GroupInvitations
+                    .AnyAsync(gi => gi.InviteeUserId == parsedInviteeUserId 
+                                    && gi.GroupId == parsedGroupId
+                                    && gi.Status == "pending");
+        if (pendingInvitationExists)
         {
             return BadRequest(new CustomError{Message = "An earlier invitation had been sent. No new invitations allowed until the initial is resolved" });
         }
