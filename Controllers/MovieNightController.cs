@@ -17,11 +17,40 @@ public class MovieNightController : ControllerBase
     }
 
     [HttpPost("groups/{groupId}/movie-night")]
-    public async Task<IActionResult> CreateMovieNight([FromRoute] string groupId, [FromBody] CreateMovieNightDto movieNightDto)
+    public async Task<IActionResult> UpsertMovieNight(
+        [FromRoute] Guid groupId, 
+        [FromQuery] Guid userId,
+        [FromBody] UpsertMovieNightDto movieNightDto
+    )
     {
-        if (!Guid.TryParse(groupId, out Guid parsedGroupId))
+        if (!string.IsNullOrEmpty(movieNightDto.Id) && !string.IsNullOrWhiteSpace(movieNightDto.Id)) // Update logic
         {
-            return BadRequest(new CustomError { Message = "Invalid groupId provided" });
+            if (!Guid.TryParse(movieNightDto.Id, out Guid parsedEventId))
+            {
+                return BadRequest(new CustomError { Message = "Invalid movie event id provided" });
+            }
+
+            // Allow only group admins to update the movie event
+            var isGroupAdmin = await _dbContext.UserGroups
+                                    .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId && ug.IsAdmin);
+            if (!isGroupAdmin)
+            {
+                return BadRequest(new CustomError {Message = "You are not allowed to update this movie event"});
+            }
+
+            var movieEvent = await _dbContext.MovieNightEvents.FindAsync(parsedEventId);
+            if (movieEvent == null)
+            {
+                return BadRequest(new CustomError{ Message = "The movie event does not exist" });
+            }
+
+            movieEvent.Name = movieNightDto.Name ?? movieEvent.Name;
+            movieEvent.Description = movieNightDto.Description ?? movieEvent.Description;
+            // movieEvent.ScheduledAt = movieNightDto.ScheduledAt != null ? movieNightDto.ScheduledAt : movieEvent.ScheduledAt; // TODO: Find a robust solution for this
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new {message="Movie event updated successfully",movieNightId=movieEvent.Id});
         }
 
         if (!Guid.TryParse(movieNightDto.CreatedById, out Guid parsedUserId))
@@ -29,7 +58,7 @@ public class MovieNightController : ControllerBase
             return BadRequest(new CustomError { Message = "Invalid userId provided" });
         }
 
-        var groupExists = await _dbContext.Groups.FindAsync(parsedGroupId);
+        var groupExists = await _dbContext.Groups.FindAsync(groupId);
         if (groupExists == null)
         {
             return NotFound(new CustomError{ Message = "The movie night's group does not exist" });
@@ -46,7 +75,7 @@ public class MovieNightController : ControllerBase
             Name = movieNightDto.Name,
             Description = movieNightDto.Description ?? "",
             CreatedById = parsedUserId,
-            GroupId = parsedGroupId,
+            GroupId = groupId,
             ScheduledAt = movieNightDto.ScheduledAt
         };
 
