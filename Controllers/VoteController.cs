@@ -1,6 +1,7 @@
 namespace WatchHive.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WatchHive.DTOs;
 using WatchHive.Models;
 
@@ -39,6 +40,11 @@ public class VoteController : ControllerBase
         {
             return NotFound(new CustomError{ Message = "The user creating the movie night does not exist" });
         }
+
+        // Delete other votes made by the user for the suggestion before adding a new one
+        await _dbContext.Votes 
+                .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == parsedMovieSuggestionId)
+                .ExecuteDeleteAsync();
 
         var vote = new Vote
         {

@@ -41,7 +41,7 @@
 	>(() => ({
 		queryKey: [QUERY_KEYS.GROUP_INVITES + user?.id || "" + selectedGroup?.id || ""],
 		queryFn: async () => {
-			return apiFetch(`${API_BASE_URL}/api/group/invites?userId=${encodeURIComponent(user?.id || "")}`, {
+ 			return apiFetch(`${API_BASE_URL}/api/group/invites/${selectedGroup?.id || ""}?userId=${encodeURIComponent(user?.id || "")}`, {
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' }
 			});
@@ -263,6 +263,7 @@
                                             <div class="flex gap-2">
                                                 {#if 
                                                     (user?.email === invitation.invitee.email && !isJoinRequest) ||
+                                                    (user?.email !== invitation.invitee.email && isJoinRequest && selectedGroup?.isUserAdmin) ||
                                                     (isAdminInvitation && selectedGroup?.isUserAdmin && invitation.createdBy.email != user?.email)
                                                  }
                                                     <Button 

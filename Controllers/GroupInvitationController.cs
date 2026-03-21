@@ -16,16 +16,46 @@ public class GroupInvitationController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet("group/invites")]
-    public async Task<IActionResult> GetGroupInvites([FromQuery] string userId)
+    [HttpGet("group/invites/{groupId?}")]
+    public async Task<IActionResult> GetGroupInvites([FromQuery] Guid userId, [FromRoute] Guid? groupId)
     {
-           if (!Guid.TryParse(userId, out Guid parsedUserId))
+        if (groupId != null)
         {
-            return BadRequest(new CustomError {Message = "Invalid user id provided"});
+           var isAdmin = await _dbContext.UserGroups
+                .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId && ug.IsAdmin);
+            if (isAdmin)
+            {
+                var adminInvitations = await _dbContext.GroupInvitations
+                        .Where(gi => gi.GroupId == groupId)
+                        .AsNoTracking()
+                        .Select(gi => new
+                        {
+                            Id = gi.Id,
+                            Group = new
+                            {
+                                Name = gi.Group.Name,
+                                Description = gi.Group.Description ?? "",
+                            },
+                            Invitee = new
+                            {
+                                FullName = gi.Invitee.FullName,
+                                Email = gi.Invitee.Email
+                            },
+                            CreatedBy = new
+                            {
+                                FullName = gi.CreatedBy.FullName,
+                                Email = gi.CreatedBy.Email
+                            },
+                            Status = gi.Status
+                        })
+                        .ToListAsync();
+
+                        return Ok(new { invitations = adminInvitations } );
+            }
         }
 
         var invitations = await _dbContext.GroupInvitations
-                    .Where(gi => gi.InviteeUserId == parsedUserId || gi.CreatedById == parsedUserId)
+                    .Where(gi => gi.InviteeUserId == userId || gi.CreatedById == userId)
                     .AsNoTracking()
                     .Select(gi => new
                     {
