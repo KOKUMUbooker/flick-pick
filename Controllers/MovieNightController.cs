@@ -86,6 +86,28 @@ public class MovieNightController : ControllerBase
         return Ok(new { Message = "Movie night event created successfully", movieNightId = movieNight.Id });
     }
 
+    [HttpDelete("groups/{groupId}/movie-event/{movieEventId}")]
+    public async Task<IActionResult> DeleteMovieEvent(
+        [FromRoute] Guid groupId,
+        [FromRoute] Guid movieEventId,
+        [FromQuery] Guid userId
+    )
+    {
+        // Allow only group admins to update the movie event
+        var isGroupAdmin = await _dbContext.UserGroups
+                                .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId && ug.IsAdmin);
+        if (!isGroupAdmin)
+        {
+            return BadRequest(new CustomError {Message = "You are not allowed to delete this movie event"});
+        }
+
+        await _dbContext.MovieNightEvents
+                .Where(me => me.Id == movieEventId)
+                .ExecuteDeleteAsync();
+
+        return Ok(new {message = "Movie Event deleted successfully" });
+    }
+
     [HttpGet("groups/{groupId}/movie-nights")]
     public async Task<IActionResult> FetchMovieNights([FromRoute] string groupId,[FromQuery] string? status)
     {
