@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { EditIcon, MailPlus, Plus, Trash, Users } from '@lucide/svelte';
 	import type { DBGroup } from "../../../types";
-    import { EditIcon, MailPlus, Plus, Trash, Users } from '@lucide/svelte';
 	import Button from '../ui/button/button.svelte';
 
     interface GroupActionsMobile {
@@ -9,20 +9,22 @@
  		showJoinGroupsDialog: boolean;
 		showSendInviteDialog: boolean;
         showAddGroupDialog: boolean;
+        showDeleteWarnDialog: boolean;
 	}
 	let {
 		createNewEvent,
  		selectedGroup,
 		showJoinGroupsDialog = $bindable(),
 		showSendInviteDialog = $bindable(),
-        showAddGroupDialog = $bindable()
+        showAddGroupDialog = $bindable(),
+        showDeleteWarnDialog = $bindable(),
 	}: GroupActionsMobile = $props();
 </script>
 
 <div class="flex h-16 items-center justify-between">
     <div class="flex flex-row gap-2 items-center">
         <Button variant="outline" onclick={()=>showAddGroupDialog=true}> <EditIcon/> </Button>
-        <Button variant="destructive"> <Trash/> </Button>
+        <Button variant="destructive" onclick={()=>showDeleteWarnDialog=true}> <Trash/> </Button>
     </div>
 
     <div class="flex items-center gap-2">

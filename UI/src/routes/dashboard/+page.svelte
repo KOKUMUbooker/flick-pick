@@ -18,10 +18,10 @@
 	import TabsContent from '@/components/ui/tabs/tabs-content.svelte';
 	import { getIsMobile } from '@/hooks/is-mobile.svelte';
 	import { Calendar, Clock, MailPlus, Menu, Plus, UserPlus, Users } from '@lucide/svelte';
-	import { createQuery } from '@tanstack/svelte-query';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { apiFetch, QUERY_KEYS } from '../../api';
+	import { apiFetch, QUERY_KEYS, queryClient } from '../../api';
 	import { API_BASE_URL } from '../../api/urls';
 	import { appState, getAppUser, hubIsDisconnected } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
@@ -34,6 +34,7 @@
 	let showPendingInvitesDialog = $state(false) 
 	let showJoinGroupsDialog = $state(false) 
 	let showSendInviteDialog = $state(false) 
+	let showDeleteWarnDialog = $state(false)
 
 	// Track selected event for chat view
 	let selectedGroup = $state<DBGroup | null>(null);
@@ -73,6 +74,8 @@
 	// Initialize
 	onMount(async () => {
 		try {
+			if (!user) return
+
 			// 1. Fetch groups
 			shouldFetchGroups = true;
 			const groupsRes = await groupsQuery.refetch();
@@ -124,6 +127,34 @@
 		sidebarOpen = !sidebarOpen;
 	}
 
+	let groupDeleteMutation = createMutation<
+		{message : string}, // response type
+		Error, // error type
+		void // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id || ""}/del?userId=${encodeURIComponent(user?.id || "")}`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey:  [QUERY_KEYS.GROUPS + user?.id || ""] });
+			selectedGroup = null
+		}
+	}));
+
+	function onShowDelWarningOnchange(show:boolean) {
+		showDeleteWarnDialog = show
+	}
+
+	async function onProceedGroupDelete() {
+		const res = await groupDeleteMutation.mutateAsync();
+		toast.success(res.message,{richColors:true});
+		onShowDelWarningOnchange(false)
+	}
+
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -157,6 +188,16 @@
 
 <CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
 	<AddMovieNightForm bind:selectedGroup onOpenChange={onShowMovieNightDialogOpenChange} />
+</CustomDialog>
+
+<CustomDialog 
+	header={{title:"Are you sure?"}} 
+	bind:open={showDeleteWarnDialog} 
+	onOpenChange={onShowDelWarningOnchange}
+	isLoading={groupDeleteMutation.isPending}
+	actions={{onProceed:onProceedGroupDelete}}
+>
+	<p>Are you sure you want to delete this group and all of its data? This action is irreversible so proceed with caution.</p>
 </CustomDialog>
 
 <div class="flex min-h-screen bg-background">
@@ -203,6 +244,7 @@
 				bind:showSendInviteDialog={showSendInviteDialog} 
 				bind:showJoinGroupsDialog={showJoinGroupsDialog} 
 				bind:showAddGroupDialog={showAddGroupDialog} 
+				bind:showDeleteWarnDialog={showDeleteWarnDialog} 
 			/>
 
 			<!-- Main Content Area -->
@@ -233,7 +275,14 @@
 								</TabsTrigger>
 							</TabsList>
 						{:else}
-							<GroupActionsMobile bind:showAddGroupDialog={showAddGroupDialog}  {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog}/>
+							<GroupActionsMobile 
+								{selectedGroup} 
+								{createNewEvent} 
+								bind:showAddGroupDialog={showAddGroupDialog}  
+								bind:showSendInviteDialog={showSendInviteDialog} 
+								bind:showJoinGroupsDialog={showJoinGroupsDialog}
+								bind:showDeleteWarnDialog={showDeleteWarnDialog} 
+							/>
 						{/if}
 
 						<!-- Upcoming Events Tab -->
@@ -259,24 +308,28 @@
 					<Users class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 					<h2 class="mb-2 text-2xl font-semibold">Welcome to WatchHive</h2>
 					<p class="mb-6 text-muted-foreground">
-						Select a group from the sidebar or create your first group to start planning movie
-						nights.
+						{user ? 
+						"Select a group from the sidebar or create your first group to start planning movie nights." :
+						"Oops, it seems you're logged out, please proceed to login"
+						}
 					</p>
-					<div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
-						<Button onclick={createNewGroup}>
-							<Plus class="mr-2 h-4 w-4" />
-							Create Your First Group
-						</Button>
+					{#if user}
+						<div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
+							<Button onclick={createNewGroup}>
+								<Plus class="mr-2 h-4 w-4" />
+								Create Your First Group
+							</Button>
 
-						<Button variant="secondary" onclick={()=>showJoinGroupsDialog=true}>
-							<Users class="mr-2 h-4 w-4" />
-							Join Existing Group
-						</Button>
-						<Button variant="outline" onclick={()=>showPendingInvitesDialog=true}>
-							<MailPlus  class="mr-2 h-4 w-4" />
-							Check pending invites
-						</Button>
-					</div>
+							<Button variant="secondary" onclick={()=>showJoinGroupsDialog=true}>
+								<Users class="mr-2 h-4 w-4" />
+								Join Existing Group
+							</Button>
+							<Button variant="outline" onclick={()=>showPendingInvitesDialog=true}>
+								<MailPlus  class="mr-2 h-4 w-4" />
+								Check pending invites
+							</Button>
+						</div>
+					{/if}
 				</div>
 			</div>
 		{/if}
