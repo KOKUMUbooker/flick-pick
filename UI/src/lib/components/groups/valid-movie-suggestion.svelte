@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { Eye, ThumbsDown, ThumbsUp, Trash, XCircle } from "@lucide/svelte";
+	import { createMutation } from "@tanstack/svelte-query";
+	import { toast } from "svelte-sonner";
+	import { apiFetch, QUERY_KEYS, queryClient } from "../../../api";
 	import type { FetchedMovieSuggestion } from "../../../api/types/fetch-movie-suggestions";
+	import { API_BASE_URL } from "../../../api/urls";
 	import { getAppUser } from "../../../store";
 	import { VoteType, type MovieNightEvent } from "../../../types";
-	import Button from "../ui/button/button.svelte";
-	import { createMutation } from "@tanstack/svelte-query";
-	import { apiFetch, queryClient, QUERY_KEYS } from "../../../api";
-	import { API_BASE_URL } from "../../../api/urls";
 	import CustomDialog from "../common/CustomDialog.svelte";
-	import { toast } from "svelte-sonner";
+	import Button from "../ui/button/button.svelte";
+	import MovieDetailsContent from "./movie-details-content.svelte";
 
     interface MovieSuggestionItem {
         selectedGroupId : string | undefined;
@@ -19,6 +20,11 @@
 	let { suggestion, event = $bindable() ,selectedGroupId}: MovieSuggestionItem = $props();
 	let user = getAppUser();
     let showDeleteWarnDialog = $state(false);
+    let showMovieDetailsDialog = $state(false);
+
+    const onShowMovieDialogChange = (show:boolean) => {
+        showMovieDetailsDialog = show
+    }
 
     function canVote(event: MovieNightEvent): boolean {
 		return !event.isLocked && new Date(event.scheduledAt) > new Date();
@@ -56,6 +62,13 @@
 </script>
 
 
+<CustomDialog 
+	header={{title:"Movie Details"}} 
+	bind:open={showMovieDetailsDialog} 
+	onOpenChange={onShowMovieDialogChange}
+ >
+  <MovieDetailsContent movie={suggestion.movie}/>
+</CustomDialog>
 <CustomDialog 
 	header={{title:"Delete movie suggestion"}} 
 	bind:open={showDeleteWarnDialog} 
@@ -103,7 +116,7 @@
     {#if suggestion.suggestedBy.email !== user?.email}
         <div class="flex items-center justify-between">
             <div class="flex-1">
-                <Button size="sm" variant="outline" disabled={!canVote(event)} onclick={() => {}}>
+                <Button size="sm" variant="outline" onclick={() => showMovieDetailsDialog = true}>
                     <Eye class="mr-2 h-4 w-4" />
                     View Movie
                 </Button>
@@ -143,7 +156,7 @@
         </div>
     {:else}
         <div class="flex justify-between gap-2">
-            <Button size="sm" variant="outline" disabled={!canVote(event)} onclick={() => {}}>
+            <Button size="sm" variant="outline" onclick={() => showMovieDetailsDialog= true}>
                 <Eye class="mr-2 h-4 w-4" />
                 View Movie
             </Button>
