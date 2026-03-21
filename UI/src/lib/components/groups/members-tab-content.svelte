@@ -1,6 +1,13 @@
 <script lang="ts">
-	import { Link, Mail, MessageSquare, MoreVertical, Trash2, Users } from '@lucide/svelte';
-	import type { DBGroup, GroupMember,   } from '../../../types';
+	import { MoreVertical, Trash2, Users } from '@lucide/svelte';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
+	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
+	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
+	import { API_BASE_URL } from '../../../api/urls';
+	import { getAppUser } from '../../../store';
+	import type { DBGroup, GroupMember, } from '../../../types';
+	import CustomDialog from '../common/CustomDialog.svelte';
 	import { AvatarFallback } from '../ui/avatar';
 	import Avatar from '../ui/avatar/avatar.svelte';
 	import Badge from '../ui/badge/badge.svelte';
@@ -9,7 +16,6 @@
 		Card,
 		CardContent,
 		CardDescription,
-		CardFooter,
 		CardHeader,
 		CardTitle
 	} from '../ui/card';
@@ -20,14 +26,8 @@
 		DropdownMenuTrigger
 	} from '../ui/dropdown-menu';
 	import DropdownMenu from '../ui/dropdown-menu/dropdown-menu.svelte';
-	import Separator from '../ui/separator/separator.svelte';
-	import { TabsContent } from '../ui/tabs';
-	import { createQuery } from '@tanstack/svelte-query';
-	import { QUERY_KEYS, apiFetch } from '../../../api';
-	import { API_BASE_URL } from '../../../api/urls';
-	import { getAppUser } from '../../../store';
-	import { onMount } from 'svelte';
 	import Skeleton from '../ui/skeleton/skeleton.svelte';
+	import { TabsContent } from '../ui/tabs';
 
 	interface MembersTabContentProps {
 		selectedGroup: DBGroup | null;
@@ -36,6 +36,11 @@
 	let {  selectedGroup }: MembersTabContentProps = $props();
 	let user = getAppUser();
 
+	let selectedMember = $state<GroupMember | null>(null)
+	let roleAction = $state<"grant" | "revoke" | null>(null)
+	let showRoleChangeDialog = $state(false)
+	let showMemberRemovalDialog = $state(false)
+	
 	let fetchMembers = $state(false)
 	let membersQuery = createQuery<
 		null, // variables type
@@ -57,8 +62,85 @@
 		if (selectedGroup != null) await membersQuery.refetch()
 	})
 
+	let memberRemovalMutation = createMutation<
+		{message : string}, // response type
+		Error, // error type
+		void // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id || ""}/leave?initiator=${encodeURIComponent(user?.id || "")}&userId=${encodeURIComponent(selectedMember?.userId || "")}`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MEMBERS + selectedGroup?.id]});
+ 		}
+	}));
+	const onShowMemberRemovalDialog = (show:boolean) => {
+		if (show) showMemberRemovalDialog = true
+		else {
+ 			showMemberRemovalDialog = false
+			selectedMember = null
+		}
+	}
+	const onProceedMemberRemoval = async() =>{
+		const res = await memberRemovalMutation.mutateAsync()
+		toast.success(res.message,{richColors:true})
+		onShowMemberRemovalDialog(false)
+	}
+
+	let memberRoleChangeMutation = createMutation<
+		{ message : string }, // response type
+		Error, // error type
+		{ MakeAdmin : boolean } // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id || ""}/members/${selectedMember?.userId || ""}?initiator=${encodeURIComponent(user?.id || "")}&userId=${encodeURIComponent(selectedMember?.id || "")}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MEMBERS + selectedGroup?.id]});
+ 		}
+	}));
+	const onShowRoleChangeDialog = (show:boolean) => {
+		if (show) showRoleChangeDialog = true
+		else {
+			roleAction = null;
+			showRoleChangeDialog = false
+			selectedMember = null
+		}
+	}
+	const onProceedMemberRoleChange = async() => {
+		const res = await memberRoleChangeMutation.mutateAsync({MakeAdmin:roleAction == "revoke" ? false : true})
+		toast.success(res.message,{richColors:true})
+		onShowRoleChangeDialog(false)
+	}
+
  </script>
 
+<CustomDialog 
+	header={{title:"Are you sure?"}} 
+	bind:open={showRoleChangeDialog} 
+	onOpenChange={onShowRoleChangeDialog}
+	isLoading={memberRoleChangeMutation.isPending}
+	actions={{onProceed:onProceedMemberRoleChange}}
+>
+	<p>Are you sure you want to {roleAction == "grant"? `grant ${selectedMember?.fullName} an admin role?`:`revoke ${selectedMember?.fullName} of their admin role?`}</p>
+</CustomDialog>
+<CustomDialog 
+	header={{title:"Are you sure?"}} 
+	bind:open={showMemberRemovalDialog} 
+	onOpenChange={onShowMemberRemovalDialog}
+	isLoading={memberRemovalMutation.isPending}
+	actions={{onProceed:onProceedMemberRemoval}}
+>
+	<p>Are you sure you want to remove {selectedMember?.fullName} from the group?.</p>
+</CustomDialog>
 <TabsContent value="members" class="mt-6">
 	<Card>
 		<CardHeader>
@@ -99,30 +181,33 @@
 									{#if member.isAdmin}
 										<Badge variant="outline">Admin</Badge>
 									{/if}
-									<DropdownMenu>
-										<DropdownMenuTrigger>
-											<Button size="sm" variant="ghost">
-												<MoreVertical class="h-4 w-4" />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end">
-											<DropdownMenuItem>
-												<MessageSquare class="mr-2 h-4 w-4" />
-												Message
-											</DropdownMenuItem>
-											{#if !member.isAdmin}
-												<DropdownMenuItem>
+									{#if selectedGroup?.isUserAdmin && member.email != user?.email}
+										<DropdownMenu>
+											<DropdownMenuTrigger>
+												<Button size="sm" variant="ghost">
+													<MoreVertical class="h-4 w-4" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuItem onclick={()=>{
+													selectedMember = member
+													roleAction = member.isAdmin ? "revoke" : "grant"
+													showRoleChangeDialog = true
+												}}>
 													<Users class="mr-2 h-4 w-4" />
-													Make Admin
+													{member.isAdmin ? "Revoke Admin role" : "Make Admin"}
 												</DropdownMenuItem>
-											{/if}
-											<DropdownMenuSeparator />
-											<DropdownMenuItem class="text-destructive">
-												<Trash2 class="mr-2 h-4 w-4" />
-												Remove from Group
-											</DropdownMenuItem>
-										</DropdownMenuContent>
-									</DropdownMenu>
+ 												<DropdownMenuSeparator />
+												<DropdownMenuItem class="text-destructive" onclick={()=>{
+													selectedMember = member
+													showMemberRemovalDialog=true
+												}}>
+													<Trash2 class="mr-2 h-4 w-4" />
+													Remove from Group
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									{/if}
 								</div>
 							</div>
 						{/each}
