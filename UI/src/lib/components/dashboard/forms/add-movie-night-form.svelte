@@ -5,8 +5,8 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { cn, type WithElementRef } from '$lib/utils.js';
-	import { addMovieNightSchema } from '@/forms/add-movie-night-schema';
-	import { CalendarDate, getLocalTimeZone } from '@internationalized/date';
+	import { addMovieNightSchema, getDefaultMovieEventFormData } from '@/forms/add-movie-night-schema';
+	import { getLocalTimeZone } from '@internationalized/date';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import { createMutation } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
@@ -19,7 +19,7 @@
 	} from '../../../../api/types';
 	import { API_BASE_URL } from '../../../../api/urls';
 	import { getAppUser } from '../../../../store';
-	import type { DBGroup } from '../../../../types';
+	import type { DBGroup, MovieNightEvent } from '../../../../types';
 	import { combineDateTime } from '../../../../utils/combine-date-time';
 	import HelperText from '../../common/HelperText.svelte';
 	import Spinner from '../../ui/spinner/spinner.svelte';
@@ -27,23 +27,19 @@
 	interface AddMovieNightProps extends WithElementRef<HTMLFormAttributes> {
 		onOpenChange: (open: boolean) => void;
 		selectedGroup: DBGroup | null;
+		defaultMovieEvent?: MovieNightEvent
 	}
 
 	let {
 		ref = $bindable(null),
-		selectedGroup = $bindable(),
 		onOpenChange,
+		selectedGroup,
+		defaultMovieEvent = $bindable(),
 		class: className,
 		...restProps
 	}: AddMovieNightProps = $props();
-	let today = new Date();
-	let formData = $state<AddMovieNightEventFormData>({
-		Name: '',
-		Description: '',
-		ScheduledDate: new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate()),
-		ScheduledTime: '21:00',
-		ScheduledAt: new Date()
-	});
+ 	let defaultFormValues = getDefaultMovieEventFormData(defaultMovieEvent)
+	let formData = $state<AddMovieNightEventFormData>(defaultFormValues);
 	let errors: Record<string, string> = $state({});
 	let touched: Record<string, boolean> = $state({});
 	let open = $state(false);
@@ -54,7 +50,7 @@
 		AddMovieNightEventData // variables type
 	>(() => ({
 		mutationFn: async (data) => {
-			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-night`, {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-night?userId=${encodeURIComponent(user?.id || "")}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
@@ -125,7 +121,6 @@
 			return toast.error('Please provide a scheduled at time', { richColors: true });
 		}
 
-		console.log('sheduledAt comb : ', sheduledAt);
 		const res = await createMovieNightMutation.mutateAsync({
 			...formData,
 			ScheduledAt: sheduledAt.toISOString(),
@@ -146,7 +141,7 @@
 >
 	<FieldGroup>
 		<div class="flex flex-col items-center gap-1 text-center">
-			<h1 class="text-2xl font-bold">Create movie event</h1>
+			<h1 class="text-2xl font-bold">{formData.Id ? "Update" : "Create"} movie event</h1>
 		</div>
 		<Field>
 			<Label for="Name">Name</Label>
@@ -235,8 +230,9 @@
 					<Spinner />
 				{/if}
 				{createMovieNightMutation.isPending
-					? 'Creating movie event...'
-					: 'Create movie event'}</Button
+					? formData.Id ? 'Updating movie event...' : 'Creating movie event...'
+					: formData.Id ? 'Update movie event' :'Create movie event'}
+			</Button
 			>
 		</Field>
 	</FieldGroup>

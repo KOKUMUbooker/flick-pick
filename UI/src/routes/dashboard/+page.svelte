@@ -187,7 +187,7 @@
 </CustomDialog>
 
 <CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
-	<AddMovieNightForm bind:selectedGroup onOpenChange={onShowMovieNightDialogOpenChange} />
+	<AddMovieNightForm selectedGroup={selectedGroup} onOpenChange={onShowMovieNightDialogOpenChange} />
 </CustomDialog>
 
 <CustomDialog 

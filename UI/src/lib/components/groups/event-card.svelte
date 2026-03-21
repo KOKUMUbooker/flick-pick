@@ -26,6 +26,8 @@
 		CardHeader,
 		CardTitle
 	} from '../ui/card';
+	import CustomDialog from '../common/CustomDialog.svelte';
+	import AddMovieNightForm from '../dashboard/forms/add-movie-night-form.svelte';
 
 	interface EventCardProps {
 		selectedGroup: DBGroup | null;
@@ -33,10 +35,11 @@
 		openEventChat: (event: MovieNightEvent) => void;
 	}
 
-	let { selectedGroup, event, openEventChat }: EventCardProps = $props();
+	let { selectedGroup, event = $bindable(), openEventChat }: EventCardProps = $props();
 	let user = getAppUser();
-
+	
 	let showSuggestionFlow = $state(false);
+	let showAddMovieNightDialog = $state(false);
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -72,8 +75,15 @@
 				)
 			: true
 	);
+
+	function onShowMovieNightDialogOpenChange(show:boolean){
+		showAddMovieNightDialog = show
+	}
 </script>
 
+<CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
+	<AddMovieNightForm bind:defaultMovieEvent={event} selectedGroup={selectedGroup} onOpenChange={onShowMovieNightDialogOpenChange} />
+</CustomDialog>
 {#if showSuggestionFlow}
 	<SuggestionFlow
 		movieEventId={event.id}
@@ -283,11 +293,21 @@
 	</CardContent>
 
 	<CardFooter class="flex justify-between bg-muted/30">
-		<Button variant="outline" size="sm">
-			<Edit class="mr-2 h-4 w-4" />
-			Edit Event
-		</Button>
-		<Button size="sm" onclick={() => openEventChat(event)}>
+		<div>
+			{#if selectedGroup?.isUserAdmin}
+				<div class="flex flex-row items-center gap-2">
+					<Button variant="outline" size="sm" onclick={()=>showAddMovieNightDialog=true}>
+						<Edit class="mr-2 h-4 w-4" />
+						Edit Event
+					</Button>
+					<Button variant="destructive" size="sm">
+						<Trash class="mr-2 h-4 w-4" />
+						Delete Event
+					</Button>
+				</div>
+			{/if}
+		</div>
+		<Button  size="sm" onclick={() => openEventChat(event)}>
 			<MessageSquare class="mr-2 h-4 w-4" />
 			Event Chat
 		</Button>
