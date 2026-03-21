@@ -8,6 +8,7 @@
 	import SearchUsersToInviteFlow from '@/components/dashboard/search-users-to-invite-flow.svelte';
 	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
+	import GroupActionsMobile from '@/components/groups/group-actions-mobile.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
 	import GroupsSideBar from '@/components/groups/groups-side-bar.svelte';
 	import InvitesTabContent from '@/components/groups/invites-tab-content.svelte';
@@ -15,6 +16,7 @@
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
 	import UpcomingEventsTabContent from '@/components/groups/upcoming-events-tab-content.svelte';
 	import TabsContent from '@/components/ui/tabs/tabs-content.svelte';
+	import { getIsMobile } from '@/hooks/is-mobile.svelte';
 	import { Calendar, Clock, MailPlus, Menu, Plus, UserPlus, Users } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
@@ -208,24 +210,28 @@
 				{:else}
 					<!-- Tabs -->
 					<Tabs value={activeTab} onValueChange={(value) => (activeTab = value)} class="mb-8">
-						<TabsList class="grid w-full grid-cols-4 md:w-auto">
-							<TabsTrigger value="upcoming">
-								<Calendar class="mr-2 h-4 w-4" />
-								Upcoming
-							</TabsTrigger>
-							<TabsTrigger value="past">
-								<Clock class="mr-2 h-4 w-4" />
-								Past Events
-							</TabsTrigger>
-							<TabsTrigger value="members">
-								<Users class="mr-2 h-4 w-4" />
-								Members
-							</TabsTrigger>
-							<TabsTrigger value="invites">
-								<UserPlus class="mr-2 h-4 w-4" />
-								Invites
-							</TabsTrigger>
-						</TabsList>
+						{#if !getIsMobile()}
+							<TabsList class="grid w-full grid-cols-4 md:w-auto">
+								<TabsTrigger value="upcoming">
+									<Calendar class="mr-2 h-4 w-4" />
+									Upcoming
+								</TabsTrigger>
+								<TabsTrigger value="past">
+									<Clock class="mr-2 h-4 w-4" />
+									Past Events
+								</TabsTrigger>
+								<TabsTrigger value="members">
+									<Users class="mr-2 h-4 w-4" />
+									Members
+								</TabsTrigger>
+								<TabsTrigger value="invites">
+									<UserPlus class="mr-2 h-4 w-4" />
+									Invites
+								</TabsTrigger>
+							</TabsList>
+						{:else}
+							<GroupActionsMobile  {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog}/>
+						{/if}
 
 						<!-- Upcoming Events Tab -->
 						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
@@ -237,11 +243,11 @@
 						<MembersTabContent {selectedGroup} {inviteToGroup} />
 
 						<!-- Invites Tab -->
-						 <TabsContent value="invites" class="mt-6">
+						<TabsContent value="invites" class="mt-6">
 							<InvitesTabContent {selectedGroup} />
-						 </TabsContent>
+						</TabsContent>
 					</Tabs>
-				{/if}
+ 				{/if}
 			</div>
 		{:else}
 			<!-- No Group Selected State -->
