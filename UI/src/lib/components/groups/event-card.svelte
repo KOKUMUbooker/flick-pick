@@ -9,12 +9,15 @@
 		Trash,
 		XCircle
 	} from '@lucide/svelte';
-	import { createQuery } from '@tanstack/svelte-query';
-	import { QUERY_KEYS, apiFetch } from '../../../api';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
+	import { toast } from 'svelte-sonner';
+	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { getAppUser } from '../../../store';
 	import { VoteType, type DBGroup, type MovieNightEvent } from '../../../types';
+	import CustomDialog from '../common/CustomDialog.svelte';
+	import AddMovieNightForm from '../dashboard/forms/add-movie-night-form.svelte';
 	import SuggestionFlow from '../dashboard/suggestion-flow.svelte';
 	import Badge from '../ui/badge/badge.svelte';
 	import Button from '../ui/button/button.svelte';
@@ -26,8 +29,6 @@
 		CardHeader,
 		CardTitle
 	} from '../ui/card';
-	import CustomDialog from '../common/CustomDialog.svelte';
-	import AddMovieNightForm from '../dashboard/forms/add-movie-night-form.svelte';
 
 	interface EventCardProps {
 		selectedGroup: DBGroup | null;
@@ -40,6 +41,7 @@
 	
 	let showSuggestionFlow = $state(false);
 	let showAddMovieNightDialog = $state(false);
+	let showDeleteWarnDialog = $state(false);
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -79,8 +81,43 @@
 	function onShowMovieNightDialogOpenChange(show:boolean){
 		showAddMovieNightDialog = show
 	}
+	let movieEventDeleteMutation = createMutation<
+		{message : string}, // response type
+		Error, // error type
+		void // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id || ""}/movie-event/${event.id}?userId=${encodeURIComponent(user?.id || "")}`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming'] });
+ 		}
+	}));
+	const onShowDelWarningOnchange = (show : boolean) => {
+		showDeleteWarnDialog = show;
+	}
+
+	const onProceedMovieEventDelete = async () => {
+		const res = await movieEventDeleteMutation.mutateAsync();
+		toast.success(res.message,{richColors:true});
+	}
+
 </script>
 
+
+<CustomDialog 
+	header={{title:"Are you sure?"}} 
+	bind:open={showDeleteWarnDialog} 
+	onOpenChange={onShowDelWarningOnchange}
+	isLoading={movieEventDeleteMutation.isPending}
+	actions={{onProceed:onProceedMovieEventDelete}}
+>
+	<p>Are you sure you want to delete this movie event and all of its data? This action is irreversible so proceed with caution.</p>
+</CustomDialog>
 <CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
 	<AddMovieNightForm bind:defaultMovieEvent={event} selectedGroup={selectedGroup} onOpenChange={onShowMovieNightDialogOpenChange} />
 </CustomDialog>
@@ -300,7 +337,7 @@
 						<Edit class="mr-2 h-4 w-4" />
 						Edit Event
 					</Button>
-					<Button variant="destructive" size="sm">
+					<Button variant="destructive" size="sm" onclick={()=>showDeleteWarnDialog=true}>
 						<Trash class="mr-2 h-4 w-4" />
 						Delete Event
 					</Button>
