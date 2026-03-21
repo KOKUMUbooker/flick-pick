@@ -15,23 +15,26 @@
 	import Spinner from '../../ui/spinner/spinner.svelte';
 
 	interface AddGroupFromProps extends WithElementRef<HTMLFormAttributes> {
+		defaultValues? : { Id : string ,Name : string, Description : string };
 		onOpenChange: (open: boolean) => void;
 	}
 
 	let {
 		ref = $bindable(null),
+		defaultValues,
 		onOpenChange,
 		class: className,
 		...restProps
 	}: AddGroupFromProps = $props();
 	let formData = $state({
-		Name: '',
-		Description: ''
+		Id: defaultValues?.Id || "",
+		Name: defaultValues?.Name || '',
+		Description: defaultValues?.Description || ''
 	});
 	let errors: Record<string, string> = $state({});
 	let touched: Record<string, boolean> = $state({});
 
-	let createGroupMutation = createMutation<
+	let upsertGroupMutation = createMutation<
 		AddGroupRes, // response type
 		Error, // error type
 		AddGroupData // variables type
@@ -84,7 +87,7 @@
 			return;
 		}
 
-		const res = await createGroupMutation.mutateAsync({ ...formData, UserId: user.id });
+		const res = await upsertGroupMutation.mutateAsync({ ...formData, UserId: user.id });
 		toast.success(res.message, { richColors: true });
 		onOpenChange(false);
 	}
@@ -100,7 +103,7 @@
 >
 	<FieldGroup>
 		<div class="flex flex-col items-center gap-1 text-center">
-			<h1 class="text-2xl font-bold">Create movie group</h1>
+			<h1 class="text-2xl font-bold">{formData.Id ? "Update" :"Create"} movie group</h1>
 		</div>
 		<Field>
 			<Label for="Name">Name</Label>
@@ -133,11 +136,15 @@
 		</Field>
 
 		<Field>
-			<Button disabled={createGroupMutation.isPending} type="submit">
-				{#if createGroupMutation.isPending}
+			<Button disabled={upsertGroupMutation.isPending} type="submit">
+				{#if upsertGroupMutation.isPending}
 					<Spinner />
 				{/if}
-				{createGroupMutation.isPending ? 'Creating group...' : 'Create group'}</Button
+				{upsertGroupMutation.isPending ? 
+					formData.Id ? 'Updating group...' :'Creating group...' : 
+					formData.Id ? 'Update group' :'Create group'
+				}
+			</Button
 			>
 		</Field>
 	</FieldGroup>

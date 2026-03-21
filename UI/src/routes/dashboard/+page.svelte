@@ -8,6 +8,7 @@
 	import SearchUsersToInviteFlow from '@/components/dashboard/search-users-to-invite-flow.svelte';
 	import ChatContentArea from '@/components/groups/chat-content-area.svelte';
 	import DesktopHeader from '@/components/groups/desktop-header.svelte';
+	import GroupActionsMobile from '@/components/groups/group-actions-mobile.svelte';
 	import GroupsMobileNav from '@/components/groups/groups-mobile-nav.svelte';
 	import GroupsSideBar from '@/components/groups/groups-side-bar.svelte';
 	import InvitesTabContent from '@/components/groups/invites-tab-content.svelte';
@@ -15,11 +16,12 @@
 	import PastEventContentTab from '@/components/groups/past-event-content-tab.svelte';
 	import UpcomingEventsTabContent from '@/components/groups/upcoming-events-tab-content.svelte';
 	import TabsContent from '@/components/ui/tabs/tabs-content.svelte';
+	import { getIsMobile } from '@/hooks/is-mobile.svelte';
 	import { Calendar, Clock, MailPlus, Menu, Plus, UserPlus, Users } from '@lucide/svelte';
-	import { createQuery } from '@tanstack/svelte-query';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { apiFetch, QUERY_KEYS } from '../../api';
+	import { apiFetch, QUERY_KEYS, queryClient } from '../../api';
 	import { API_BASE_URL } from '../../api/urls';
 	import { appState, getAppUser, hubIsDisconnected } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
@@ -32,6 +34,7 @@
 	let showPendingInvitesDialog = $state(false) 
 	let showJoinGroupsDialog = $state(false) 
 	let showSendInviteDialog = $state(false) 
+	let showDeleteWarnDialog = $state(false)
 
 	// Track selected event for chat view
 	let selectedGroup = $state<DBGroup | null>(null);
@@ -71,6 +74,8 @@
 	// Initialize
 	onMount(async () => {
 		try {
+			if (!user) return
+
 			// 1. Fetch groups
 			shouldFetchGroups = true;
 			const groupsRes = await groupsQuery.refetch();
@@ -114,17 +119,40 @@
 		showAddMovieNightDialog = true;
 	}
 
-	function inviteToGroup() {
-		if (!selectedGroup) return;
-		console.log('Invite to group:', selectedGroup.id);
-	}
-
 	function createNewGroup() {
 		showAddGroupDialog = true;
 	}
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
+	}
+
+	let groupDeleteMutation = createMutation<
+		{message : string}, // response type
+		Error, // error type
+		void // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id || ""}/del?userId=${encodeURIComponent(user?.id || "")}`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey:  [QUERY_KEYS.GROUPS + user?.id || ""] });
+			selectedGroup = null
+		}
+	}));
+
+	function onShowDelWarningOnchange(show:boolean) {
+		showDeleteWarnDialog = show
+	}
+
+	async function onProceedGroupDelete() {
+		const res = await groupDeleteMutation.mutateAsync();
+		toast.success(res.message,{richColors:true});
+		onShowDelWarningOnchange(false)
 	}
 
 	function getEventStatus(event: MovieNightEvent): {
@@ -152,11 +180,24 @@
 </CustomDialog>
 
 <CustomDialog bind:open={showAddGroupDialog} onOpenChange={onShowAddGroupDialogOpenChange}>
-	<AddGroupForm onOpenChange={onShowAddGroupDialogOpenChange} />
+	<AddGroupForm 
+		onOpenChange={onShowAddGroupDialogOpenChange} 
+		defaultValues={{Id:selectedGroup?.id || "", Description:selectedGroup?.description || "",Name:selectedGroup?.name || ""}}
+	/>
 </CustomDialog>
 
 <CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
-	<AddMovieNightForm bind:selectedGroup onOpenChange={onShowMovieNightDialogOpenChange} />
+	<AddMovieNightForm selectedGroup={selectedGroup} onOpenChange={onShowMovieNightDialogOpenChange} />
+</CustomDialog>
+
+<CustomDialog 
+	header={{title:"Are you sure?"}} 
+	bind:open={showDeleteWarnDialog} 
+	onOpenChange={onShowDelWarningOnchange}
+	isLoading={groupDeleteMutation.isPending}
+	actions={{onProceed:onProceedGroupDelete}}
+>
+	<p>Are you sure you want to delete this group and all of its data? This action is irreversible so proceed with caution.</p>
 </CustomDialog>
 
 <div class="flex min-h-screen bg-background">
@@ -174,8 +215,7 @@
 		{sidebarOpen}
 		{toggleSidebar}
 		{filteredGroups}
-		{createNewGroup}
-		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
+ 		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
 		bind:searchQuery
 		bind:selectedGroup
 	/>
@@ -198,7 +238,14 @@
 
 		{#if selectedGroup}
 			<!-- Desktop Group Header -->
-			<DesktopHeader {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog} />
+			<DesktopHeader 
+				{selectedGroup} 
+				{createNewEvent} 
+				bind:showSendInviteDialog={showSendInviteDialog} 
+				bind:showJoinGroupsDialog={showJoinGroupsDialog} 
+				bind:showAddGroupDialog={showAddGroupDialog} 
+				bind:showDeleteWarnDialog={showDeleteWarnDialog} 
+			/>
 
 			<!-- Main Content Area -->
 			<div class="p-4 md:p-6">
@@ -208,24 +255,35 @@
 				{:else}
 					<!-- Tabs -->
 					<Tabs value={activeTab} onValueChange={(value) => (activeTab = value)} class="mb-8">
-						<TabsList class="grid w-full grid-cols-4 md:w-auto">
-							<TabsTrigger value="upcoming">
-								<Calendar class="mr-2 h-4 w-4" />
-								Upcoming
-							</TabsTrigger>
-							<TabsTrigger value="past">
-								<Clock class="mr-2 h-4 w-4" />
-								Past Events
-							</TabsTrigger>
-							<TabsTrigger value="members">
-								<Users class="mr-2 h-4 w-4" />
-								Members
-							</TabsTrigger>
-							<TabsTrigger value="invites">
-								<UserPlus class="mr-2 h-4 w-4" />
-								Invites
-							</TabsTrigger>
-						</TabsList>
+						{#if !getIsMobile()}
+							<TabsList class="grid w-full grid-cols-4 md:w-auto">
+								<TabsTrigger value="upcoming">
+									<Calendar class="mr-2 h-4 w-4" />
+									Upcoming
+								</TabsTrigger>
+								<TabsTrigger value="past">
+									<Clock class="mr-2 h-4 w-4" />
+									Past Events
+								</TabsTrigger>
+								<TabsTrigger value="members">
+									<Users class="mr-2 h-4 w-4" />
+									Members
+								</TabsTrigger>
+								<TabsTrigger value="invites">
+									<UserPlus class="mr-2 h-4 w-4" />
+									Invites
+								</TabsTrigger>
+							</TabsList>
+						{:else}
+							<GroupActionsMobile 
+								{selectedGroup} 
+								{createNewEvent} 
+								bind:showAddGroupDialog={showAddGroupDialog}  
+								bind:showSendInviteDialog={showSendInviteDialog} 
+								bind:showJoinGroupsDialog={showJoinGroupsDialog}
+								bind:showDeleteWarnDialog={showDeleteWarnDialog} 
+							/>
+						{/if}
 
 						<!-- Upcoming Events Tab -->
 						<UpcomingEventsTabContent {selectedGroup} {openEventChat} {createNewEvent} />
@@ -234,14 +292,14 @@
 						<PastEventContentTab {openEventChat} {selectedGroup} />
 
 						<!-- Members Tab -->
-						<MembersTabContent {selectedGroup} {inviteToGroup} />
+						<MembersTabContent {selectedGroup} />
 
 						<!-- Invites Tab -->
-						 <TabsContent value="invites" class="mt-6">
+						<TabsContent value="invites" class="mt-6">
 							<InvitesTabContent {selectedGroup} />
-						 </TabsContent>
+						</TabsContent>
 					</Tabs>
-				{/if}
+ 				{/if}
 			</div>
 		{:else}
 			<!-- No Group Selected State -->
@@ -250,24 +308,28 @@
 					<Users class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 					<h2 class="mb-2 text-2xl font-semibold">Welcome to WatchHive</h2>
 					<p class="mb-6 text-muted-foreground">
-						Select a group from the sidebar or create your first group to start planning movie
-						nights.
+						{user ? 
+						"Select a group from the sidebar or create your first group to start planning movie nights." :
+						"Oops, it seems you're logged out, please proceed to login"
+						}
 					</p>
-					<div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
-						<Button onclick={createNewGroup}>
-							<Plus class="mr-2 h-4 w-4" />
-							Create Your First Group
-						</Button>
+					{#if user}
+						<div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
+							<Button onclick={createNewGroup}>
+								<Plus class="mr-2 h-4 w-4" />
+								Create Your First Group
+							</Button>
 
-						<Button variant="secondary" onclick={()=>showJoinGroupsDialog=true}>
-							<Users class="mr-2 h-4 w-4" />
-							Join Existing Group
-						</Button>
-						<Button variant="outline" onclick={()=>showPendingInvitesDialog=true}>
-							<MailPlus  class="mr-2 h-4 w-4" />
-							Check pending invites
-						</Button>
-					</div>
+							<Button variant="secondary" onclick={()=>showJoinGroupsDialog=true}>
+								<Users class="mr-2 h-4 w-4" />
+								Join Existing Group
+							</Button>
+							<Button variant="outline" onclick={()=>showPendingInvitesDialog=true}>
+								<MailPlus  class="mr-2 h-4 w-4" />
+								Check pending invites
+							</Button>
+						</div>
+					{/if}
 				</div>
 			</div>
 		{/if}

@@ -61,6 +61,38 @@ public class MovieSuggestionController : ControllerBase
         return Ok(new {MovieNightSuggestions});
     }
 
+    [HttpDelete("movie-events/{movieEventId}/suggestion/{suggestionId}")]
+    public async Task<IActionResult> DeleteMovieEventSuggestion(
+        [FromRoute] Guid movieEventId, 
+        [FromRoute] Guid suggestionId,
+        [FromBody] DeleteMovieSuggestionDto delDto
+    )
+    {
+        var movieSuggestion = await _dbContext.MovieSuggestions.FindAsync(suggestionId);
+        var Message = "Movie suggestion deleted successfully";
+        if (movieSuggestion == null)
+        {
+            return Ok(new { Message });
+        }
+        
+        if (!Guid.TryParse(delDto.Initiator, out Guid parsedInitiatorId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movieNightId provided" });
+        }
+
+        // Only allow creator of suggestion to delete it
+        if (movieSuggestion.SuggestedById != parsedInitiatorId)
+        {
+            return BadRequest(new CustomError {Message="You are not allowed to delete this suggestion"});
+        }
+
+        var rows = await _dbContext.MovieSuggestions
+            .Where(ms => ms.Id == suggestionId && ms.MovieNightEventId == movieEventId && ms.SuggestedById == parsedInitiatorId)
+            .ExecuteDeleteAsync();
+
+        return Ok(new { Message });
+    }
+
     [HttpPost("movie-nights/{movieNightId}/suggestion")]
     public async Task<IActionResult> CreateMovieNightSuggestion([FromRoute] string movieNightId, [FromBody] CreateMovieSuggestionDto createDto)
     {

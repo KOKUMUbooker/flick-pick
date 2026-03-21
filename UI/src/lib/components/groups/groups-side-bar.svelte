@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { ChevronLeft, Plus, Search, Users } from '@lucide/svelte';
 	import type { DBGroup } from '../../../types';
+	import CustomDialog from '../common/CustomDialog.svelte';
+	import AddGroupForm from '../dashboard/forms/add-group-form.svelte';
 	import Button from '../ui/button/button.svelte';
 	import Skeleton from '../ui/skeleton/skeleton.svelte';
 
@@ -10,21 +12,27 @@
 		selectedGroup: DBGroup | null;
 		filteredGroups: DBGroup[];
 		toggleSidebar: () => void;
-		createNewGroup: () => void;
-		isFetching: boolean;
+ 		isFetching: boolean;
 	}
 
 	let {
 		sidebarOpen,
 		toggleSidebar,
-		createNewGroup,
-		filteredGroups,
+ 		filteredGroups,
 		selectedGroup = $bindable(),
 		searchQuery = $bindable(),
 		isFetching
 	}: GroupsSideBarProps = $props();
+
+	let showCreateGroup = $state(false);
+	const onShowCreateGroupDialog = (show:boolean) =>{
+		showCreateGroup = show
+	}
 </script>
 
+<CustomDialog bind:open={showCreateGroup} onOpenChange={onShowCreateGroupDialog}>
+	<AddGroupForm  onOpenChange={onShowCreateGroupDialog}  />
+</CustomDialog>
 <aside
 	class={`
 			fixed inset-y-0 left-0 z-45 flex
@@ -100,7 +108,7 @@
 
 	<!-- Create Group Button -->
 	<div class="border-t border-border p-4">
-		<Button class="w-full" onclick={createNewGroup}>
+		<Button class="w-full" onclick={()=> showCreateGroup = true}>
 			<Plus class="mr-2 h-4 w-4" />
 			Create New Group
 		</Button>

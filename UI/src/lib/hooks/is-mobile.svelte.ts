@@ -7,3 +7,8 @@ export class IsMobile extends MediaQuery {
 		super(`max-width: ${breakpoint - 1}px`);
 	}
 }
+
+let _isMobile = $derived((new IsMobile).current)
+export function getIsMobile(): boolean {
+	return _isMobile
+}

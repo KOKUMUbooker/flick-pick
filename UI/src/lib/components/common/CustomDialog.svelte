@@ -21,7 +21,7 @@
     children: Snippet<[]>;
     isLoading?: boolean;
     header? : Header,
-    width? : "sm" | "lg" | "xl" | "2xl" | "3xl" | "4xl",
+    width? : "sm" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl",
     actions? : Actions
  }
  let {open = $bindable(),onOpenChange,children,header,width="lg",actions,isLoading}:CustomDialogProps = $props()

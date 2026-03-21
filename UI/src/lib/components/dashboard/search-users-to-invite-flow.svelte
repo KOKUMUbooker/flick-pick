@@ -155,7 +155,7 @@
 						{:else if currentState === 'success'}
 							User invitation sent successfully
 						{:else}
-							Search for a user to invite to the group : {selectedGroup?.name}
+							Send group invite
 						{/if}
 					</h2>
 				</div>

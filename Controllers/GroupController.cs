@@ -6,7 +6,7 @@ using WatchHive.DTOs;
 using WatchHive.Models;
 
 [ApiController]
-[Route("/api/groups")]
+[Route("/api/")]
 public class GroupController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
@@ -16,7 +16,7 @@ public class GroupController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet]
+    [HttpGet("groups")]
     public async Task<IActionResult> GetGroups([FromQuery] string userId) 
     {
         if (!Guid.TryParse(userId, out var parsedUserId))
@@ -40,8 +40,8 @@ public class GroupController : ControllerBase
         return Ok(new { groups });
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateGroup([FromBody] CreateGroupDto groupDto) 
+    [HttpPost("groups")]
+    public async Task<IActionResult> UpsertGroup([FromBody] UpsertGroupDto groupDto) 
     {
         if (!Guid.TryParse(groupDto.UserId, out Guid parsedUserId))
         {
@@ -54,9 +54,41 @@ public class GroupController : ControllerBase
             return BadRequest(new CustomError { Message = "Request initiated by a user that does not exist" });
         }
 
-        var groupName = groupDto.Name.Trim();
+        // If Id is present in dto, user wants to update
+        if (!string.IsNullOrEmpty(groupDto.Id) && !string.IsNullOrWhiteSpace(groupDto.Id))
+        {
+            if (!Guid.TryParse(groupDto.Id, out Guid parsedGroupId))
+            {
+                return BadRequest(new CustomError { Message = "Invalid groupId provided" });
+            } 
+
+            var group = await _dbContext.Groups.FindAsync(parsedGroupId);
+            if (group == null)
+            {
+                return BadRequest(new CustomError{ Message = "Group does not exist" });
+            }
+
+            var newName = groupDto.Name.Trim();
+            if (group.Name != newName)
+            {
+                var sameNamedGroup = await _dbContext.Groups
+                        .AnyAsync(g => g.Name == newName && g.CreatedById == parsedUserId);
+
+                if (sameNamedGroup)
+                {
+                    return BadRequest(new CustomError { Message = "You already have a group with that name" });
+                }
+            }
+            
+            group.Name = groupDto.Name.Trim() ?? group.Name;
+            group.Description = groupDto.Description?.Trim() ?? group.Description;
+ 
+            await _dbContext.SaveChangesAsync();
+            return Ok(new { message = "Group updated successfully", group = group.Id });
+        }
 
         // Check for similarly named group
+        var groupName = groupDto.Name.Trim();
         var groupExists = await _dbContext.Groups
             .AnyAsync(g => g.Name == groupName && g.CreatedById == parsedUserId);
 
@@ -64,7 +96,6 @@ public class GroupController : ControllerBase
         {
             return BadRequest(new CustomError { Message = "You already have a group with that name" });
         }
-
         var newGroup = new Group()
         {
             Name = groupName,
@@ -87,58 +118,101 @@ public class GroupController : ControllerBase
         return Ok(new { message = "Group created successfully", group = newGroup.Id });
     }
 
-    [HttpDelete("/{groupId}/leave")]
-    public async Task<IActionResult> ExitGroup(string groupId, [FromQuery] string userId) 
+    [HttpDelete("groups/{groupId}/del")]
+    public async Task<IActionResult> DeleteGroup(Guid groupId, [FromQuery] Guid userId)
     {
-        if (!Guid.TryParse(groupId, out Guid parsedGroupId))
+        var group = await _dbContext.Groups.FindAsync(groupId);
+        var message = "Group deleted successfully";
+        if (group == null)
         {
-            return BadRequest(new CustomError { Message = "Invalid group id provided" });
+            return Ok(new { message });
+        }
+        
+        // Only allow group creator to delete the group
+        if (userId != group.CreatedById)
+        {
+            return BadRequest(new CustomError{Message = "You're not allowed to delete this group"});
         }
 
-        if (!Guid.TryParse(userId, out Guid parsedUserId))
+        await _dbContext.Groups
+                .Where(g => g.Id == groupId && g.CreatedById == userId)
+                .ExecuteDeleteAsync();
+
+        return Ok(new { message });
+    }
+
+    [HttpDelete("groups/{groupId}/leave")]
+    public async Task<IActionResult> RemoveMemberFromGroup(
+        [FromRoute] Guid groupId, 
+        [FromQuery] Guid userId,
+        [FromQuery] Guid initiator
+    ) 
+    {
+        if (userId == initiator)
         {
-            return BadRequest(new CustomError { Message = "Invalid user id provided" });
+            return BadRequest(new CustomError{Message="You can't remove yourself from the group"});
         }
 
-        var groupExists = await _dbContext.Groups.FindAsync(parsedGroupId);
+        // Ensure user is a group admin before proceeding
+        var isGroupAdmin = await _dbContext.UserGroups.
+                            Where(ug => ug.GroupId == groupId && ug.UserId == initiator && ug.IsAdmin)
+                            .AsNoTracking()
+                            .FirstAsync();
+        if (isGroupAdmin == null)
+        {
+            return BadRequest(new CustomError {Message="You are not allowed to remove a user from this group"} );
+        }
+
+        var groupExists = await _dbContext.Groups.FindAsync(groupId);
         if (groupExists == null)
         {
             return BadRequest(new CustomError { Message = "Group for the provided groupId does not exist" });
         }
 
         await _dbContext.UserGroups
-            .Where(ug => ug.GroupId == parsedGroupId && ug.UserId == parsedUserId)
+            .Where(ug => ug.GroupId == groupId && ug.UserId == userId)
             .ExecuteDeleteAsync();
-
-        return Ok(new {message = "User successfully exited the group" });
+        
+        return Ok(new {message = "User successfully removed the group" });
     } 
 
-    [HttpPatch("/{groupId}/members/{userId}")]
-    public async Task<IActionResult> ChangeMemberRole(string groupId, string userId, [FromBody] ChangeGroupMemberRoleDto roleChangeDto) 
+    [HttpPatch("groups/{groupId}/members/{memberUserId}")]
+    public async Task<IActionResult> ChangeMemberRole(
+        [FromRoute] Guid groupId, 
+        [FromRoute] Guid memberUserId, 
+        [FromQuery] Guid initiator,
+        [FromBody] ChangeGroupMemberRoleDto roleChangeDto
+    ) 
     {
-        if (!Guid.TryParse(groupId, out Guid parsedGroupId))
+        // Ensure user is a group admin before proceeding
+        var isGroupAdmin = await _dbContext.UserGroups.
+                            Where(ug => ug.GroupId == groupId && ug.UserId == initiator && ug.IsAdmin)
+                            .AsNoTracking()
+                            .FirstAsync();
+        if (isGroupAdmin == null)
         {
-            return BadRequest(new CustomError { Message = "Invalid group id provided" });
+            return BadRequest(new CustomError {Message="You are not allowed to remove a user from this group"} );
         }
 
-        if (!Guid.TryParse(userId, out Guid parsedUserId))
-        {
-            return BadRequest(new CustomError { Message = "Invalid user id provided" });
-        }
-
-        var groupExists = await _dbContext.Groups.FindAsync(parsedGroupId);
+        var groupExists = await _dbContext.Groups.FindAsync(groupId);
         if (groupExists == null)
         {
-            return BadRequest(new CustomError { Message = "Group for the provided groupId does not exist" });
+            return BadRequest(new CustomError { Message = "The group does not exist" });
         }
 
         var groupMember = await _dbContext.UserGroups
-            .Where(ug => ug.GroupId == parsedGroupId && ug.UserId == parsedUserId)
+            .Where(ug => ug.GroupId == groupId && ug.UserId == memberUserId)
             .FirstAsync();
         
         if (groupMember == null)
         {
             return BadRequest(new CustomError { Message = "Group member does not exist" });
+        }
+
+        // You shouldn't be able to revoke role of the group creator 
+        if (!roleChangeDto.MakeAdmin && groupExists.CreatedById == memberUserId)
+        {
+            return BadRequest(new CustomError{Message="You can't demote the creator of the group"});
         }
 
         groupMember.IsAdmin = roleChangeDto.MakeAdmin;

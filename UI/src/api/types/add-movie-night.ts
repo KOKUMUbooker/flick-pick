@@ -1,6 +1,7 @@
 import type { CalendarDate } from "@internationalized/date";
 
 export interface MovieNightEventFormData {
+    Id?: string;
     Name: string;
     Description: string;
 }

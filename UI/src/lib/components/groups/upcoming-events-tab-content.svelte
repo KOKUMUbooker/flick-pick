@@ -61,8 +61,8 @@
 		{#if movieNightsQuery.data}
 			{#if movieNightsQuery.data.movieEvents.length > 0}
 				<div class="space-y-6">
-					{#each movieNightsQuery.data.movieEvents as event (event.id)}
-						<EventCard {event} {openEventChat} selectedGroup={selectedGroup} />
+					{#each movieNightsQuery.data.movieEvents as event, i (event.id)}
+						<EventCard bind:event={movieNightsQuery.data.movieEvents[i]} {openEventChat} selectedGroup={selectedGroup} />
 					{/each}
 				</div>
 			{:else}

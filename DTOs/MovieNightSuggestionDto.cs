@@ -14,6 +14,12 @@ public class CreateMovieSuggestionDto
 
 }
 
+public class DeleteMovieSuggestionDto
+{
+    [Required]
+    public string Initiator { get; set; } = null!; 
+}
+
 public class MovieSuggestionDto
 {
     public string Id { get; set; } = string.Empty;

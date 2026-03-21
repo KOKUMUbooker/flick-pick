@@ -2,8 +2,10 @@ namespace WatchHive.DTOs;
 
 using System.ComponentModel.DataAnnotations;
 
-public class CreateMovieNightDto
+public class UpsertMovieNightDto
 {
+    public string? Id { get; set; }
+
     [Required]
     public string Name { get; set; } = null!;
 
