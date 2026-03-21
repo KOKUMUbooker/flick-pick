@@ -6,7 +6,7 @@ using WatchHive.DTOs;
 using WatchHive.Models;
 
 [ApiController]
-[Route("/api/groups")]
+[Route("/api/")]
 public class GroupController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
@@ -16,7 +16,7 @@ public class GroupController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet]
+    [HttpGet("groups")]
     public async Task<IActionResult> GetGroups([FromQuery] string userId) 
     {
         if (!Guid.TryParse(userId, out var parsedUserId))
@@ -40,7 +40,7 @@ public class GroupController : ControllerBase
         return Ok(new { groups });
     }
 
-    [HttpPost]
+    [HttpPost("groups")]
     public async Task<IActionResult> UpsertGroup([FromBody] UpsertGroupDto groupDto) 
     {
         if (!Guid.TryParse(groupDto.UserId, out Guid parsedUserId))
@@ -55,7 +55,7 @@ public class GroupController : ControllerBase
         }
 
         // If Id is present in dto, user wants to update
-        if (groupDto.Id != null)
+        if (!string.IsNullOrEmpty(groupDto.Id) && !string.IsNullOrWhiteSpace(groupDto.Id))
         {
             if (!Guid.TryParse(groupDto.Id, out Guid parsedGroupId))
             {
@@ -118,7 +118,30 @@ public class GroupController : ControllerBase
         return Ok(new { message = "Group created successfully", group = newGroup.Id });
     }
 
-    [HttpDelete("/{groupId}/leave")]
+    [HttpDelete("groups/{groupId}/del")]
+    public async Task<IActionResult> DeleteGroup(Guid groupId, [FromQuery] Guid userId)
+    {
+        var group = await _dbContext.Groups.FindAsync(groupId);
+        var message = "Group deleted successfully";
+        if (group == null)
+        {
+            return Ok(new { message });
+        }
+        
+        // Only allow group creator to delete the group
+        if (userId != group.CreatedById)
+        {
+            return BadRequest(new CustomError{Message = "You're not allowed to delete this group"});
+        }
+
+        await _dbContext.Groups
+                .Where(g => g.Id == groupId && g.CreatedById == userId)
+                .ExecuteDeleteAsync();
+
+        return Ok(new { message });
+    }
+
+    [HttpDelete("groups/{groupId}/leave")]
     public async Task<IActionResult> ExitGroup(string groupId, [FromQuery] string userId) 
     {
         if (!Guid.TryParse(groupId, out Guid parsedGroupId))
@@ -144,7 +167,7 @@ public class GroupController : ControllerBase
         return Ok(new {message = "User successfully exited the group" });
     } 
 
-    [HttpPatch("/{groupId}/members/{userId}")]
+    [HttpPatch("groups/{groupId}/members/{userId}")]
     public async Task<IActionResult> ChangeMemberRole(string groupId, string userId, [FromBody] ChangeGroupMemberRoleDto roleChangeDto) 
     {
         if (!Guid.TryParse(groupId, out Guid parsedGroupId))
