@@ -31,10 +31,9 @@
 
 	interface MembersTabContentProps {
 		selectedGroup: DBGroup | null;
-		inviteToGroup: () => void;
 	}
 
-	let { inviteToGroup, selectedGroup }: MembersTabContentProps = $props();
+	let {  selectedGroup }: MembersTabContentProps = $props();
 	let user = getAppUser();
 
 	let fetchMembers = $state(false)
@@ -131,7 +130,7 @@
 				{/if}
 			</div>
 		</CardContent>
-		<CardFooter class="flex flex-col gap-4">
+		<!-- <CardFooter class="flex flex-col gap-4">
 			<Separator />
 			<div class="flex w-full items-center justify-between">
 				<div>
@@ -149,6 +148,6 @@
 					</Button>
 				</div>
 			</div>
-		</CardFooter>
+		</CardFooter> -->
 	</Card>
 </TabsContent>

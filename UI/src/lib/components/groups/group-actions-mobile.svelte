@@ -8,18 +8,20 @@
 		createNewEvent: () => void;
  		showJoinGroupsDialog: boolean;
 		showSendInviteDialog: boolean;
+        showAddGroupDialog: boolean;
 	}
 	let {
 		createNewEvent,
  		selectedGroup,
 		showJoinGroupsDialog = $bindable(),
-		showSendInviteDialog = $bindable()
+		showSendInviteDialog = $bindable(),
+        showAddGroupDialog = $bindable()
 	}: GroupActionsMobile = $props();
 </script>
 
 <div class="flex h-16 items-center justify-between">
     <div class="flex flex-row gap-2 items-center">
-        <Button variant="outline"> <EditIcon/> </Button>
+        <Button variant="outline" onclick={()=>showAddGroupDialog=true}> <EditIcon/> </Button>
         <Button variant="destructive"> <Trash/> </Button>
     </div>
 

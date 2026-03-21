@@ -8,12 +8,14 @@
 		createNewEvent: () => void;
  		showJoinGroupsDialog: boolean;
 		showSendInviteDialog: boolean;
+		showAddGroupDialog: boolean;
 	}
 	let {
 		createNewEvent,
  		selectedGroup,
 		showJoinGroupsDialog = $bindable(),
-		showSendInviteDialog = $bindable()
+		showSendInviteDialog = $bindable(),
+		showAddGroupDialog = $bindable()
 	}: DesktopHeaderProps = $props();
 </script>
 
@@ -25,7 +27,7 @@
 			<div class="flex flex-row gap-2 items-center">
 				<h1 class="text-xl font-semibold">{selectedGroup?.name}</h1>
 				{#if selectedGroup?.isUserAdmin}
-					<Button variant="outline"> <EditIcon/> </Button>
+					<Button variant="outline" onclick={()=>showAddGroupDialog=true}> <EditIcon/> </Button>
 					<Button variant="destructive"> <Trash/> </Button>
 				{/if}
 			</div>

@@ -116,11 +116,6 @@
 		showAddMovieNightDialog = true;
 	}
 
-	function inviteToGroup() {
-		if (!selectedGroup) return;
-		console.log('Invite to group:', selectedGroup.id);
-	}
-
 	function createNewGroup() {
 		showAddGroupDialog = true;
 	}
@@ -154,7 +149,10 @@
 </CustomDialog>
 
 <CustomDialog bind:open={showAddGroupDialog} onOpenChange={onShowAddGroupDialogOpenChange}>
-	<AddGroupForm onOpenChange={onShowAddGroupDialogOpenChange} />
+	<AddGroupForm 
+		onOpenChange={onShowAddGroupDialogOpenChange} 
+		defaultValues={{Id:selectedGroup?.id || "", Description:selectedGroup?.description || "",Name:selectedGroup?.name || ""}}
+	/>
 </CustomDialog>
 
 <CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
@@ -176,8 +174,7 @@
 		{sidebarOpen}
 		{toggleSidebar}
 		{filteredGroups}
-		{createNewGroup}
-		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
+ 		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
 		bind:searchQuery
 		bind:selectedGroup
 	/>
@@ -200,7 +197,13 @@
 
 		{#if selectedGroup}
 			<!-- Desktop Group Header -->
-			<DesktopHeader {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog} />
+			<DesktopHeader 
+				{selectedGroup} 
+				{createNewEvent} 
+				bind:showSendInviteDialog={showSendInviteDialog} 
+				bind:showJoinGroupsDialog={showJoinGroupsDialog} 
+				bind:showAddGroupDialog={showAddGroupDialog} 
+			/>
 
 			<!-- Main Content Area -->
 			<div class="p-4 md:p-6">
@@ -230,7 +233,7 @@
 								</TabsTrigger>
 							</TabsList>
 						{:else}
-							<GroupActionsMobile  {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog}/>
+							<GroupActionsMobile bind:showAddGroupDialog={showAddGroupDialog}  {selectedGroup} {createNewEvent} bind:showSendInviteDialog={showSendInviteDialog} bind:showJoinGroupsDialog={showJoinGroupsDialog}/>
 						{/if}
 
 						<!-- Upcoming Events Tab -->
@@ -240,7 +243,7 @@
 						<PastEventContentTab {openEventChat} {selectedGroup} />
 
 						<!-- Members Tab -->
-						<MembersTabContent {selectedGroup} {inviteToGroup} />
+						<MembersTabContent {selectedGroup} />
 
 						<!-- Invites Tab -->
 						<TabsContent value="invites" class="mt-6">
