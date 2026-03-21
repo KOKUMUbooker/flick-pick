@@ -41,7 +41,7 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateGroup([FromBody] CreateGroupDto groupDto) 
+    public async Task<IActionResult> UpsertGroup([FromBody] UpsertGroupDto groupDto) 
     {
         if (!Guid.TryParse(groupDto.UserId, out Guid parsedUserId))
         {
@@ -54,9 +54,41 @@ public class GroupController : ControllerBase
             return BadRequest(new CustomError { Message = "Request initiated by a user that does not exist" });
         }
 
-        var groupName = groupDto.Name.Trim();
+        // If Id is present in dto, user wants to update
+        if (groupDto.Id != null)
+        {
+            if (!Guid.TryParse(groupDto.Id, out Guid parsedGroupId))
+            {
+                return BadRequest(new CustomError { Message = "Invalid groupId provided" });
+            } 
+
+            var group = await _dbContext.Groups.FindAsync(parsedGroupId);
+            if (group == null)
+            {
+                return BadRequest(new CustomError{ Message = "Group does not exist" });
+            }
+
+            var newName = groupDto.Name.Trim();
+            if (group.Name != newName)
+            {
+                var sameNamedGroup = await _dbContext.Groups
+                        .AnyAsync(g => g.Name == newName && g.CreatedById == parsedUserId);
+
+                if (sameNamedGroup)
+                {
+                    return BadRequest(new CustomError { Message = "You already have a group with that name" });
+                }
+            }
+            
+            group.Name = groupDto.Name.Trim() ?? group.Name;
+            group.Description = groupDto.Description?.Trim() ?? group.Description;
+ 
+            await _dbContext.SaveChangesAsync();
+            return Ok(new { message = "Group updated successfully", group = group.Id });
+        }
 
         // Check for similarly named group
+        var groupName = groupDto.Name.Trim();
         var groupExists = await _dbContext.Groups
             .AnyAsync(g => g.Name == groupName && g.CreatedById == parsedUserId);
 
@@ -64,7 +96,6 @@ public class GroupController : ControllerBase
         {
             return BadRequest(new CustomError { Message = "You already have a group with that name" });
         }
-
         var newGroup = new Group()
         {
             Name = groupName,
