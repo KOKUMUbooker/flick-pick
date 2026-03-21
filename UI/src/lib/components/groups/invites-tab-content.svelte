@@ -263,6 +263,7 @@
                                             <div class="flex gap-2">
                                                 {#if 
                                                     (user?.email === invitation.invitee.email && !isJoinRequest) ||
+                                                    (user?.email !== invitation.invitee.email && isJoinRequest && selectedGroup?.isUserAdmin) ||
                                                     (isAdminInvitation && selectedGroup?.isUserAdmin && invitation.createdBy.email != user?.email)
                                                  }
                                                     <Button 
