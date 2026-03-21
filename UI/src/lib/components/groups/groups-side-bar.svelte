@@ -26,7 +26,7 @@
 
 	let showCreateGroup = $state(false);
 	const onShowCreateGroupDialog = (show:boolean) =>{
-		showCreateGroup = true
+		showCreateGroup = show
 	}
 </script>
 
