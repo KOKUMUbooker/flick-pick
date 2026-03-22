@@ -81,13 +81,15 @@
 					<CardContent class="py-12 text-center">
 						<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 						<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
-						<p class="mb-4 text-sm text-muted-foreground">
-							Plan your first movie night with the group
-						</p>
-						<Button onclick={createNewEvent}>
-							<Plus class="mr-2 h-4 w-4" />
-							Plan Movie Night
-						</Button>
+						{#if selectedGroup?.isUserAdmin}
+							<p class="mb-4 text-sm text-muted-foreground">
+								Plan your first movie night with the group
+							</p>
+							<Button onclick={createNewEvent}>
+								<Plus class="mr-2 h-4 w-4" />
+								Plan Movie Night
+							</Button>
+						{/if}
 					</CardContent>
 				</Card>
 			{/if}
