@@ -150,7 +150,8 @@
 		const res = await updateInvitationMutation.mutateAsync({
 			Initiator: user.id,
 			Status: action,
-			InvitationId: selectedInvitation?.id
+			InvitationId: selectedInvitation?.id,
+			GroupId: selectedGroup?.id || ''
 		});
 		toast.success(res.message, { richColors: true });
 		onUpdateOpenChange(false);
