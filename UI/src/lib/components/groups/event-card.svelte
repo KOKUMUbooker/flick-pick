@@ -1,21 +1,12 @@
 <script lang="ts">
-	import {
-		Edit,
-		Eye,
-		MessageSquare,
-		Plus,
-		ThumbsDown,
-		ThumbsUp,
-		Trash,
-		XCircle
-	} from '@lucide/svelte';
+	import { Edit, MessageSquare, Plus, Trash } from '@lucide/svelte';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { getAppUser } from '../../../store';
-	import { VoteType, type DBGroup, type MovieNightEvent } from '../../../types';
+	import { type DBGroup, type MovieNightEvent } from '../../../types';
 	import CustomDialog from '../common/CustomDialog.svelte';
 	import AddMovieNightForm from '../dashboard/forms/add-movie-night-form.svelte';
 	import SuggestionFlow from '../dashboard/suggestion-flow.svelte';
@@ -30,7 +21,7 @@
 		CardTitle
 	} from '../ui/card';
 	import ValidMovieSuggestion from './valid-movie-suggestion.svelte';
-	import VetoedMovieSuggestion from './vetoed-movie-suggestion.svelte';
+	import VetoedMovieSection from './vetoed-movie-section.svelte';
 
 	interface EventCardProps {
 		selectedGroup: DBGroup | null;
@@ -185,7 +176,11 @@
 					{/each}
 
 					{#if movieSuggestionQuery.data?.movieNightSuggestions.some((s) => s.isDisqualified)}
-						<VetoedMovieSuggestion bind:movieSuggestionQuery />
+						<VetoedMovieSection
+							{event}
+							bind:movieSuggestionQuery
+							selectedGroupId={selectedGroup?.id}
+						/>
 					{/if}
 				</div>
 			</div>
