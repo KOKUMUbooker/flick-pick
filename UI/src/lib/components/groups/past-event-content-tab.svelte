@@ -4,17 +4,19 @@
 	import { onMount } from 'svelte';
 	import { QUERY_KEYS, apiFetch } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
+	import { getAppUser } from '../../../store';
 	import type { DBGroup, MovieNightEvent } from '../../../types';
 	import Button from '../ui/button/button.svelte';
 	import { Card, CardContent } from '../ui/card';
-	import { TabsContent } from '../ui/tabs';
 	import Skeleton from '../ui/skeleton/skeleton.svelte';
+	import { TabsContent } from '../ui/tabs';
 	interface PastEventsTabContentProps {
 		selectedGroup: DBGroup | null;
 		openEventChat: (event: MovieNightEvent) => void;
 	}
 
 	let { selectedGroup, openEventChat }: PastEventsTabContentProps = $props();
+	let user = getAppUser();
 	let _movieEventsQuery = createQuery<
 		null, // variables type
 		Error, // error type
@@ -22,10 +24,13 @@
 	>(() => ({
 		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'past'],
 		queryFn: async (data) => {
-			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=past`, {
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' }
-			});
+			return apiFetch(
+				`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=past&initiator=${user?.id || ''}`,
+				{
+					method: 'GET',
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
 		},
 		enabled: selectedGroup != null
 	}));

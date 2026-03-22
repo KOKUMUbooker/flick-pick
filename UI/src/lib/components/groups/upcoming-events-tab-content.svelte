@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { apiFetch, QUERY_KEYS } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
+	import { getAppUser } from '../../../store';
 	import type { DBGroup, MovieNightEvent } from '../../../types';
 	import Button from '../ui/button/button.svelte';
 	import { Card, CardContent } from '../ui/card';
@@ -18,7 +19,7 @@
 	}
 
 	let { createNewEvent, selectedGroup, openEventChat }: UpcomingEventsTabContentProps = $props();
-
+	let user = getAppUser();
 	let _movieEventsQuery = createQuery<
 		null, // variables type
 		Error, // error type
@@ -27,7 +28,7 @@
 		queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming'],
 		queryFn: async (data) => {
 			return apiFetch(
-				`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=upcoming`,
+				`${API_BASE_URL}/api/groups/${selectedGroup?.id}/movie-nights?status=upcoming&initiator=${user?.id || ''}`,
 				{
 					method: 'GET',
 					headers: { 'Content-Type': 'application/json' }
