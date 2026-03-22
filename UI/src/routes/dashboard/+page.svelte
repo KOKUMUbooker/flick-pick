@@ -31,10 +31,10 @@
 	let sidebarOpen = $state(false); // Controls mobile sidebar visibility
 	let searchQuery = $state('');
 
-	let showPendingInvitesDialog = $state(false) 
-	let showJoinGroupsDialog = $state(false) 
-	let showSendInviteDialog = $state(false) 
-	let showDeleteWarnDialog = $state(false)
+	let showPendingInvitesDialog = $state(false);
+	let showJoinGroupsDialog = $state(false);
+	let showSendInviteDialog = $state(false);
+	let showDeleteWarnDialog = $state(false);
 
 	// Track selected event for chat view
 	let selectedGroup = $state<DBGroup | null>(null);
@@ -59,7 +59,7 @@
 		Error, // error type
 		{ groups: DBGroup[] } // response type
 	>(() => ({
-		queryKey: [QUERY_KEYS.GROUPS + user?.id || ""],
+		queryKey: [QUERY_KEYS.GROUPS + user?.id || ''],
 		queryFn: async () => {
 			return apiFetch(`${API_BASE_URL}/api/groups?userId=${user?.id}`, {
 				method: 'GET',
@@ -74,7 +74,7 @@
 	// Initialize
 	onMount(async () => {
 		try {
-			if (!user) return
+			if (!user) return;
 
 			// 1. Fetch groups
 			shouldFetchGroups = true;
@@ -128,31 +128,34 @@
 	}
 
 	let groupDeleteMutation = createMutation<
-		{message : string}, // response type
+		{ message: string }, // response type
 		Error, // error type
 		void // variables type
 	>(() => ({
 		mutationFn: async (data) => {
-			return apiFetch(`${API_BASE_URL}/api/groups/${selectedGroup?.id || ""}/del?userId=${encodeURIComponent(user?.id || "")}`, {
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data)
-			});
+			return apiFetch(
+				`${API_BASE_URL}/api/groups/${selectedGroup?.id || ''}/del?userId=${encodeURIComponent(user?.id || '')}`,
+				{
+					method: 'DELETE',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data)
+				}
+			);
 		},
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey:  [QUERY_KEYS.GROUPS + user?.id || ""] });
-			selectedGroup = null
+			await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GROUPS + user?.id || ''] });
+			selectedGroup = null;
 		}
 	}));
 
-	function onShowDelWarningOnchange(show:boolean) {
-		showDeleteWarnDialog = show
+	function onShowDelWarningOnchange(show: boolean) {
+		showDeleteWarnDialog = show;
 	}
 
 	async function onProceedGroupDelete() {
 		const res = await groupDeleteMutation.mutateAsync();
-		toast.success(res.message,{richColors:true});
-		onShowDelWarningOnchange(false)
+		toast.success(res.message, { richColors: true });
+		onShowDelWarningOnchange(false);
 	}
 
 	function getEventStatus(event: MovieNightEvent): {
@@ -166,38 +169,56 @@
 </script>
 
 {#if showSendInviteDialog}
-	<SearchUsersToInviteFlow selectedGroup={selectedGroup} onCancel={()=>showSendInviteDialog=false} onGroupSelectConfirm={()=>showSendInviteDialog=false}/>
+	<SearchUsersToInviteFlow
+		{selectedGroup}
+		onCancel={() => (showSendInviteDialog = false)}
+		onGroupSelectConfirm={() => (showSendInviteDialog = false)}
+	/>
 {/if}
 
 {#if showJoinGroupsDialog}
- 	<SearchJoinGroupsFlow onCancel={()=>showJoinGroupsDialog=false} onGroupSelectConfirm={()=>showJoinGroupsDialog=false}/>
+	<SearchJoinGroupsFlow
+		onCancel={() => (showJoinGroupsDialog = false)}
+		onGroupSelectConfirm={() => (showJoinGroupsDialog = false)}
+	/>
 {/if}
 
-<CustomDialog bind:open={showPendingInvitesDialog} width="4xl" onOpenChange={()=>showPendingInvitesDialog=false}>
+<CustomDialog
+	bind:open={showPendingInvitesDialog}
+	width="4xl"
+	onOpenChange={() => (showPendingInvitesDialog = false)}
+>
 	<div class="mt-6">
-		<InvitesTabContent selectedGroup={null} allowAutomaticFetch={true}/>
+		<InvitesTabContent selectedGroup={null} allowAutomaticFetch={true} />
 	</div>
 </CustomDialog>
 
 <CustomDialog bind:open={showAddGroupDialog} onOpenChange={onShowAddGroupDialogOpenChange}>
-	<AddGroupForm 
-		onOpenChange={onShowAddGroupDialogOpenChange} 
-		defaultValues={{Id:selectedGroup?.id || "", Description:selectedGroup?.description || "",Name:selectedGroup?.name || ""}}
+	<AddGroupForm
+		onOpenChange={onShowAddGroupDialogOpenChange}
+		defaultValues={{
+			Id: selectedGroup?.id || '',
+			Description: selectedGroup?.description || '',
+			Name: selectedGroup?.name || ''
+		}}
 	/>
 </CustomDialog>
 
 <CustomDialog bind:open={showAddMovieNightDialog} onOpenChange={onShowMovieNightDialogOpenChange}>
-	<AddMovieNightForm selectedGroup={selectedGroup} onOpenChange={onShowMovieNightDialogOpenChange} />
+	<AddMovieNightForm {selectedGroup} onOpenChange={onShowMovieNightDialogOpenChange} />
 </CustomDialog>
 
-<CustomDialog 
-	header={{title:"Are you sure?"}} 
-	bind:open={showDeleteWarnDialog} 
+<CustomDialog
+	header={{ title: 'Delete Group' }}
+	bind:open={showDeleteWarnDialog}
 	onOpenChange={onShowDelWarningOnchange}
 	isLoading={groupDeleteMutation.isPending}
-	actions={{onProceed:onProceedGroupDelete}}
+	actions={{ onProceed: onProceedGroupDelete }}
 >
-	<p>Are you sure you want to delete this group and all of its data? This action is irreversible so proceed with caution.</p>
+	<p>
+		Are you sure you want to delete this group and all of its data? This action is irreversible so
+		proceed with caution.
+	</p>
 </CustomDialog>
 
 <div class="flex min-h-screen bg-background">
@@ -215,7 +236,7 @@
 		{sidebarOpen}
 		{toggleSidebar}
 		{filteredGroups}
- 		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
+		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
 		bind:searchQuery
 		bind:selectedGroup
 	/>
@@ -238,13 +259,13 @@
 
 		{#if selectedGroup}
 			<!-- Desktop Group Header -->
-			<DesktopHeader 
-				{selectedGroup} 
-				{createNewEvent} 
-				bind:showSendInviteDialog={showSendInviteDialog} 
-				bind:showJoinGroupsDialog={showJoinGroupsDialog} 
-				bind:showAddGroupDialog={showAddGroupDialog} 
-				bind:showDeleteWarnDialog={showDeleteWarnDialog} 
+			<DesktopHeader
+				{selectedGroup}
+				{createNewEvent}
+				bind:showSendInviteDialog
+				bind:showJoinGroupsDialog
+				bind:showAddGroupDialog
+				bind:showDeleteWarnDialog
 			/>
 
 			<!-- Main Content Area -->
@@ -275,13 +296,13 @@
 								</TabsTrigger>
 							</TabsList>
 						{:else}
-							<GroupActionsMobile 
-								{selectedGroup} 
-								{createNewEvent} 
-								bind:showAddGroupDialog={showAddGroupDialog}  
-								bind:showSendInviteDialog={showSendInviteDialog} 
-								bind:showJoinGroupsDialog={showJoinGroupsDialog}
-								bind:showDeleteWarnDialog={showDeleteWarnDialog} 
+							<GroupActionsMobile
+								{selectedGroup}
+								{createNewEvent}
+								bind:showAddGroupDialog
+								bind:showSendInviteDialog
+								bind:showJoinGroupsDialog
+								bind:showDeleteWarnDialog
 							/>
 						{/if}
 
@@ -299,7 +320,7 @@
 							<InvitesTabContent {selectedGroup} />
 						</TabsContent>
 					</Tabs>
- 				{/if}
+				{/if}
 			</div>
 		{:else}
 			<!-- No Group Selected State -->
@@ -308,10 +329,9 @@
 					<Users class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 					<h2 class="mb-2 text-2xl font-semibold">Welcome to WatchHive</h2>
 					<p class="mb-6 text-muted-foreground">
-						{user ? 
-						"Select a group from the sidebar or create your first group to start planning movie nights." :
-						"Oops, it seems you're logged out, please proceed to login"
-						}
+						{user
+							? 'Select a group from the sidebar or create your first group to start planning movie nights.'
+							: "Oops, it seems you're logged out, please proceed to login"}
 					</p>
 					{#if user}
 						<div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -320,12 +340,12 @@
 								Create Your First Group
 							</Button>
 
-							<Button variant="secondary" onclick={()=>showJoinGroupsDialog=true}>
+							<Button variant="secondary" onclick={() => (showJoinGroupsDialog = true)}>
 								<Users class="mr-2 h-4 w-4" />
 								Join Existing Group
 							</Button>
-							<Button variant="outline" onclick={()=>showPendingInvitesDialog=true}>
-								<MailPlus  class="mr-2 h-4 w-4" />
+							<Button variant="outline" onclick={() => (showPendingInvitesDialog = true)}>
+								<MailPlus class="mr-2 h-4 w-4" />
 								Check pending invites
 							</Button>
 						</div>
