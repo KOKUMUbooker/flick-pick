@@ -26,7 +26,7 @@ public class GroupInvitationController : ControllerBase
             if (isAdmin)
             {
                 var adminInvitations = await _dbContext.GroupInvitations
-                        .Where(gi => gi.GroupId == groupId)
+                        .Where(gi => gi.GroupId == groupId || gi.InviteeUserId == userId || gi.CreatedById == userId)
                         .AsNoTracking()
                         .Select(gi => new
                         {
