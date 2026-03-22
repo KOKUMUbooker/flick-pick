@@ -90,7 +90,8 @@ export interface CreateInvitationRes {
 export interface UpdateInvitationData {
     Initiator: string;
     Status: GroupInvitationStatus,
-    InvitationId: string
+    InvitationId: string,
+    GroupId?: string
 }
 
 export interface UpdateInvitationRes {

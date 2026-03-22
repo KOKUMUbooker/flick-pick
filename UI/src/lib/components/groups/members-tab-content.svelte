@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MoreVertical, Trash2, Users } from '@lucide/svelte';
+	import { MoreVertical, RefreshCw, Trash2, Users } from '@lucide/svelte';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -150,6 +150,16 @@
 	<p>Are you sure you want to remove {selectedMember?.fullName} from the group?.</p>
 </CustomDialog>
 <TabsContent value="members" class="mt-6">
+	<div class="mb-2 flex justify-end">
+		<Button
+			variant="outline"
+			onclick={membersQuery.refetch}
+			disabled={membersQuery.isPending || membersQuery.isFetching}
+		>
+			<RefreshCw />
+			Refetch</Button
+		>
+	</div>
 	<Card>
 		<CardHeader>
 			<CardTitle>Group Members</CardTitle>

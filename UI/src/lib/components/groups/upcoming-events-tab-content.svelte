@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Calendar, Plus } from '@lucide/svelte';
+	import { Calendar, Plus, RefreshCw } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
 	import { apiFetch, QUERY_KEYS } from '../../../api';
@@ -15,15 +15,11 @@
 		selectedGroup: DBGroup | null;
 		createNewEvent: () => void;
 		openEventChat: (event: MovieNightEvent) => void;
- 	}
+	}
 
-	let {
-		createNewEvent,
-		selectedGroup,
-		openEventChat,
- 	}: UpcomingEventsTabContentProps = $props();
+	let { createNewEvent, selectedGroup, openEventChat }: UpcomingEventsTabContentProps = $props();
 
-	let _movieNightsQuery = createQuery<
+	let _movieEventsQuery = createQuery<
 		null, // variables type
 		Error, // error type
 		{ movieEvents: MovieNightEvent[] } // response type
@@ -41,51 +37,49 @@
 		enabled: selectedGroup != null
 	}));
 
-	let movieNightsQuery = $state(_movieNightsQuery);
+	let movieEventsQuery = $state(_movieEventsQuery);
 
 	onMount(async () => {
-		await movieNightsQuery.refetch();
+		await movieEventsQuery.refetch();
 	});
-
-	 
 </script>
 
 <TabsContent value="upcoming" class="mt-6">
-	{#if movieNightsQuery.isFetching || movieNightsQuery.isPending}
+	<div class="mb-2 flex justify-end">
+		<Button
+			variant="outline"
+			onclick={movieEventsQuery.refetch}
+			disabled={movieEventsQuery.isPending || movieEventsQuery.isFetching}
+		>
+			<RefreshCw />
+			Refetch</Button
+		>
+	</div>
+	{#if movieEventsQuery.isFetching || movieEventsQuery.isPending}
 		<div class="grid space-y-2">
-			{#each [1,2,3] as count (count)}
+			{#each [1, 2, 3] as count (count)}
 				<Skeleton class="h-64" />
 			{/each}
 		</div>
-	{:else}
-		{#if movieNightsQuery.data}
-			{#if movieNightsQuery.data.movieEvents.length > 0}
-				<div class="space-y-6">
-					{#each movieNightsQuery.data.movieEvents as event, i (event.id)}
-						<EventCard bind:event={movieNightsQuery.data.movieEvents[i]} {openEventChat} selectedGroup={selectedGroup} />
-					{/each}
-				</div>
-			{:else}
-				<Card>
-					<CardContent class="py-12 text-center">
-						<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-						<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
-						<p class="mb-4 text-sm text-muted-foreground">
-							Plan your first movie night with the group
-						</p>
-						<Button onclick={createNewEvent}>
-							<Plus class="mr-2 h-4 w-4" />
-							Plan Movie Night
-						</Button>
-					</CardContent>
-				</Card>
-			{/if}
+	{:else if movieEventsQuery.data}
+		{#if movieEventsQuery.data.movieEvents.length > 0}
+			<div class="space-y-6">
+				{#each movieEventsQuery.data.movieEvents as event, i (event.id)}
+					<EventCard
+						bind:event={movieEventsQuery.data.movieEvents[i]}
+						{openEventChat}
+						{selectedGroup}
+					/>
+				{/each}
+			</div>
 		{:else}
 			<Card>
 				<CardContent class="py-12 text-center">
 					<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 					<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
-					<p class="mb-4 text-sm text-muted-foreground">Plan your first movie night with the group</p>
+					<p class="mb-4 text-sm text-muted-foreground">
+						Plan your first movie night with the group
+					</p>
 					<Button onclick={createNewEvent}>
 						<Plus class="mr-2 h-4 w-4" />
 						Plan Movie Night
@@ -93,6 +87,17 @@
 				</CardContent>
 			</Card>
 		{/if}
+	{:else}
+		<Card>
+			<CardContent class="py-12 text-center">
+				<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+				<h3 class="mb-2 text-lg font-semibold">No upcoming movie nights</h3>
+				<p class="mb-4 text-sm text-muted-foreground">Plan your first movie night with the group</p>
+				<Button onclick={createNewEvent}>
+					<Plus class="mr-2 h-4 w-4" />
+					Plan Movie Night
+				</Button>
+			</CardContent>
+		</Card>
 	{/if}
-	
 </TabsContent>

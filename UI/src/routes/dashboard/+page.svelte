@@ -70,6 +70,7 @@
 	}));
 
 	let groupsQuery = $state(_groupsQuery);
+	// groupsQuery.refetch
 
 	// Initialize
 	onMount(async () => {
@@ -236,7 +237,9 @@
 		{sidebarOpen}
 		{toggleSidebar}
 		{filteredGroups}
-		isFetching={groupsQuery.isFetching || groupsQuery.isPending}
+		refetchGroups={groupsQuery.refetch}
+		isFetching={groupsQuery.isFetching}
+		isPending={groupsQuery.isPending}
 		bind:searchQuery
 		bind:selectedGroup
 	/>
