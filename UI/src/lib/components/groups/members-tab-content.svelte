@@ -127,118 +127,97 @@
 	};
 </script>
 
-<CustomDialog
-	header={{ title: `${roleAction ? `${roleAction.toUpperCase()} role` : 'Change role'}` }}
-	bind:open={showRoleChangeDialog}
-	onOpenChange={onShowRoleChangeDialog}
-	isLoading={memberRoleChangeMutation.isPending}
-	actions={{ onProceed: onProceedMemberRoleChange }}
->
-	<p>
-		Are you sure you want to {roleAction == 'grant'
-			? `grant ${selectedMember?.fullName} an admin role?`
-			: `revoke ${selectedMember?.fullName} of their admin role?`}
-	</p>
-</CustomDialog>
-<CustomDialog
-	header={{ title: 'Remove group member' }}
-	bind:open={showMemberRemovalDialog}
-	onOpenChange={onShowMemberRemovalDialog}
-	isLoading={memberRemovalMutation.isPending}
-	actions={{ onProceed: onProceedMemberRemoval }}
->
-	<p>Are you sure you want to remove {selectedMember?.fullName} from the group?.</p>
-</CustomDialog>
-<TabsContent value="members" class="mt-6">
-	<div class="mb-2 flex justify-end">
-		<Button
-			variant="outline"
-			onclick={membersQuery.refetch}
-			disabled={membersQuery.isPending || membersQuery.isFetching}
-		>
-			<RefreshCw />
-			Refetch</Button
-		>
-	</div>
-	<Card>
-		<CardHeader>
-			<CardTitle>Group Members</CardTitle>
-			<CardDescription
-				>{membersQuery.data?.groupMembers?.length ?? 0} people in this group</CardDescription
+<TabsContent value="members" class="mt-2">
+	<div class="grid">
+		<div class="flex justify-end pb-4">
+			<Button
+				variant="outline"
+				onclick={membersQuery.refetch}
+				disabled={membersQuery.isPending || membersQuery.isFetching}
 			>
-		</CardHeader>
-		<CardContent>
-			<div class="space-y-3">
-				{#if membersQuery.isFetching || membersQuery.isPending}
-					<div class="grid space-y-2">
-						{#each [1, 2, 3, 4, 5] as count (count)}
-							<Skeleton class="h-16" />
-						{/each}
-					</div>
-				{:else if membersQuery.data != undefined}
-					{#each membersQuery.data.groupMembers as member (member.id)}
-						<div class="flex items-center justify-between rounded-lg border border-border p-4">
-							<div class="flex items-center gap-3">
-								<Avatar>
-									<AvatarFallback>{member.fullName.charAt(0)}</AvatarFallback>
-								</Avatar>
-								<div>
-									<div class="font-medium">{member.fullName}</div>
-									<div class="flex items-center gap-2 text-sm text-muted-foreground">
-										{member.isAdmin ? 'Group Admin' : 'Member'}
-										<span>•</span>
-										<span
-											>Joined {new Date(member.joinedAt).toLocaleDateString('en-US', {
-												month: 'short',
-												day: 'numeric'
-											})}</span
-										>
+				<RefreshCw />
+				Refetch</Button
+			>
+		</div>
+		<Card>
+			<CardHeader>
+				<CardTitle>Group Members</CardTitle>
+				<CardDescription
+					>{membersQuery.data?.groupMembers?.length ?? 0} people in this group</CardDescription
+				>
+			</CardHeader>
+			<CardContent>
+				<div class="">
+					{#if membersQuery.isFetching || membersQuery.isPending}
+						<div class="grid space-y-2">
+							{#each [1, 2, 3, 4, 5] as count (count)}
+								<Skeleton class="h-16" />
+							{/each}
+						</div>
+					{:else if membersQuery.data != undefined}
+						{#each membersQuery.data.groupMembers as member (member.id)}
+							<div class="flex items-center justify-between rounded-lg border border-border p-4">
+								<div class="flex items-center gap-3">
+									<Avatar>
+										<AvatarFallback>{member.fullName.charAt(0)}</AvatarFallback>
+									</Avatar>
+									<div>
+										<div class="font-medium">{member.fullName}</div>
+										<div class="flex items-center gap-2 text-sm text-muted-foreground">
+											{member.isAdmin ? 'Group Admin' : 'Member'}
+											<span>•</span>
+											<span
+												>Joined {new Date(member.joinedAt).toLocaleDateString('en-US', {
+													month: 'short',
+													day: 'numeric'
+												})}</span
+											>
+										</div>
 									</div>
 								</div>
+								<div class="flex items-center gap-2">
+									{#if member.isAdmin}
+										<Badge variant="outline">Admin</Badge>
+									{/if}
+									{#if selectedGroup?.isUserAdmin && member.email != user?.email}
+										<DropdownMenu>
+											<DropdownMenuTrigger>
+												<Button size="sm" variant="ghost">
+													<MoreVertical class="h-4 w-4" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuItem
+													onclick={() => {
+														selectedMember = member;
+														roleAction = member.isAdmin ? 'revoke' : 'grant';
+														showRoleChangeDialog = true;
+													}}
+												>
+													<Users class="mr-2 h-4 w-4" />
+													{member.isAdmin ? 'Revoke Admin role' : 'Make Admin'}
+												</DropdownMenuItem>
+												<DropdownMenuSeparator />
+												<DropdownMenuItem
+													class="text-destructive"
+													onclick={() => {
+														selectedMember = member;
+														showMemberRemovalDialog = true;
+													}}
+												>
+													<Trash2 class="mr-2 h-4 w-4" />
+													Remove from Group
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									{/if}
+								</div>
 							</div>
-							<div class="flex items-center gap-2">
-								{#if member.isAdmin}
-									<Badge variant="outline">Admin</Badge>
-								{/if}
-								{#if selectedGroup?.isUserAdmin && member.email != user?.email}
-									<DropdownMenu>
-										<DropdownMenuTrigger>
-											<Button size="sm" variant="ghost">
-												<MoreVertical class="h-4 w-4" />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end">
-											<DropdownMenuItem
-												onclick={() => {
-													selectedMember = member;
-													roleAction = member.isAdmin ? 'revoke' : 'grant';
-													showRoleChangeDialog = true;
-												}}
-											>
-												<Users class="mr-2 h-4 w-4" />
-												{member.isAdmin ? 'Revoke Admin role' : 'Make Admin'}
-											</DropdownMenuItem>
-											<DropdownMenuSeparator />
-											<DropdownMenuItem
-												class="text-destructive"
-												onclick={() => {
-													selectedMember = member;
-													showMemberRemovalDialog = true;
-												}}
-											>
-												<Trash2 class="mr-2 h-4 w-4" />
-												Remove from Group
-											</DropdownMenuItem>
-										</DropdownMenuContent>
-									</DropdownMenu>
-								{/if}
-							</div>
-						</div>
-					{/each}
-				{/if}
-			</div>
-		</CardContent>
-		<!-- <CardFooter class="flex flex-col gap-4">
+						{/each}
+					{/if}
+				</div>
+			</CardContent>
+			<!-- <CardFooter class="flex flex-col gap-4">
 			<Separator />
 			<div class="flex w-full items-center justify-between">
 				<div>
@@ -257,5 +236,29 @@
 				</div>
 			</div>
 		</CardFooter> -->
-	</Card>
+		</Card>
+	</div>
+
+	<CustomDialog
+		header={{ title: `${roleAction ? `${roleAction.toUpperCase()} role` : 'Change role'}` }}
+		bind:open={showRoleChangeDialog}
+		onOpenChange={onShowRoleChangeDialog}
+		isLoading={memberRoleChangeMutation.isPending}
+		actions={{ onProceed: onProceedMemberRoleChange }}
+	>
+		<p>
+			Are you sure you want to {roleAction == 'grant'
+				? `grant ${selectedMember?.fullName} an admin role?`
+				: `revoke ${selectedMember?.fullName} of their admin role?`}
+		</p>
+	</CustomDialog>
+	<CustomDialog
+		header={{ title: 'Remove group member' }}
+		bind:open={showMemberRemovalDialog}
+		onOpenChange={onShowMemberRemovalDialog}
+		isLoading={memberRemovalMutation.isPending}
+		actions={{ onProceed: onProceedMemberRemoval }}
+	>
+		<p>Are you sure you want to remove {selectedMember?.fullName} from the group?.</p>
+	</CustomDialog>
 </TabsContent>

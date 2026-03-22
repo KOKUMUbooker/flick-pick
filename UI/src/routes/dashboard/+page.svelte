@@ -319,7 +319,7 @@
 						<MembersTabContent {selectedGroup} />
 
 						<!-- Invites Tab -->
-						<TabsContent value="invites" class="mt-6">
+						<TabsContent value="invites" class="">
 							<InvitesTabContent {selectedGroup} />
 						</TabsContent>
 					</Tabs>

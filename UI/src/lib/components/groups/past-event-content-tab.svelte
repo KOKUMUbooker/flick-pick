@@ -37,8 +37,8 @@
 	});
 </script>
 
-<TabsContent value="past" class="mt-6">
-	<div class="mb-2 flex justify-end">
+<TabsContent value="past">
+	<div class="mb-2 flex justify-end py-2">
 		<Button
 			variant="outline"
 			onclick={movieEventsQuery.refetch}

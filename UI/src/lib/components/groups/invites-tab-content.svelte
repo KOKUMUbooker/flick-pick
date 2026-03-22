@@ -170,27 +170,17 @@
 	}
 </script>
 
-{#if showConfirmPrompt && selectedInvitation}
-	<CustomDialog
-		open={showConfirmPrompt}
-		actions={{ onProceed: handeleStatusUpdate }}
-		header={{ title: `${action == 'approved' ? 'Approve' : 'Cancel'} invitation` }}
-		onOpenChange={onUpdateOpenChange}
-	>
-		<p>Are you sure you want to {action == 'approved' ? 'approve' : 'cancel'} this invitation?</p>
-	</CustomDialog>
-{/if}
-<div class="mb-2 flex justify-end">
-	<Button
-		variant="outline"
-		onclick={invitesQuery.refetch}
-		disabled={invitesQuery.isPending || invitesQuery.isFetching}
-	>
-		<RefreshCw />
-		Refetch</Button
-	>
-</div>
 <div>
+	<div class="mt-2 mb-4 flex justify-end">
+		<Button
+			variant="outline"
+			onclick={invitesQuery.refetch}
+			disabled={invitesQuery.isPending || invitesQuery.isFetching}
+		>
+			<RefreshCw />
+			Refetch</Button
+		>
+	</div>
 	{#if isGettingInvites}
 		<!-- Skeletons -->
 		<div class="space-y-4">
@@ -376,3 +366,14 @@
 		</Card>
 	{/if}
 </div>
+
+{#if showConfirmPrompt && selectedInvitation}
+	<CustomDialog
+		open={showConfirmPrompt}
+		actions={{ onProceed: handeleStatusUpdate }}
+		header={{ title: `${action == 'approved' ? 'Approve' : 'Cancel'} invitation` }}
+		onOpenChange={onUpdateOpenChange}
+	>
+		<p>Are you sure you want to {action == 'approved' ? 'approve' : 'cancel'} this invitation?</p>
+	</CustomDialog>
+{/if}
