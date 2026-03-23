@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Eye, Undo2 } from '@lucide/svelte';
-	import { createMutation, type CreateQueryResult } from '@tanstack/svelte-query';
+	import { createMutation, createQuery, type CreateQueryResult } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS, queryClient } from '../../../api';
 	import type { CreateVoteData } from '../../../api/types';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { getAppUser } from '../../../store';
-	import { VoteType, type MovieNightEvent } from '../../../types';
+	import { VoteType, type MovieNightEvent, type Vote } from '../../../types';
 	import CustomDialog from '../common/CustomDialog.svelte';
 	import Badge from '../ui/badge/badge.svelte';
 	import Button from '../ui/button/button.svelte';
@@ -22,17 +22,40 @@
 		event: MovieNightEvent;
 		suggestion: FetchedMovieSuggestion;
 		selectedGroupId: string | undefined;
+		validMvSuggestionCmpHasFetchedVotes: boolean;
+		movieSuggestionSuccefullyFetched: boolean;
 	}
 
 	let {
 		movieSuggestionQuery = $bindable(),
 		event,
 		suggestion,
-		selectedGroupId
+		selectedGroupId,
+		movieSuggestionSuccefullyFetched,
+		validMvSuggestionCmpHasFetchedVotes
 	}: VetoedMovieSuggestionProps = $props();
 	let user = getAppUser();
 	let showMovieDetailsDialog = $state(false);
-	let myVote = $derived(suggestion.votes.find((v) => v.user.email === user?.email));
+	let votesQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		{ votes: Vote[] } // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.VOTES + suggestion.id],
+		queryFn: async () => {
+			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes`;
+			console.log('Fetching from:', url);
+			return apiFetch(url, {
+				method: 'GET',
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+		},
+		enabled:
+			movieSuggestionSuccefullyFetched && !!suggestion.id && !validMvSuggestionCmpHasFetchedVotes
+	}));
+	let myVote = $derived(votesQuery.data?.votes.find((v) => v.user.email === user?.email));
 
 	const onShowMovieDialogChange = (show: boolean) => {
 		showMovieDetailsDialog = show;
@@ -74,7 +97,7 @@
 	<MovieDetailsContent movie={suggestion.movie} />
 </CustomDialog>
 <div
-	class="rounded-lg border border-destructive/30 bg-destructive/5 p-3 opacity-80 hover:opacity-100"
+	class="mb-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 opacity-80 hover:opacity-100"
 >
 	<div class="flex items-center gap-3">
 		<img
