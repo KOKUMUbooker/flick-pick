@@ -26,7 +26,7 @@ public class GroupInvitationController : ControllerBase
             if (isAdmin)
             {
                 var adminInvitations = await _dbContext.GroupInvitations
-                        .Where(gi => gi.GroupId == groupId)
+                        .Where(gi => gi.GroupId == groupId || gi.InviteeUserId == userId || gi.CreatedById == userId)
                         .AsNoTracking()
                         .Select(gi => new
                         {
@@ -109,13 +109,9 @@ public class GroupInvitationController : ControllerBase
         return Ok(new {message});
     }
 
-    /*
-      On approval - The invitation item gets deleted
-      On cancel   - If the initiator is the invitation creator, delete the item
-                  - Otherwise, just mark it as cancelled
-    */
-    [HttpPatch("invite/{invitationId}/status-update")]
-    public async Task<IActionResult> UpdateInvitationStatus([FromRoute] Guid invitationId ,[FromBody] UpdateInvitationDto updateDto)
+    /* On successful processing, the invitation gets deleted */
+    [HttpPatch("invitation/{invitationId}/status-update")]
+    public async Task<IActionResult> UpdateInvitationStatus([FromRoute] Guid invitationId, [FromBody] UpdateInvitationDto updateDto)
     {
         var invitation = await _dbContext.GroupInvitations.FindAsync(invitationId);
         if (invitation == null)
@@ -133,8 +129,26 @@ public class GroupInvitationController : ControllerBase
             return BadRequest(new CustomError {Message = "Invalid initiator provided"});
         }
 
-        // if initiator is not the creator of the invitation or the invitation invitee, cancel request
-        if (!(invitation.CreatedById == parsedInitiator ||  invitation.InviteeUserId == parsedInitiator))
+        Guid tempGuid = new();
+        Guid parsedGroupId = tempGuid;
+        if (!string.IsNullOrEmpty(updateDto.GroupId) && !string.IsNullOrWhiteSpace(updateDto.GroupId))
+        {
+             if (!Guid.TryParse(updateDto.GroupId, out parsedGroupId))
+            {
+                return BadRequest(new CustomError {Message = "Invalid groupId provided"});
+            }
+        }
+
+        var isAdmin = false;
+        if (parsedGroupId != tempGuid)
+        {
+            isAdmin = await _dbContext.UserGroups
+               .AnyAsync(ug => ug.UserId == parsedInitiator && ug.GroupId == parsedGroupId && ug.IsAdmin);
+        }
+
+        // if initiator is not the creator of the invitation or the invitation invitee or not the group admin, cancel request
+        bool areInvitationParties = invitation.CreatedById == parsedInitiator ||  invitation.InviteeUserId == parsedInitiator;
+        if (!areInvitationParties && !isAdmin)
         {
             return BadRequest(new CustomError { Message = "You are not authorized to update this invitation" } );
         } 

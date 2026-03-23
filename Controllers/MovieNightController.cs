@@ -109,7 +109,11 @@ public class MovieNightController : ControllerBase
     }
 
     [HttpGet("groups/{groupId}/movie-nights")]
-    public async Task<IActionResult> FetchMovieNights([FromRoute] string groupId,[FromQuery] string? status)
+    public async Task<IActionResult> FetchMovieNights(
+        [FromRoute] string groupId,
+        [FromQuery] string? status,
+        [FromQuery] string initiator
+    )
     {
         if (!Guid.TryParse(groupId, out Guid parsedGroupId))
         {
@@ -120,6 +124,18 @@ public class MovieNightController : ControllerBase
         if (groupExists == null)
         {
             return NotFound(new CustomError{ Message = "The movie night's group does not exist" });
+        }
+
+        if (!Guid.TryParse(initiator, out Guid parsedInitiator))
+        {
+            return BadRequest(new CustomError { Message = "Invalid initiator provided" });
+        }
+
+        var isGroupMember = await _dbContext.UserGroups
+                    .AnyAsync(ug => ug.GroupId == parsedGroupId && ug.UserId == parsedInitiator);
+        if (!isGroupMember)
+        {
+            return BadRequest(new CustomError{Message="You are not allowed to view movie events from a group you're not part of"});
         }
 
         var now = DateTimeOffset.UtcNow;

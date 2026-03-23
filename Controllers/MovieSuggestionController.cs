@@ -28,7 +28,7 @@ public class MovieSuggestionController : ControllerBase
                             .Where(ms => ms.MovieNightEventId == parsedMovieNightId)
                             .Select(ms => new 
                             {
-                                Id = ms.Id.ToString(),
+                                Id = ms.Id,
                                 MovieId = ms.MovieId,
                                 MovieNightEventId = ms.MovieNightEventId,
                                 IsDisqualified = ms.IsDisqualified,
@@ -45,15 +45,7 @@ public class MovieSuggestionController : ControllerBase
                                     ReleaseDate = ms.Movie.ReleaseDate.ToString(),
                                     Overview = ms.Movie.Overview,
                                     VoteAverage = ms.Movie.VoteAverage
-                                },
-                                Votes = ms.Votes.Select(v => new 
-                                {
-                                    VoteType = v.VoteType,
-                                    User = new {
-                                        fullName = v.User.FullName,
-                                        email = v.User.Email
-                                    }
-                                }).ToList()
+                                } 
                             })
                             .AsNoTracking()
                             .ToListAsync();

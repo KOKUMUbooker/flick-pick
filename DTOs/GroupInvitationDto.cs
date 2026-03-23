@@ -16,6 +16,8 @@ public class UpdateInvitationDto
     [Required]
     public string Initiator { get; set; } = null!;
 
+     public string? GroupId {get; set;} 
+
     [Required]
     public string Status { get; set; } = null!;
 }
