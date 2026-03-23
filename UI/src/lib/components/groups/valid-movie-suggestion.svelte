@@ -19,13 +19,15 @@
 		event: MovieNightEvent;
 		suggestion: FetchedMovieSuggestion;
 		movieSuggestionSuccefullyFetched: boolean;
+		validMvSuggestionCmpHasFetchedVotes: boolean;
 	}
 
 	let {
 		suggestion,
 		event = $bindable(),
 		selectedGroupId,
-		movieSuggestionSuccefullyFetched
+		movieSuggestionSuccefullyFetched,
+		validMvSuggestionCmpHasFetchedVotes = $bindable()
 	}: MovieSuggestionItem = $props();
 	let user = getAppUser();
 	let showDeleteWarnDialog = $state(false);
@@ -79,6 +81,11 @@
 		enabled: movieSuggestionSuccefullyFetched && !!suggestion.id
 	}));
 	let myVote = $derived(votesQuery.data?.votes.find((v) => v.user.email === user?.email));
+
+	$effect(() => {
+		// Update this state to help the veto mv suggestion component know if the fetch was successfull
+		validMvSuggestionCmpHasFetchedVotes = votesQuery.isSuccess;
+	});
 
 	// suggestions/{movieSuggestionId}/vote
 	let voteMutation = createMutation<

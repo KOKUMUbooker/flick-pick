@@ -103,6 +103,7 @@
 		const res = await movieEventDeleteMutation.mutateAsync();
 		toast.success(res.message, { richColors: true });
 	};
+	let validMvSuggestionCmpHasFetchedVotes = $state(false);
 </script>
 
 <CustomDialog
@@ -177,6 +178,7 @@
 							{suggestion}
 							selectedGroupId={selectedGroup?.id}
 							movieSuggestionSuccefullyFetched={movieSuggestionQuery.isSuccess}
+							bind:validMvSuggestionCmpHasFetchedVotes
 						/>
 					{/each}
 
@@ -185,6 +187,8 @@
 							{event}
 							bind:movieSuggestionQuery
 							selectedGroupId={selectedGroup?.id}
+							movieSuggestionSuccefullyFetched={movieSuggestionQuery.isSuccess}
+							{validMvSuggestionCmpHasFetchedVotes}
 						/>
 					{/if}
 				</div>
