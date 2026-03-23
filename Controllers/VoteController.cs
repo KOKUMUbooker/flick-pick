@@ -16,11 +16,23 @@ public class VoteController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet("movie-suggestions/{movieSuggestionId}/vote")]
-    public async Task<IActionResult> GetSuggestionVotes([FromRoute] string movieSuggestionId)
+    [HttpGet("movie-suggestions/vote/{voteId}")]
+    public async Task<IActionResult> GetVoteDetails([FromRoute] Guid voteId)
     {
-        // TODO: Implement this
-        return Ok();
+        var vote = await _dbContext.Votes 
+                        .SingleOrDefaultAsync(v => v.Id == voteId);
+        
+        return Ok(new {vote});
+    }
+
+    [HttpGet("movie-suggestions/{movieSuggestionId}/votes")]
+    public async Task<IActionResult> GetSuggestionVotes([FromRoute] Guid movieSuggestionId)
+    {
+        var movieSuggestions = await _dbContext.Votes
+                .Where(v => v.MovieSuggestionId == movieSuggestionId)
+                .ToListAsync();
+
+        return Ok( new { movieSuggestions } );
     }
 
     [HttpPost("movie-suggestions/{movieSuggestionId}/vote")]
