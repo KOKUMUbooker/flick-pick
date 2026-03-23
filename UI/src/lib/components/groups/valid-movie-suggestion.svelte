@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { Eye, ThumbsDown, ThumbsUp, Trash, XCircle } from '@lucide/svelte';
-	import { createMutation } from '@tanstack/svelte-query';
+	import { Eye, RefreshCw, ThumbsDown, ThumbsUp, Trash, XCircle } from '@lucide/svelte';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS, queryClient } from '../../../api';
 	import type { CreateVoteData } from '../../../api/types';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { getAppUser } from '../../../store';
-	import { VoteType, type MovieNightEvent } from '../../../types';
+	import { VoteType, type MovieNightEvent, type Vote } from '../../../types';
 	import CustomDialog from '../common/CustomDialog.svelte';
 	import Button from '../ui/button/button.svelte';
+	import Skeleton from '../ui/skeleton/skeleton.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
 	import MovieDetailsContent from './movie-details-content.svelte';
 
@@ -17,13 +18,19 @@
 		selectedGroupId: string | undefined;
 		event: MovieNightEvent;
 		suggestion: FetchedMovieSuggestion;
+		movieSuggestionSuccefullyFetched: boolean;
 	}
 
-	let { suggestion, event = $bindable(), selectedGroupId }: MovieSuggestionItem = $props();
+	let {
+		suggestion,
+		event = $bindable(),
+		selectedGroupId,
+		movieSuggestionSuccefullyFetched
+	}: MovieSuggestionItem = $props();
 	let user = getAppUser();
 	let showDeleteWarnDialog = $state(false);
 	let showMovieDetailsDialog = $state(false);
-	let myVote = $derived(suggestion.votes.find((v) => v.user.email === user?.email));
+
 	let selectedVote = $state<VoteType | null>(null);
 
 	const onShowMovieDialogChange = (show: boolean) => {
@@ -53,6 +60,26 @@
 		}
 	}));
 
+	let votesQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		{ votes: Vote[] } // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.VOTES + suggestion.id],
+		queryFn: async () => {
+			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes`;
+			console.log('Fetching from:', url);
+			return apiFetch(url, {
+				method: 'GET',
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+		},
+		enabled: movieSuggestionSuccefullyFetched && !!suggestion.id
+	}));
+	let myVote = $derived(votesQuery.data?.votes.find((v) => v.user.email === user?.email));
+
 	// suggestions/{movieSuggestionId}/vote
 	let voteMutation = createMutation<
 		{ message: string }, // response type
@@ -66,9 +93,14 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onSuccess: async () => {
+		onSuccess: async (res, data) => {
+			if (data.VoteType == VoteType.Veto) {
+				await queryClient.invalidateQueries({
+					queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
+				});
+			}
 			await queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
+				queryKey: [QUERY_KEYS.VOTES + suggestion.id]
 			});
 		}
 	}));
@@ -141,16 +173,33 @@
 		<div class="flex items-center gap-4">
 			<div class="flex items-center gap-1">
 				<ThumbsUp class="h-4 w-4 text-green-500" />
-				<span class="font-semibold">
-					{suggestion.votes.filter((v) => v.voteType === VoteType.Upvote).length}
-				</span>
+				{#if votesQuery.isPending || votesQuery.isFetching}
+					<Skeleton class="h-4 w-6" />
+				{:else if votesQuery.data != undefined}
+					<span class="font-semibold">
+						{votesQuery.data.votes.filter((v) => v.voteType === VoteType.Upvote).length}
+					</span>
+				{/if}
 			</div>
 			<div class="flex items-center gap-1">
 				<ThumbsDown class="h-4 w-4 text-red-500" />
-				<span class="font-semibold">
+				<!-- {#if votesQuery.isPending || votesQuery.isFetching} -->
+				{#if votesQuery.isPending || votesQuery.isFetching}
+					<Skeleton class="h-4 w-6" />
+				{:else if votesQuery.data != undefined}
+					<span class="font-semibold">
+						{votesQuery.data.votes.filter((v) => v.voteType === VoteType.Downvote).length}
+					</span>
+				{/if}
+				<!-- <span class="font-semibold">
 					{suggestion.votes.filter((v) => v.voteType === VoteType.Downvote).length}
-				</span>
+				</span> -->
 			</div>
+			<Button
+				variant="ghost"
+				disabled={votesQuery.isPending || votesQuery.isFetching}
+				onclick={votesQuery.refetch}><RefreshCw /></Button
+			>
 		</div>
 	</div>
 
