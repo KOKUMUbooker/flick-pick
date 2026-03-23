@@ -19,20 +19,51 @@ public class VoteController : ControllerBase
     [HttpGet("movie-suggestions/vote/{voteId}")]
     public async Task<IActionResult> GetVoteDetails([FromRoute] Guid voteId)
     {
-        var vote = await _dbContext.Votes 
-                        .SingleOrDefaultAsync(v => v.Id == voteId);
+        var vote = await _dbContext.Votes
+                        .Where(v => v.Id == voteId)
+                        .Select(v => new
+                        {
+                            Id = v.Id,
+                            VoteType = v.VoteType,
+                            MovieSuggestionId = v.MovieSuggestionId,
+                            MovieNightEventId = v.MovieSuggestion.MovieNightEventId,
+                            user = new
+                            {
+                                FullName = v.User.FullName,
+                                Email = v.User.Email
+                            }
+                        }) 
+                        .SingleOrDefaultAsync();
         
         return Ok(new {vote});
     }
 
     [HttpGet("movie-suggestions/{movieSuggestionId}/votes")]
-    public async Task<IActionResult> GetSuggestionVotes([FromRoute] Guid movieSuggestionId)
+    public async Task<IActionResult> GetSuggestionVotes([FromRoute] string movieSuggestionId)
     {
-        var movieSuggestions = await _dbContext.Votes
-                .Where(v => v.MovieSuggestionId == movieSuggestionId)
-                .ToListAsync();
+ 
+        if (!Guid.TryParse(movieSuggestionId, out Guid parsedMovieSuggestionId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movieSuggestionId provided" });
+        }
 
-        return Ok( new { movieSuggestions } );
+        var votes = await _dbContext.Votes
+            .Where(v => v.MovieSuggestionId == parsedMovieSuggestionId)
+            .Select(v => new
+            {
+                Id = v.Id,
+                VoteType = v.VoteType,
+                MovieSuggestionId = v.MovieSuggestionId,
+                MovieNightEventId = v.MovieSuggestion.MovieNightEventId,
+                user = new
+                {
+                    FullName = v.User.FullName,
+                    Email = v.User.Email
+                }
+            }) 
+            .ToListAsync();
+ 
+        return Ok( new { votes } );
     }
 
     [HttpPost("movie-suggestions/{movieSuggestionId}/vote")]

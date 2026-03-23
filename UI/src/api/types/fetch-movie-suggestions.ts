@@ -5,7 +5,6 @@ export interface FetchedMovieSuggestion {
     movieNightEventId: string;
     isDisqualified: boolean;
     movie: Movie;
-    votes: Vote[];
 }
 
 export interface Movie {
@@ -18,8 +17,11 @@ export interface Movie {
 }
 
 export interface Vote {
+    Id: string;
     voteType: number;
     user: User;
+    movieSuggestionId: string;
+    movieEventId: string;
 }
 
 export interface User {
