@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Edit, MessageSquare, Plus, Trash } from '@lucide/svelte';
+	import { Edit, Laptop, MessageSquare, Plus, Trash } from '@lucide/svelte';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
@@ -35,6 +35,7 @@
 	let showSuggestionFlow = $state(false);
 	let showAddMovieNightDialog = $state(false);
 	let showDeleteWarnDialog = $state(false);
+	let showComputeResultsDialog = $state(false);
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -104,8 +105,24 @@
 		toast.success(res.message, { richColors: true });
 	};
 	let validMvSuggestionCmpHasFetchedVotes = $state(false);
+
+	const onShowComputeResultsOnchange = (show: boolean) => {
+		showComputeResultsDialog = show;
+	};
 </script>
 
+<CustomDialog
+	header={{ title: 'Compute results' }}
+	bind:open={showComputeResultsDialog}
+	onOpenChange={onShowComputeResultsOnchange}
+	isLoading={false}
+	actions={{ onProceed: () => {} }}
+>
+	<p>
+		This will compute the movie to be watched based on the poll results and also lock the event from
+		further additions of movie suggestions
+	</p>
+</CustomDialog>
 <CustomDialog
 	header={{ title: 'Delete Movie Event' }}
 	bind:open={showDeleteWarnDialog}
@@ -253,9 +270,15 @@
 				</div>
 			{/if}
 		</div>
-		<Button size="sm" onclick={() => openEventChat(event)}>
-			<MessageSquare class="mr-2 h-4 w-4" />
-			Event Chat
-		</Button>
+		<div class="flex flex-row items-center gap-2">
+			<Button variant="outline" onclick={() => openEventChat(event)}>
+				<MessageSquare class="mr-2 h-4 w-4" />
+				Event Chat
+			</Button>
+			<Button variant="default" onclick={() => (showComputeResultsDialog = true)}>
+				<Laptop />
+				Compute results
+			</Button>
+		</div>
 	</CardFooter>
 </Card>
