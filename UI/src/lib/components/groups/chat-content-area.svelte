@@ -14,6 +14,7 @@
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 	import ChatMsgSkeleton from './chat-msg-skeleton.svelte';
 	import { onDestroy } from 'svelte';
+	import { Spinner } from '../ui/spinner';
 
 	interface FetchedChatData {
 		messages: ChatMessage[];
@@ -35,6 +36,7 @@
 	let user = getAppUser();
 	let chatMsg = $state("");
 	
+	// svelte-ignore non_reactive_update
 	let messagesContainer: HTMLDivElement;
 	let isLoadingMore = false;
 	let scrollTimeout: NodeJS.Timeout;
@@ -178,7 +180,7 @@
 			// Get the current query data
 			const queryKey = [QUERY_KEYS.CHAT_MSG + selectedEvent?.id];
 			const currentData = queryClient.getQueryData<InfiniteData<FetchedChatData>>(queryKey);
-			if (!user) return;
+			if (!user) return console.error("Please login");
 			
 			if (currentData && currentData.pages.length > 0) {
 				// Create the new message object
@@ -352,11 +354,16 @@
 					>
 						<input
 							type="text"
+							disabled={chatMsgsMutation.isPending}
 							bind:value={chatMsg}
 							placeholder="Type your message..."
 							class="flex-1 rounded-lg border border-border bg-background px-4 py-2"
 						/>
-						<Button type="submit">Send</Button>
+						<Button type="submit" disabled={chatMsgsMutation.isPending}>
+							{#if chatMsgsMutation.isPending}
+								<Spinner/>
+							{/if}
+							Send</Button>
 					</form>
 				</div>
 			</CardContent>
