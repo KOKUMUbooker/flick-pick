@@ -85,6 +85,15 @@ public class VoteController : ControllerBase
             return BadRequest(new CustomError { Message = "Invalid groupId provided" });
         }
 
+        // Check if Event has been locked
+        bool eventLocked = await _dbContext.MovieNightEvents
+                            .AnyAsync(me => me.Id == movieSuggestionExists.MovieNightEventId && me.IsLocked);
+
+        if (eventLocked)
+        {
+            return BadRequest(new CustomError { Message = "Movie event has been locked by admin, no more votes allowed" });
+        }
+
         var userExist = await _dbContext.Users.FindAsync(parsedUserId);
         if (userExist == null)
         {
