@@ -16,10 +16,10 @@ public class ChatController : ControllerBase
         _dbContext = dbContext;
     }
 
-        // Implement cursor based pagination where contents are fetched from newest to less new
-        // ie on UI fetch like 20 chats then when user scrolls to top another request for the 
-        // current cursor to earlier 20 chats are fetched & sent to UI 
-        // Server should also specify whether we've reached the end or not
+    // Implement cursor based pagination where contents are fetched from newest to less new
+    // ie on UI fetch like 20 chats then when user scrolls to top another request for the 
+    // current cursor to earlier 20 chats are fetched & sent to UI 
+    // Server should also specify whether we've reached the end or not
     [HttpGet("{movieNightId}/chat")]
     public async Task<IActionResult> GetMovieNightChats(
         [FromRoute] string movieNightId,
@@ -62,7 +62,11 @@ public class ChatController : ControllerBase
                 c.UserId,
                 c.Message,
                 c.SentAt,
-                FullName = c.SentBy.FullName
+                user = new
+                {
+                    c.SentBy.FullName,
+                    c.SentBy.Email
+                }
             })
             .ToListAsync();
 
@@ -84,5 +88,46 @@ public class ChatController : ControllerBase
             nextCursor,
             hasMore
         });
+    }
+
+    [HttpPost("{movieNightId}/chat")]
+    public async Task<IActionResult> CreateMovieChat([FromRoute] string movieNightId,[FromBody] CreateChatMsgDto createDto)
+    {
+        if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movieNightId provided" });
+        }
+
+        if (!Guid.TryParse(createDto.UserId, out Guid parsedUserId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid user Id provided" });
+        }
+
+        var movieEventExist = await _dbContext.MovieNightEvents
+                                .AnyAsync(me => me.Id == parsedMovieNightId);
+        if (!movieEventExist)
+        {
+            return NotFound(new CustomError {Message = "Movie event does not exist"});
+        }
+
+        var isGroupMember = await _dbContext.UserGroups
+                                .AnyAsync(ug => ug.UserId == parsedUserId);
+        if (!isGroupMember)
+        {
+            return BadRequest(new CustomError {Message = "Not allowed. You're not a memeber of this group"});
+        }
+
+        var newMsg = new ChatMessage
+        {
+            UserId  = parsedUserId,
+            Message = createDto.Message,
+            MovieNightEventId = parsedMovieNightId,
+            SentAt = createDto.SentAt,
+        };
+
+        await _dbContext.ChatMessages.AddAsync(newMsg);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new {Message = "Message created successfully"});
     }
 }
