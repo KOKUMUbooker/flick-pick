@@ -128,6 +128,6 @@ public class ChatController : ControllerBase
         await _dbContext.ChatMessages.AddAsync(newMsg);
         await _dbContext.SaveChangesAsync();
 
-        return Ok(new {Message = "Message created successfully"});
+        return Ok(new {Message = "Message created successfully", msgId  = newMsg.Id.ToString() });
     }
 }
