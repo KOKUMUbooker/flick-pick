@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Edit, MessageSquare, Plus, Trash } from '@lucide/svelte';
+	import { Calculator, Edit, MessageSquare, Plus, Trash } from '@lucide/svelte';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
@@ -35,6 +35,7 @@
 	let showSuggestionFlow = $state(false);
 	let showAddMovieNightDialog = $state(false);
 	let showDeleteWarnDialog = $state(false);
+	let showComputeResultsDialog = $state(false);
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -95,6 +96,25 @@
 			});
 		}
 	}));
+	let computeEventResultsMutation = createMutation<
+		{ message: string }, // response type
+		Error, // error type
+		{ Initiator: string } // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/movieEvent/${event.id}/compute-results`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+			// TODO: Update this to only fetch the updated movie event not all
+			await queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming']
+			});
+		}
+	}));
 	const onShowDelWarningOnchange = (show: boolean) => {
 		showDeleteWarnDialog = show;
 	};
@@ -103,9 +123,30 @@
 		const res = await movieEventDeleteMutation.mutateAsync();
 		toast.success(res.message, { richColors: true });
 	};
+	const onProceedComputeEventResults = async () => {
+		if (!user) return toast.error('Please log in', { richColors: true });
+		const res = await computeEventResultsMutation.mutateAsync({ Initiator: user.id });
+		toast.success(res.message, { richColors: true });
+	};
 	let validMvSuggestionCmpHasFetchedVotes = $state(false);
+
+	const onShowComputeResultsOnchange = (show: boolean) => {
+		showComputeResultsDialog = show;
+	};
 </script>
 
+<CustomDialog
+	header={{ title: 'Compute Event Results' }}
+	bind:open={showComputeResultsDialog}
+	onOpenChange={(show) => (showComputeResultsDialog = show)}
+	isLoading={computeEventResultsMutation.isPending}
+	actions={{ onProceed: onProceedComputeEventResults }}
+>
+	<p>
+		Are you sure you want to compute the movie to be watched for the movie event. This will lock the
+		event thus preventing incoming votes on the event.
+	</p>
+</CustomDialog>
 <CustomDialog
 	header={{ title: 'Delete Movie Event' }}
 	bind:open={showDeleteWarnDialog}
@@ -209,6 +250,7 @@
 		{:else if event.selectedMovie}
 			<!-- Scheduled Event Details -->
 			<div class="space-y-4">
+				<div class="text-lg font-semibold">Selected movie</div>
 				<div class="rounded-lg bg-primary/5 p-4">
 					<div class="mb-2 flex items-center gap-2">
 						<img
@@ -253,9 +295,17 @@
 				</div>
 			{/if}
 		</div>
-		<Button size="sm" onclick={() => openEventChat(event)}>
-			<MessageSquare class="mr-2 h-4 w-4" />
-			Event Chat
-		</Button>
+		<div>
+			<Button size="sm" variant="outline" onclick={() => openEventChat(event)}>
+				<MessageSquare class="mr-2 h-4 w-4" />
+				Event Chat
+			</Button>
+			{#if selectedGroup?.isUserAdmin}
+				<Button size="sm" onclick={() => (showComputeResultsDialog = true)}>
+					<Calculator />
+					Compute results
+				</Button>
+			{/if}
+		</div>
 	</CardFooter>
 </Card>
