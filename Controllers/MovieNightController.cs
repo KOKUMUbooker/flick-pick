@@ -152,7 +152,7 @@ public class MovieNightController : ControllerBase
             }
             else if (status == "past")
             {
-                query = query.Where(mn => mn.ScheduledAt < now || mn.IsLocked);
+                query = query.Where(mn => mn.ScheduledAt < now );
             }
         }
 
@@ -186,6 +186,86 @@ public class MovieNightController : ControllerBase
             .ToListAsync();
 
             return Ok(new { movieEvents });
+    }
+
+    [HttpPost("movieEvent/{movieEventId}/compute-results")]
+    public async Task<IActionResult> ComputeMovieEventResults([FromRoute] string movieEventId, [FromBody] ComputeEventResultDto resultsDto)
+    {
+        if (!Guid.TryParse(movieEventId, out Guid parsedMovieEventId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movieEventId provided" });
+        }
+
+        if (!Guid.TryParse(resultsDto.Initiator, out Guid parsedInitiatorId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid initiatorId provided" });
+        }
+
+        var movieEvent = await _dbContext.MovieNightEvents
+                .Include(e => e.MovieSuggestions)
+                    .ThenInclude(s => s.Votes)
+                .Include(e => e.MovieSuggestions) 
+                    .ThenInclude(s => s.Movie)
+                .FirstOrDefaultAsync(e => e.Id == parsedMovieEventId);
+        
+        if (movieEvent == null)
+        {
+            return NotFound(new CustomError { Message = "Movie event does not exist"});
+        }
+
+        var isAdmin = await _dbContext.UserGroups
+                        .AnyAsync(ug => ug.UserId == parsedInitiatorId && ug.IsAdmin);
+        
+        if (!isAdmin)
+        {
+            return BadRequest(new CustomError {Message = "Only group admins are allowed to perform this action"} );
+        }
+
+        // Lock the event
+        movieEvent.IsLocked = true;
+
+        var winner = movieEvent.MovieSuggestions
+            .Select(s => new
+            {
+                Suggestion = new {
+                    s.Id,
+                    s.IsDisqualified,
+                    s.MovieNightEventId,
+                    s.SuggestedById,
+                    s.Created,
+                    Movie = new
+                    {
+                        s.Movie.TmdbId,
+                        s.Movie.Title,
+                    }
+                },
+                // HasVeto = s.Votes.Any(v => v.VoteType == VoteType.Veto),
+                Upvotes = s.Votes.Count(v => v.VoteType == VoteType.Upvote),
+                Downvotes = s.Votes.Count(v => v.VoteType == VoteType.Downvote)
+            })
+            .Where(s => !s.Suggestion.IsDisqualified)
+            .Select(x => new
+            {
+                x.Suggestion,
+                Score = x.Upvotes - x.Downvotes,
+                x.Upvotes,
+                x.Downvotes
+            })
+            .OrderByDescending(x => x.Score)       // primary
+            .ThenByDescending(x => x.Upvotes)      // tie-breaker 1
+            .ThenBy(x => x.Downvotes)              // tie-breaker 2
+            .ThenBy(x => x.Suggestion.Created)  // tie-breaker 3 (fairness)
+            .FirstOrDefault();
+
+        if (winner == null)
+        {
+            return BadRequest(new CustomError { Message = "All suggestions got vetoed" });
+        }
+
+        movieEvent.SelectedMovieId = winner.Suggestion.Movie.TmdbId;
+        await _dbContext.SaveChangesAsync();
+        
+        return Ok( new { Message = $"The movie ${winner.Suggestion.Movie.Title} has been selected for the event {movieEvent.Name}" } );
     }
 
     [HttpGet("movie-nights/{movieNightId}")]

@@ -39,3 +39,9 @@ public class MovieNightEventDto
     public double? AverageRating { get; set; }
     public int TotalRatings { get; set; }
 }
+
+public class ComputeEventResultDto 
+{
+    [Required]
+    public string Initiator { get; set; } = null!;
+}
