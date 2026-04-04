@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Edit, Laptop, MessageSquare, Plus, Trash } from '@lucide/svelte';
+	import { Calculator, Edit, MessageSquare, Plus, Trash } from '@lucide/svelte';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
@@ -96,12 +96,36 @@
 			});
 		}
 	}));
+	let computeEventResultsMutation = createMutation<
+		{ message: string }, // response type
+		Error, // error type
+		{ Initiator: string } // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/movieEvent/${event.id}/compute-results`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async () => {
+			// TODO: Update this to only fetch the updated movie event not all
+			await queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming']
+			});
+		}
+	}));
 	const onShowDelWarningOnchange = (show: boolean) => {
 		showDeleteWarnDialog = show;
 	};
 
 	const onProceedMovieEventDelete = async () => {
 		const res = await movieEventDeleteMutation.mutateAsync();
+		toast.success(res.message, { richColors: true });
+	};
+	const onProceedComputeEventResults = async () => {
+		if (!user) return toast.error('Please log in', { richColors: true });
+		const res = await computeEventResultsMutation.mutateAsync({ Initiator: user.id });
 		toast.success(res.message, { richColors: true });
 	};
 	let validMvSuggestionCmpHasFetchedVotes = $state(false);
@@ -112,15 +136,15 @@
 </script>
 
 <CustomDialog
-	header={{ title: 'Compute results' }}
+	header={{ title: 'Compute Event Results' }}
 	bind:open={showComputeResultsDialog}
-	onOpenChange={onShowComputeResultsOnchange}
-	isLoading={false}
-	actions={{ onProceed: () => {} }}
+	onOpenChange={(show) => (showComputeResultsDialog = show)}
+	isLoading={computeEventResultsMutation.isPending}
+	actions={{ onProceed: onProceedComputeEventResults }}
 >
 	<p>
-		This will compute the movie to be watched based on the poll results and also lock the event from
-		further additions of movie suggestions
+		Are you sure you want to compute the movie to be watched for the movie event. This will lock the
+		event thus preventing incoming votes on the event.
 	</p>
 </CustomDialog>
 <CustomDialog
@@ -226,6 +250,7 @@
 		{:else if event.selectedMovie}
 			<!-- Scheduled Event Details -->
 			<div class="space-y-4">
+				<div class="text-lg font-semibold">Selected movie</div>
 				<div class="rounded-lg bg-primary/5 p-4">
 					<div class="mb-2 flex items-center gap-2">
 						<img
@@ -270,15 +295,17 @@
 				</div>
 			{/if}
 		</div>
-		<div class="flex flex-row items-center gap-2">
-			<Button variant="outline" onclick={() => openEventChat(event)}>
+		<div>
+			<Button size="sm" variant="outline" onclick={() => openEventChat(event)}>
 				<MessageSquare class="mr-2 h-4 w-4" />
 				Event Chat
 			</Button>
-			<Button variant="default" onclick={() => (showComputeResultsDialog = true)}>
-				<Laptop />
-				Compute results
-			</Button>
+			{#if selectedGroup?.isUserAdmin}
+				<Button size="sm" onclick={() => (showComputeResultsDialog = true)}>
+					<Calculator />
+					Compute results
+				</Button>
+			{/if}
 		</div>
 	</CardFooter>
 </Card>
