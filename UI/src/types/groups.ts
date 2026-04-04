@@ -19,8 +19,8 @@ export interface GroupMember {
 }
 
 export interface ChatMessage {
-    id: number;
-    userId: number;
+    id: string;
+    userId: string;
     user: UserDto;
     message: string;
     sentAt: string;
