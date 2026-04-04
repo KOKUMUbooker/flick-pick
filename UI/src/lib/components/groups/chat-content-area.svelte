@@ -232,9 +232,11 @@
 			<Button
 				variant="secondary"
 				disabled={chatMsgsQuery.isFetching || chatMsgsQuery.isPending}
-				onclick={() => {
-					chatMsgsQuery.refetch();
+				onclick={async() => {
 					isInitialLoad = true;
+					await queryClient.resetQueries({ 
+						queryKey: [QUERY_KEYS.CHAT_MSG + selectedEvent?.id]
+					});
 				}}
 			>
 				<RefreshCw />
