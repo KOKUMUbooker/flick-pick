@@ -2,7 +2,6 @@ namespace WatchHive.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using WatchHive.DTOs;
 using WatchHive.Models;
 
@@ -46,16 +45,14 @@ public class ChatController : ControllerBase
 
         var query = _dbContext.ChatMessages
             .AsNoTracking()
-            .Where(c => c.MovieNightEventId == parsedMovieNightId)
-            .Include(c => c.SentBy);
+            .Where(c => c.MovieNightEventId == parsedMovieNightId);
 
         // Apply cursor filter (fetch older messages)
         if (before.HasValue)
         {
-            query = (IIncludableQueryable<ChatMessage, User>)query.Where(c => c.SentAt < before!.Value);
+            query = query.Where(c => c.SentAt < before.Value);
         }
 
-        // Fetch newest first
         var messages = await query
             .OrderByDescending(c => c.SentAt)
             .Take(limit + 1) // take one extra to determine if more exist
@@ -65,7 +62,7 @@ public class ChatController : ControllerBase
                 c.UserId,
                 c.Message,
                 c.SentAt,
-                c.SentBy.FullName
+                FullName = c.SentBy.FullName
             })
             .ToListAsync();
 
