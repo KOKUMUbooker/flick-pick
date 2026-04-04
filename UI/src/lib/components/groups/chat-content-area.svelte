@@ -160,7 +160,7 @@
 	});
 
 	let chatMsgsMutation = createMutation<
-		void,
+		{message:string, msgId : string},
 		Error,
 		CreateChatData
 	>(() => ({
@@ -174,11 +174,42 @@
 				}
 			);
 		},
-		onSuccess: async () => {
-			// Invalidate and refetch
-			await queryClient.invalidateQueries({ 
-				queryKey: [QUERY_KEYS.CHAT_MSG + selectedEvent?.id]
-			});
+		onSuccess: async (res, variables) => {
+			// Get the current query data
+			const queryKey = [QUERY_KEYS.CHAT_MSG + selectedEvent?.id];
+			const currentData = queryClient.getQueryData<InfiniteData<FetchedChatData>>(queryKey);
+			if (!user) return;
+			
+			if (currentData && currentData.pages.length > 0) {
+				// Create the new message object
+				const newMessage: ChatMessage = {
+					id: res.msgId,
+					userId: user.id,
+					user: {
+						fullName: user.fullName,
+						email: user.email
+					},
+					message: variables.Message,
+					sentAt: variables.SentAt
+				};
+				
+				// Add the new message to the first page (most recent page)
+				const updatedPages = [...currentData.pages];
+				updatedPages[0] = {
+					...updatedPages[0],
+					messages: [...updatedPages[0].messages, newMessage]
+				};
+				
+				// Update the cache
+				queryClient.setQueryData(queryKey, {
+					...currentData,
+					pages: updatedPages
+				});
+			} else {
+				// If no data exists, just invalidate
+				await queryClient.invalidateQueries({ queryKey });
+			}
+			
 			
 			// Auto-scroll to bottom after sending a new message
 			setTimeout(() => {
