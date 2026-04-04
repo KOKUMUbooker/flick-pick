@@ -1,5 +1,6 @@
 export * from "./add-group"
 export * from "./add-movie-night"
+export * from "./chat"
 export * from "./create-movie-suggestion"
 export * from "./group-invites"
 export * from "./votes"
