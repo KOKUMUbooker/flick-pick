@@ -120,17 +120,23 @@ public class MovieSuggestionController : ControllerBase
         }
  
         // Create the movie first
-        var SelectedMovie = new Movie {
-            TmdbId = createDto.SelectedMovie.TmdbId,
-            Title = createDto.SelectedMovie.Title,
-            PosterPath = createDto.SelectedMovie.PosterPath,
-            ReleaseDate = createDto.SelectedMovie.ReleaseDate != null
-                    ? DateTime.SpecifyKind(DateTime.Parse(createDto.SelectedMovie.ReleaseDate), DateTimeKind.Utc)
-                    : null,
-            Overview  = createDto.SelectedMovie.Overview, 
-            VoteAverage  = createDto.SelectedMovie.VoteAverage,
-        };
-        await  _dbContext.Movies.AddAsync(SelectedMovie);
+        // Check if movie exists first
+        var movieExists = await _dbContext.Movies
+                            .AnyAsync(m => m.TmdbId == createDto.SelectedMovie.TmdbId);
+        if (!movieExists)
+        {
+            var SelectedMovie = new Movie {
+                TmdbId = createDto.SelectedMovie.TmdbId,
+                Title = createDto.SelectedMovie.Title,
+                PosterPath = createDto.SelectedMovie.PosterPath,
+                ReleaseDate = createDto.SelectedMovie.ReleaseDate != null
+                        ? DateTime.SpecifyKind(DateTime.Parse(createDto.SelectedMovie.ReleaseDate), DateTimeKind.Utc)
+                        : null,
+                Overview  = createDto.SelectedMovie.Overview, 
+                VoteAverage  = createDto.SelectedMovie.VoteAverage,
+            };
+            await  _dbContext.Movies.AddAsync(SelectedMovie);
+        }
 
         var MovieSuggestion = new MovieSuggestion
         {
