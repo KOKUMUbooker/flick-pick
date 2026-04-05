@@ -2,18 +2,22 @@ namespace WatchHive.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using WatchHive.DTOs;
 using WatchHive.Models;
+using WatchHive.Hubs;
 
 [ApiController]
 [Route("/api/movie-night/")]
 public class ChatController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
+    private readonly IHubContext<MovieNightHub> _hubContext;
 
-    public ChatController(WatchHiveDbContext dbContext)
+    public ChatController(WatchHiveDbContext dbContext, IHubContext<MovieNightHub> hubContext)
     {
         _dbContext = dbContext;
+        _hubContext = hubContext;
     }
 
     // Implement cursor based pagination where contents are fetched from newest to less new
@@ -110,9 +114,17 @@ public class ChatController : ControllerBase
             return NotFound(new CustomError {Message = "Movie event does not exist"});
         }
 
-        var isGroupMember = await _dbContext.UserGroups
-                                .AnyAsync(ug => ug.UserId == parsedUserId);
-        if (!isGroupMember)
+        var groupMemberDetails = await _dbContext.UserGroups
+                                .Where(ug => ug.UserId == parsedUserId)
+                                .Select(ug => new
+                                {
+                                    email = ug.User.Email,
+                                    fullName = ug.User.FullName,
+                                })
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync();
+
+        if (groupMemberDetails == null)
         {
             return BadRequest(new CustomError {Message = "Not allowed. You're not a memeber of this group"});
         }
@@ -127,6 +139,20 @@ public class ChatController : ControllerBase
 
         await _dbContext.ChatMessages.AddAsync(newMsg);
         await _dbContext.SaveChangesAsync();
+
+        var msgToSend = new
+        {
+            id = newMsg.Id,
+            userId  = parsedUserId,
+            message = createDto.Message,
+            movieNightEventId = parsedMovieNightId,
+            sentAt = createDto.SentAt,
+            user = groupMemberDetails
+        };
+
+        await _hubContext.Clients
+            .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+            .SendAsync("msg", movieNightId, msgToSend);
 
         return Ok(new {Message = "Message created successfully", msgId  = newMsg.Id.ToString() });
     }

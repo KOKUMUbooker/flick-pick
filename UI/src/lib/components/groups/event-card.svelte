@@ -5,7 +5,8 @@
 	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
-	import { getAppUser } from '../../../store';
+	import { movieNightHub } from '../../../hubs';
+	import { getAppUser, hubIsConnected } from '../../../store';
 	import { type DBGroup, type MovieNightEvent } from '../../../types';
 	import CustomDialog from '../common/CustomDialog.svelte';
 	import AddMovieNightForm from '../dashboard/forms/add-movie-night-form.svelte';
@@ -129,6 +130,19 @@
 		toast.success(res.message, { richColors: true });
 	};
 	let validMvSuggestionCmpHasFetchedVotes = $state(false);
+
+	$effect(()=>{
+		(async()=>{
+			if (hubIsConnected()) {
+				console.log(`${user?.email} is joining event ${event.id} ...`)
+				await movieNightHub.join(event.id)
+			}
+		})()
+	})
+
+	// onDestroy(async()=>{
+	// 	await movieNightHub.leave(event.id)
+	// })
 
 	const onShowComputeResultsOnchange = (show: boolean) => {
 		showComputeResultsDialog = show;

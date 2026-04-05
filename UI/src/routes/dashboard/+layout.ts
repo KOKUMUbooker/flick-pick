@@ -22,7 +22,7 @@
 
 import { apiFetch, QUERY_KEYS, queryClient, type AuthResponseData } from '../../api';
 import { API_BASE_URL } from '../../api/urls';
-import { isLoggedIn, logIn } from '../../store';
+import { isLoggedIn, logIn, startHubConnection } from '../../store';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async () => {
@@ -46,6 +46,9 @@ export const load: LayoutLoad = async () => {
         });
 
         logIn(userData);
+
+        //  Connect to signalR hub
+        await startHubConnection();
 
     } catch (err) {
         console.error('Failed to fetch user:', err);

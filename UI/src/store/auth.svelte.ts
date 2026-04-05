@@ -1,7 +1,8 @@
 import * as signalR from "@microsoft/signalr";
 import type { AuthResponseData } from "../api";
-import type { AppState } from "../types";
 import { API_BASE_URL } from "../api/urls";
+import { chatListeners } from "../hubs/listeners/chat.svelte";
+import type { AppState } from "../types";
 
 export const appState = $state<AppState>({
     user: undefined,
@@ -26,6 +27,20 @@ export function isLoggedIn() {
 
 export function getAppUser() {
     return appState.user
+}
+
+let listenersRegistered = false;
+
+export async function startHubConnection() {
+    if (!listenersRegistered) {
+        chatListeners();
+        listenersRegistered = true;
+    }
+
+    if (hubIsDisconnected()) {
+        await appState.hubConnection.start();
+        // console.log("SignalR connected");
+    }
 }
 
 export function hubIsConnected() {

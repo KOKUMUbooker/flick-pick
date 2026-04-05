@@ -1,25 +1,21 @@
 <script lang="ts">
 	import { ChevronLeft, MessageCircle, RefreshCw } from '@lucide/svelte';
 	import { createInfiniteQuery, createMutation, type InfiniteData } from '@tanstack/svelte-query';
+	import { onDestroy } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { SvelteDate } from 'svelte/reactivity';
 	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
-	import type { CreateChatData } from '../../../api/types';
+	import type { CreateChatData, FetchedChatData } from '../../../api/types';
 	import { API_BASE_URL } from '../../../api/urls';
-	import { getAppUser } from '../../../store';
+	import { movieNightHub } from '../../../hubs';
+	import { appState, getAppUser, hubIsDisconnected } from '../../../store';
 	import type { BadgeVariants, ChatMessage, DBGroup, MovieNightEvent } from '../../../types';
 	import { Avatar, AvatarFallback } from '../ui/avatar';
 	import Badge from '../ui/badge/badge.svelte';
 	import Button from '../ui/button/button.svelte';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+	import { Spinner } from '../ui/spinner';
 	import ChatMsgSkeleton from './chat-msg-skeleton.svelte';
-	import { onDestroy } from 'svelte';
-
-	interface FetchedChatData {
-		messages: ChatMessage[];
-		nextCursor: string;
-		hasMore: boolean;
-	}
 
 	interface ChatContentAreaProps {
 		closeEventChat: () => void;
@@ -35,6 +31,7 @@
 	let user = getAppUser();
 	let chatMsg = $state("");
 	
+	// svelte-ignore non_reactive_update
 	let messagesContainer: HTMLDivElement;
 	let isLoadingMore = false;
 	let scrollTimeout: NodeJS.Timeout;
@@ -59,16 +56,17 @@
 		},
 		initialPageParam: new SvelteDate().toISOString(),
 		getNextPageParam: (lastPage) => {
-			// Only return next cursor if there are more messages
 			if (lastPage.hasMore && lastPage.messages.length > 0) {
-				const oldestMessage = lastPage.messages[0]; // First message is oldest due to server reversal
+				const oldestMessage = lastPage.messages[0];
 				return oldestMessage.sentAt;
 			}
 			return undefined;
 		},
 		enabled: selectedGroup != null && selectedEvent != null,
+		gcTime: 1000 * 60 * 30, // Keep cache for 30 minutes (default is 5 minutes)
+		staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
 	}));
-	
+
 	let chatMsgsQuery = $state(_chatMsgsQuery);
 
 	// Function to load older messages
@@ -178,7 +176,7 @@
 			// Get the current query data
 			const queryKey = [QUERY_KEYS.CHAT_MSG + selectedEvent?.id];
 			const currentData = queryClient.getQueryData<InfiniteData<FetchedChatData>>(queryKey);
-			if (!user) return;
+			if (!user) return console.error("Please login");
 			
 			if (currentData && currentData.pages.length > 0) {
 				// Create the new message object
@@ -340,10 +338,16 @@
 							if (!selectedEvent) return toast.error("No active movie event in selection", { richColors: true });
 							if (!user) return toast.error("Please log in", { richColors: true });
 							if (chatMsg.trim()) {
+								// console.log(`Sender ${user.email} , their connection id before : ${appState.hubConnection.connectionId}`)
+								if (!hubIsDisconnected()){
+									await movieNightHub.join(selectedEvent.id)
+								}
+								// console.log(`Sender ${user.email} , their connection id after : ${appState.hubConnection.connectionId}`)
 								const data: CreateChatData = {
 									Message: chatMsg,
 									SentAt: new Date().toISOString(),
-									UserId: user.id
+									UserId: user.id,
+									ConnectionId : appState.hubConnection.connectionId || ""
 								};
 								await chatMsgsMutation.mutateAsync(data);
 								chatMsg = '';
@@ -352,11 +356,16 @@
 					>
 						<input
 							type="text"
+							disabled={chatMsgsMutation.isPending}
 							bind:value={chatMsg}
 							placeholder="Type your message..."
 							class="flex-1 rounded-lg border border-border bg-background px-4 py-2"
 						/>
-						<Button type="submit">Send</Button>
+						<Button type="submit" disabled={chatMsgsMutation.isPending}>
+							{#if chatMsgsMutation.isPending}
+								<Spinner/>
+							{/if}
+							Send</Button>
 					</form>
 				</div>
 			</CardContent>

@@ -23,7 +23,7 @@
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS, queryClient } from '../../api';
 	import { API_BASE_URL } from '../../api/urls';
-	import { appState, getAppUser, hubIsDisconnected } from '../../store';
+	import { getAppUser } from '../../store';
 	import type { DBGroup, MovieNightEvent } from '../../types';
 
 	// State management
@@ -86,8 +86,7 @@
 				selectedGroup = groupsRes.data.groups[0];
 			}
 
-			// 2. Connect to signalR hub
-			if (hubIsDisconnected()) await appState.hubConnection.start();
+		
 		} catch (err) {
 			console.error('error : ', err);
 		}
