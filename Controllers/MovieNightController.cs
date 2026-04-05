@@ -265,7 +265,7 @@ public class MovieNightController : ControllerBase
         movieEvent.SelectedMovieId = winner.Suggestion.Movie.TmdbId;
         await _dbContext.SaveChangesAsync();
         
-        return Ok( new { Message = $"The movie ${winner.Suggestion.Movie.Title} has been selected for the event {movieEvent.Name}" } );
+        return Ok( new { Message = $"The movie {winner.Suggestion.Movie.Title} has been selected for the event {movieEvent.Name}" } );
     }
 
     [HttpGet("movie-nights/{movieNightId}")]
