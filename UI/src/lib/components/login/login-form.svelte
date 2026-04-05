@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import {
@@ -17,10 +18,9 @@
 	import { apiFetch, type LoginData, type LoginRes } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { CLIENT_ID } from '../../../constants';
+	import { logIn, startHubConnection } from '../../../store';
 	import HelperText from '../common/HelperText.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
-	import { logIn } from '../../../store';
-	import { resolve } from '$app/paths';
 
 	const searchParams = page.url.searchParams;
 	const paramEmail = searchParams.get('email') || '';
@@ -89,6 +89,9 @@
 		}
 
 		logIn(res);
+		
+		//  Connect to signalR hub
+		await startHubConnection();
 		goto(resolve('/dashboard'));
 	}
 
