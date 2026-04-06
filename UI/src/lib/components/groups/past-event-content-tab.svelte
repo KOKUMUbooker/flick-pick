@@ -36,10 +36,6 @@
 	}));
 
 	let movieEventsQuery = $state(_movieEventsQuery);
-
-	onMount(async () => {
-		await movieEventsQuery.refetch();
-	});
 </script>
 
 <TabsContent value="past">

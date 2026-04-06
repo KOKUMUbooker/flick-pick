@@ -9,5 +9,8 @@ public class CreateVoteDto
     public string UserId { get; set; } = null!;
 
     [Required]
+    public string ConnectionId { get; set; } = null!;
+
+    [Required]
     public VoteType VoteType { get; set; }
 }

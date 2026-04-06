@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { Eye, Undo2 } from '@lucide/svelte';
-	import { createMutation, createQuery, type CreateQueryResult } from '@tanstack/svelte-query';
+	import { createMutation, type CreateQueryResult } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS, queryClient } from '../../../api';
 	import type { CreateVoteData } from '../../../api/types';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
-	import { getAppUser } from '../../../store';
-	import { VoteType, type MovieNightEvent, type Vote } from '../../../types';
+	import { movieNightHub } from '../../../hubs';
+	import { appState, getAppUser, hubIsDisconnected } from '../../../store';
+	import { VoteType, type MovieNightEvent } from '../../../types';
 	import CustomDialog from '../common/CustomDialog.svelte';
 	import Badge from '../ui/badge/badge.svelte';
 	import Button from '../ui/button/button.svelte';
@@ -22,40 +23,16 @@
 		event: MovieNightEvent;
 		suggestion: FetchedMovieSuggestion;
 		selectedGroupId: string | undefined;
-		validMvSuggestionCmpHasFetchedVotes: boolean;
-		movieSuggestionSuccefullyFetched: boolean;
 	}
 
 	let {
 		movieSuggestionQuery = $bindable(),
 		event,
 		suggestion,
-		selectedGroupId,
-		movieSuggestionSuccefullyFetched,
-		validMvSuggestionCmpHasFetchedVotes
+		selectedGroupId
 	}: VetoedMovieSuggestionProps = $props();
 	let user = getAppUser();
 	let showMovieDetailsDialog = $state(false);
-	let votesQuery = createQuery<
-		null, // variables type
-		Error, // error type
-		{ votes: Vote[] } // response type
-	>(() => ({
-		queryKey: [QUERY_KEYS.VOTES + suggestion.id],
-		queryFn: async () => {
-			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes`;
-			console.log('Fetching from:', url);
-			return apiFetch(url, {
-				method: 'GET',
-				headers: {
-					Accept: 'application/json'
-				}
-			});
-		},
-		enabled:
-			movieSuggestionSuccefullyFetched && !!suggestion.id && !validMvSuggestionCmpHasFetchedVotes
-	}));
-	let myVote = $derived(votesQuery.data?.votes.find((v) => v.user.email === user?.email));
 
 	const onShowMovieDialogChange = (show: boolean) => {
 		showMovieDetailsDialog = show;
@@ -85,7 +62,14 @@
 
 	const handleVoteClick = async (vote: VoteType) => {
 		if (!user) return toast.error('Please login to proceed', { richColors: true });
-		await voteMutation.mutateAsync({ UserId: user.id, VoteType: vote });
+		if (!hubIsDisconnected()) {
+			await movieNightHub.join(event.id);
+		}
+		await voteMutation.mutateAsync({
+			UserId: user.id,
+			VoteType: vote,
+			ConnectionId: appState.hubConnection.connectionId || ''
+		});
 	};
 </script>
 
@@ -114,7 +98,7 @@
 			View Movie
 		</Button>
 		<div>
-			{#if myVote?.voteType == VoteType.Veto}
+			{#if suggestion?.userVote == VoteType.Veto}
 				<Button
 					size="sm"
 					variant="outline"

@@ -46,7 +46,7 @@ namespace WatchHive.Migrations
                     b.Property<DateTime>("SentAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2026, 3, 20, 4, 16, 4, 81, DateTimeKind.Utc).AddTicks(7001));
+                        .HasDefaultValue(new DateTime(2026, 4, 5, 19, 28, 23, 852, DateTimeKind.Utc).AddTicks(4151));
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -275,6 +275,9 @@ namespace WatchHive.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("DownVoteCount")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDisqualified")
                         .HasColumnType("boolean");
 
@@ -289,6 +292,9 @@ namespace WatchHive.Migrations
 
                     b.Property<Guid>("SuggestedById")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("UpvoteCount")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -385,15 +391,15 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 2, 976, DateTimeKind.Unspecified).AddTicks(3057), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 2, 976, DateTimeKind.Unspecified).AddTicks(3057), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 22, 704, DateTimeKind.Unspecified).AddTicks(7285), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 22, 704, DateTimeKind.Unspecified).AddTicks(7285), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 1
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 2, 976, DateTimeKind.Unspecified).AddTicks(3057), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 2, 976, DateTimeKind.Unspecified).AddTicks(3057), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 22, 704, DateTimeKind.Unspecified).AddTicks(7285), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModified = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 22, 704, DateTimeKind.Unspecified).AddTicks(7285), new TimeSpan(0, 0, 0, 0, 0)),
                             RoleValue = 2
                         });
                 });
@@ -455,45 +461,45 @@ namespace WatchHive.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Created = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 2, 978, DateTimeKind.Unspecified).AddTicks(8337), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 22, 707, DateTimeKind.Unspecified).AddTicks(1470), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "admin@sys.com",
                             EmailVerified = true,
                             FullName = "System Administrator",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 2, 978, DateTimeKind.Unspecified).AddTicks(8337), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$SHPlpEwjktPgvC1H8Uvnxezrn/07COByTG10tQV0LERGzynMFkY3y",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 22, 707, DateTimeKind.Unspecified).AddTicks(1470), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$ISaWeLCSlQhH1cE09p7W4.vemci26uycb0BsK9cu4DBBY/1nnqveu",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000001")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Created = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 3, 331, DateTimeKind.Unspecified).AddTicks(6369), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 23, 96, DateTimeKind.Unspecified).AddTicks(4522), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "john@app.com",
                             EmailVerified = true,
                             FullName = "John Doe",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 3, 331, DateTimeKind.Unspecified).AddTicks(6369), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$3H/AQQqxg7ZqvthA4Fcc/uj.lGSkizFRT6bgZXvA/dePAgoQmkqAK",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 23, 96, DateTimeKind.Unspecified).AddTicks(4522), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$i8xyex20OQWLkEO.ZL8XQeqPcOyeeSJMfTv8xZywVM4YM5Wb7.PjG",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000002")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            Created = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 3, 331, DateTimeKind.Unspecified).AddTicks(6369), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 23, 96, DateTimeKind.Unspecified).AddTicks(4522), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "jane@app.com",
                             EmailVerified = true,
                             FullName = "Jane Doe",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 3, 331, DateTimeKind.Unspecified).AddTicks(6369), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$WZ0YYL.aFy8Rvh9yq2tfGepAhGF72vMHx5582hoUc5Kbe9sQXFIfK",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 23, 96, DateTimeKind.Unspecified).AddTicks(4522), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$BJ6T6SM.WQ.i/kZNf8bIaubgOqvpB.7nc.faHjMh4FBfS/UD2kqdq",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000002")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            Created = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 3, 331, DateTimeKind.Unspecified).AddTicks(6369), new TimeSpan(0, 0, 0, 0, 0)),
+                            Created = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 23, 96, DateTimeKind.Unspecified).AddTicks(4522), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "po@app.com",
                             EmailVerified = true,
                             FullName = "Dragon Warrior",
-                            LastModified = new DateTimeOffset(new DateTime(2026, 3, 20, 4, 16, 3, 331, DateTimeKind.Unspecified).AddTicks(6369), new TimeSpan(0, 0, 0, 0, 0)),
-                            PasswordHash = "$2a$11$SAqVLJYodEvNR5HBIUIlPO94be9EYbr9BnG9wrFCjiCVPxyJJgqXa",
+                            LastModified = new DateTimeOffset(new DateTime(2026, 4, 5, 19, 28, 23, 96, DateTimeKind.Unspecified).AddTicks(4522), new TimeSpan(0, 0, 0, 0, 0)),
+                            PasswordHash = "$2a$11$6dWajxkeo6RMZAl8/CYrouL7dRjnlU5xj/pJV2AGgaJHBae8x2QJi",
                             RoleId = new Guid("00000000-0000-0000-0000-000000000002")
                         });
                 });

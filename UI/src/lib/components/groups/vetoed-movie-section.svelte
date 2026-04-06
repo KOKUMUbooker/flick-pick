@@ -11,29 +11,18 @@
 		>;
 		event: MovieNightEvent;
 		selectedGroupId: string | undefined;
-		validMvSuggestionCmpHasFetchedVotes: boolean;
-		movieSuggestionSuccefullyFetched: boolean;
 	}
 
 	let {
 		movieSuggestionQuery = $bindable(),
 		event,
-		selectedGroupId,
-		movieSuggestionSuccefullyFetched,
-		validMvSuggestionCmpHasFetchedVotes
+		selectedGroupId
 	}: VetoedMovieSuggestionProps = $props();
 </script>
 
 <div class="mt-4">
 	<h4 class="mb-2 text-sm font-medium text-muted-foreground">Disqualified (Vetoed)</h4>
 	{#each movieSuggestionQuery.data?.movieNightSuggestions.filter((s) => s.isDisqualified) as suggestion (suggestion.id)}
-		<VetoedMovieSuggestion
-			{movieSuggestionSuccefullyFetched}
-			{validMvSuggestionCmpHasFetchedVotes}
-			{event}
-			{suggestion}
-			bind:movieSuggestionQuery
-			{selectedGroupId}
-		/>
+		<VetoedMovieSuggestion {event} {suggestion} bind:movieSuggestionQuery {selectedGroupId} />
 	{/each}
 </div>
