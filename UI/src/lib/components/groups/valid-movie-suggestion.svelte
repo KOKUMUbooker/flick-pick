@@ -75,7 +75,7 @@
 
 	// suggestions/{movieSuggestionId}/vote
 	let voteMutation = createMutation<
-		{ message: string }, // response type
+		{ message: string , updatedMovieSuggestion : FetchedMovieSuggestion}, // response type
 		Error, // error type
 		CreateVoteData // variables type
 	>(() => ({
@@ -87,13 +87,29 @@
 			});
 		},
 		onSuccess: async (res, data) => {
-			if (data.VoteType == VoteType.Veto) {
-				await queryClient.invalidateQueries({
-					queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
-				});
+			const queryKey = [QUERY_KEYS.MOVIE_SUGGESTIONS + event.id]
+			const existingData = queryClient.getQueryData<{ movieNightSuggestions: FetchedMovieSuggestion[] }>(queryKey);
+			if (!existingData) {
+				await queryClient.resetQueries({
+                	queryKey: [QUERY_KEYS.CHAT_MSG + event.id]
+            	});
+				return
 			}
-			await queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.VOTES + suggestion.id]
+			// console.log("res data data : ",res.updatedMovieSuggestion)
+			queryClient.setQueryData<{ movieNightSuggestions: FetchedMovieSuggestion[] }>(queryKey, (oldData) => {
+				if (!oldData) {
+					// This shouldn't happen now due to the check above
+					return oldData;
+				}
+				const suggestionsToUpdate = [...oldData.movieNightSuggestions];
+				const targetSuggestionIdx = suggestionsToUpdate.findIndex(s => s.id === res.updatedMovieSuggestion.id);
+                if (targetSuggestionIdx < 0) {
+                    return oldData
+                }
+
+                suggestionsToUpdate[targetSuggestionIdx] = res.updatedMovieSuggestion;
+
+				return { movieNightSuggestions: suggestionsToUpdate }
 			});
 		}
 	}));

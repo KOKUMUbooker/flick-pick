@@ -10,7 +10,7 @@ export function suggestionListeners() {
     appState.hubConnection.on("suggestion", async (movieEventId: string, movieSuggestion: FetchedMovieSuggestion, action: SuggestionEventActions) => {
         const queryKey = [QUERY_KEYS.MOVIE_SUGGESTIONS + movieEventId];
 
-        console.log(`suggestion event recieved by ${appState.user?.email} with data : ${movieSuggestion}`)
+        // console.log(`suggestion event recieved by ${appState.user?.email} with data : ${movieSuggestion}`)
         // Check if cache exists
         const existingData = queryClient.getQueryData<{ movieNightSuggestions: FetchedMovieSuggestion[] }>(queryKey);
         if (!existingData) {
