@@ -1,7 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import type { AuthResponseData } from "../api";
 import { API_BASE_URL } from "../api/urls";
-import { chatListeners } from "../hubs/listeners/chat.svelte";
+import { chatListeners, suggestionListeners } from "../hubs/listeners";
 import type { AppState } from "../types";
 
 export const appState = $state<AppState>({
@@ -33,6 +33,7 @@ let listenersRegistered = false;
 
 export async function startHubConnection() {
     if (!listenersRegistered) {
+        suggestionListeners();
         chatListeners();
         listenersRegistered = true;
     }
