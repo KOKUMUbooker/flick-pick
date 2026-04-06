@@ -1,3 +1,5 @@
+import type { VoteType } from "../../types";
+
 export interface FetchedMovieSuggestion {
     id: string;
     movieId: number;
@@ -5,6 +7,9 @@ export interface FetchedMovieSuggestion {
     movieNightEventId: string;
     isDisqualified: boolean;
     movie: Movie;
+    upvoteCount: number;
+    downVoteCount: number;
+    userVote?: VoteType
 }
 
 export interface Movie {

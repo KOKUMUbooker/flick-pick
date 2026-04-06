@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { Eye, RefreshCw, ThumbsDown, ThumbsUp, Trash, XCircle } from '@lucide/svelte';
-	import { createMutation, createQuery } from '@tanstack/svelte-query';
+	import { Eye, ThumbsDown, ThumbsUp, Trash, XCircle } from '@lucide/svelte';
+	import { createMutation } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS, queryClient } from '../../../api';
 	import type { CreateVoteData } from '../../../api/types';
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
-	import { getAppUser } from '../../../store';
-	import { VoteType, type MovieNightEvent, type Vote } from '../../../types';
+	import { movieNightHub } from '../../../hubs';
+	import { appState, getAppUser, hubIsDisconnected } from '../../../store';
+	import { VoteType, type MovieNightEvent } from '../../../types';
 	import CustomDialog from '../common/CustomDialog.svelte';
 	import Button from '../ui/button/button.svelte';
-	import Skeleton from '../ui/skeleton/skeleton.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
 	import MovieDetailsContent from './movie-details-content.svelte';
 
@@ -18,17 +18,9 @@
 		selectedGroupId: string | undefined;
 		event: MovieNightEvent;
 		suggestion: FetchedMovieSuggestion;
-		movieSuggestionSuccefullyFetched: boolean;
-		validMvSuggestionCmpHasFetchedVotes: boolean;
 	}
 
-	let {
-		suggestion,
-		event = $bindable(),
-		selectedGroupId,
-		movieSuggestionSuccefullyFetched,
-		validMvSuggestionCmpHasFetchedVotes = $bindable()
-	}: MovieSuggestionItem = $props();
+	let { suggestion, event = $bindable(), selectedGroupId }: MovieSuggestionItem = $props();
 	let user = getAppUser();
 	let showDeleteWarnDialog = $state(false);
 	let showMovieDetailsDialog = $state(false);
@@ -62,30 +54,24 @@
 		}
 	}));
 
-	let votesQuery = createQuery<
-		null, // variables type
-		Error, // error type
-		{ votes: Vote[] } // response type
-	>(() => ({
-		queryKey: [QUERY_KEYS.VOTES + suggestion.id],
-		queryFn: async () => {
-			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes`;
-			console.log('Fetching from:', url);
-			return apiFetch(url, {
-				method: 'GET',
-				headers: {
-					Accept: 'application/json'
-				}
-			});
-		},
-		enabled: movieSuggestionSuccefullyFetched && !!suggestion.id
-	}));
-	let myVote = $derived(votesQuery.data?.votes.find((v) => v.user.email === user?.email));
-
-	$effect(() => {
-		// Update this state to help the veto mv suggestion component know if the fetch was successfull
-		validMvSuggestionCmpHasFetchedVotes = votesQuery.isSuccess;
-	});
+	// let votesQuery = createQuery<
+	// 	null, // variables type
+	// 	Error, // error type
+	// 	{ votes: Vote[] } // response type
+	// >(() => ({
+	// 	queryKey: [QUERY_KEYS.VOTES + suggestion.id],
+	// 	queryFn: async () => {
+	// 		const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes`;
+	// 		console.log('Fetching from:', url);
+	// 		return apiFetch(url, {
+	// 			method: 'GET',
+	// 			headers: {
+	// 				Accept: 'application/json'
+	// 			}
+	// 		});
+	// 	},
+	// 	enabled: movieSuggestionSuccefullyFetched && !!suggestion.id
+	// }));
 
 	// suggestions/{movieSuggestionId}/vote
 	let voteMutation = createMutation<
@@ -115,8 +101,15 @@
 	const handleVoteClick = async (vote: VoteType) => {
 		try {
 			if (!user) return toast.error('Please login to proceed', { richColors: true });
+			if (!hubIsDisconnected()) {
+				await movieNightHub.join(event.id);
+			}
 			selectedVote = vote;
-			await voteMutation.mutateAsync({ UserId: user.id, VoteType: vote });
+			await voteMutation.mutateAsync({
+				UserId: user.id,
+				VoteType: vote,
+				ConnectionId: appState.hubConnection.connectionId || ''
+			});
 		} catch (err) {
 			console.error(err);
 		} finally {
@@ -180,33 +173,16 @@
 		<div class="flex items-center gap-4">
 			<div class="flex items-center gap-1">
 				<ThumbsUp class="h-4 w-4 text-green-500" />
-				{#if votesQuery.isPending || votesQuery.isFetching}
-					<Skeleton class="h-4 w-6" />
-				{:else if votesQuery.data != undefined}
-					<span class="font-semibold">
-						{votesQuery.data.votes.filter((v) => v.voteType === VoteType.Upvote).length}
-					</span>
-				{/if}
+				<span class="font-semibold">
+					{suggestion.upvoteCount}
+				</span>
 			</div>
 			<div class="flex items-center gap-1">
 				<ThumbsDown class="h-4 w-4 text-red-500" />
-				<!-- {#if votesQuery.isPending || votesQuery.isFetching} -->
-				{#if votesQuery.isPending || votesQuery.isFetching}
-					<Skeleton class="h-4 w-6" />
-				{:else if votesQuery.data != undefined}
-					<span class="font-semibold">
-						{votesQuery.data.votes.filter((v) => v.voteType === VoteType.Downvote).length}
-					</span>
-				{/if}
-				<!-- <span class="font-semibold">
-					{suggestion.votes.filter((v) => v.voteType === VoteType.Downvote).length}
-				</span> -->
+				<span class="font-semibold">
+					{suggestion.downVoteCount || 0}
+				</span>
 			</div>
-			<Button
-				variant="ghost"
-				disabled={votesQuery.isPending || votesQuery.isFetching}
-				onclick={votesQuery.refetch}><RefreshCw /></Button
-			>
 		</div>
 	</div>
 
@@ -230,7 +206,7 @@
 						<Spinner />
 					{/if}
 					<ThumbsUp
-						class={`mr-2 h-4 w-4 ${myVote?.voteType == VoteType.Upvote ? iconFillClasses : ''}`}
+						class={`mr-2 h-4 w-4 ${suggestion?.userVote == VoteType.Upvote ? iconFillClasses : ''}`}
 					/>
 					Upvote
 				</Button>
@@ -245,7 +221,7 @@
 						<Spinner />
 					{/if}
 					<ThumbsDown
-						class={`mr-2 h-4 w-4 ${myVote?.voteType == VoteType.Downvote ? iconFillClasses : ''}`}
+						class={`mr-2 h-4 w-4 ${suggestion?.userVote == VoteType.Downvote ? iconFillClasses : ''}`}
 					/>
 					Downvote
 				</Button>
@@ -260,7 +236,7 @@
 						<Spinner />
 					{/if}
 					<XCircle
-						class={`mr-2 h-4 w-4 ${myVote?.voteType == VoteType.Veto ? iconFillClasses : ''}`}
+						class={`mr-2 h-4 w-4 ${suggestion?.userVote == VoteType.Veto ? iconFillClasses : ''}`}
 					/>
 					Veto
 				</Button>
