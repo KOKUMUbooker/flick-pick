@@ -137,13 +137,18 @@ public class VoteController : ControllerBase
                 movieSuggestion.IsDisqualified = false;
             }
 
-            await _hubContext.Clients
-                .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
-                .SendAsync("suggestion", movieNightId, ToMovieSuggestionDto(movieSuggestion,parsedUserId), "vote");
 
             await _dbContext.SaveChangesAsync();
+             var userUpdatedVote = await _dbContext.Votes
+                        .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
+                        .Select(v => v.VoteType )
+                        .FirstOrDefaultAsync();
+            var upToDateMovieSuggestion = ToMovieSuggestionDto(movieSuggestion, userUpdatedVote);
+            await _hubContext.Clients
+                .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                .SendAsync("suggestion", movieNightId, upToDateMovieSuggestion, "vote");
 
-            return Ok(new { Message = "Vote removed successfully" });
+            return Ok(new { Message = "Vote removed successfully" , updatedMovieSuggestion = upToDateMovieSuggestion });
         }
 
         // If voteType is different, delete the previous one before adding a new one
@@ -193,15 +198,20 @@ public class VoteController : ControllerBase
             movieSuggestion.IsDisqualified = false;
         }
 
+        await _dbContext.SaveChangesAsync();
+        var userVote = await _dbContext.Votes
+                        .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
+                        .Select(v => v.VoteType)
+                        .FirstOrDefaultAsync();
+        var updatedMovieSuggestion =  ToMovieSuggestionDto(movieSuggestion ,userVote);
         await _hubContext.Clients
             .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
-            .SendAsync("suggestion", movieNightId, ToMovieSuggestionDto(movieSuggestion ,parsedUserId), "vote");
-        await _dbContext.SaveChangesAsync();
+            .SendAsync("suggestion", movieNightId, updatedMovieSuggestion, "vote");
 
-        return Ok(new { Message = "Vote added successfully" });
+        return Ok(new { Message = "Vote added successfully", updatedMovieSuggestion });
     }
 
-    private static Object ToMovieSuggestionDto(MovieSuggestion ms, Guid initiatorId)
+    private static Object ToMovieSuggestionDto(MovieSuggestion ms, VoteType? UserVote)
     {
          return new {
             Id = ms.Id,
@@ -224,7 +234,7 @@ public class VoteController : ControllerBase
             },
             ms.UpvoteCount,
             ms.DownVoteCount,
-            UserVote = ms.Votes.Where(v => v.UserId == initiatorId).Select(v => v.VoteType).FirstOrDefault()
+            UserVote
         };
     }
 }
