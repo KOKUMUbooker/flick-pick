@@ -57,10 +57,13 @@
 	>(() => ({
 		queryKey: [QUERY_KEYS.MOVIE_SUGGESTIONS + event.id],
 		queryFn: async () => {
-			return apiFetch(`${API_BASE_URL}/api/movie-nights/${event.id}/suggestions`, {
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' }
-			});
+			return apiFetch(
+				`${API_BASE_URL}/api/movie-nights/${event.id}/suggestions?initiator=${encodeURIComponent(user?.id || '')}`,
+				{
+					method: 'GET',
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
 		}
 	}));
 
@@ -129,16 +132,15 @@
 		const res = await computeEventResultsMutation.mutateAsync({ Initiator: user.id });
 		toast.success(res.message, { richColors: true });
 	};
-	let validMvSuggestionCmpHasFetchedVotes = $state(false);
 
-	$effect(()=>{
-		(async()=>{
+	$effect(() => {
+		(async () => {
 			if (hubIsConnected()) {
-				console.log(`${user?.email} is joining event ${event.id} ...`)
-				await movieNightHub.join(event.id)
+				// console.log(`${user?.email} is joining event ${event.id} ...`);
+				await movieNightHub.join(event.id);
 			}
-		})()
-	})
+		})();
+	});
 
 	// onDestroy(async()=>{
 	// 	await movieNightHub.leave(event.id)
@@ -228,13 +230,7 @@
 				<h3 class="mb-4 font-semibold">Cast Your Vote</h3>
 				<div class="space-y-3">
 					{#each movieSuggestionQuery.data?.movieNightSuggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
-						<ValidMovieSuggestion
-							{event}
-							{suggestion}
-							selectedGroupId={selectedGroup?.id}
-							movieSuggestionSuccefullyFetched={movieSuggestionQuery.isSuccess}
-							bind:validMvSuggestionCmpHasFetchedVotes
-						/>
+						<ValidMovieSuggestion {event} {suggestion} selectedGroupId={selectedGroup?.id} />
 					{/each}
 
 					{#if movieSuggestionQuery.data?.movieNightSuggestions.some((s) => s.isDisqualified)}
@@ -242,8 +238,6 @@
 							{event}
 							bind:movieSuggestionQuery
 							selectedGroupId={selectedGroup?.id}
-							movieSuggestionSuccefullyFetched={movieSuggestionQuery.isSuccess}
-							{validMvSuggestionCmpHasFetchedVotes}
 						/>
 					{/if}
 				</div>
