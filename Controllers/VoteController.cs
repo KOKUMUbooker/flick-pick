@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using WatchHive.DTOs;
 using WatchHive.Hubs;
 using WatchHive.Models;
+using WatchHive.Services;
 
 [ApiController]
 [Route("/api/")]
@@ -143,7 +144,7 @@ public class VoteController : ControllerBase
                         .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
                         .Select(v => v.VoteType )
                         .FirstOrDefaultAsync();
-            var upToDateMovieSuggestion = ToMovieSuggestionDto(movieSuggestion, userUpdatedVote);
+            var upToDateMovieSuggestion = VoteService.ToMovieSuggestionDto(movieSuggestion, userUpdatedVote);
             await _hubContext.Clients
                 .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
                 .SendAsync("suggestion", movieNightId, upToDateMovieSuggestion, "vote");
@@ -203,38 +204,11 @@ public class VoteController : ControllerBase
                         .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
                         .Select(v => v.VoteType)
                         .FirstOrDefaultAsync();
-        var updatedMovieSuggestion =  ToMovieSuggestionDto(movieSuggestion ,userVote);
+        var updatedMovieSuggestion =  VoteService.ToMovieSuggestionDto(movieSuggestion ,userVote);
         await _hubContext.Clients
             .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
             .SendAsync("suggestion", movieNightId, updatedMovieSuggestion, "vote");
 
         return Ok(new { Message = "Vote added successfully", updatedMovieSuggestion });
-    }
-
-    private static Object ToMovieSuggestionDto(MovieSuggestion ms, VoteType? UserVote)
-    {
-         return new {
-            Id = ms.Id,
-            MovieId = ms.MovieId,
-            MovieNightEventId = ms.MovieNightEventId,
-            IsDisqualified = ms.IsDisqualified,
-            SuggestedBy = new
-            {
-                fullName = ms.SuggestedBy.FullName,
-                email = ms.SuggestedBy.Email
-            },
-            Movie = new TMDBMovieDto
-            {
-                TmdbId = ms.Movie.TmdbId,
-                Title = ms.Movie.Title,
-                PosterPath = ms.Movie.PosterPath,
-                ReleaseDate = ms.Movie.ReleaseDate.ToString(),
-                Overview = ms.Movie.Overview,
-                VoteAverage = ms.Movie.VoteAverage
-            },
-            ms.UpvoteCount,
-            ms.DownVoteCount,
-            UserVote
-        };
     }
 }

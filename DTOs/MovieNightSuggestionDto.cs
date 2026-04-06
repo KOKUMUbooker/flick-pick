@@ -22,17 +22,23 @@ public class DeleteMovieSuggestionDto
 
 public class MovieSuggestionDto
 {
-    public string Id { get; set; } = string.Empty;
-
-    public int TmdbId { get; set; }
-
-    public TMDBMovieDetailsDto MovieDetails { get; set; } = new();
-
-    public UserInfoDto SuggestedBy { get; set; } = new();
-
-    public List<VoteDto> Votes { get; set; } = new();
-
+    public Guid Id { get; set; }
+    public int MovieId { get; set; }
+    public Guid MovieNightEventId { get; set; }
     public bool IsDisqualified { get; set; }
+
+    public SuggestedByDto SuggestedBy { get; set; } = null!;
+    public TMDBMovieDto Movie { get; set; } = null!;
+
+    public int UpvoteCount { get; set; }
+    public int DownVoteCount { get; set; }
+
+    public VoteType? UserVote { get; set; }
+}
+public class SuggestedByDto
+{
+    public string FullName { get; set; } = null!;
+    public string Email { get; set; } = null!;
 }
 
 public class TMDBMovieDetailsDto
