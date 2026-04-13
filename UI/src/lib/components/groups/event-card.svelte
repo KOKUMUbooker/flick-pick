@@ -149,6 +149,8 @@
 	const onShowComputeResultsOnchange = (show: boolean) => {
 		showComputeResultsDialog = show;
 	};
+
+	let hasSuggestionVotesBeenFetched = $state(false);
 </script>
 
 <CustomDialog
@@ -230,14 +232,21 @@
 				<h3 class="mb-4 font-semibold">Cast Your Vote</h3>
 				<div class="space-y-3">
 					{#each movieSuggestionQuery.data?.movieNightSuggestions.filter((s) => !s.isDisqualified) as suggestion (suggestion.id)}
-						<ValidMovieSuggestion {event} {suggestion} selectedGroupId={selectedGroup?.id} />
+						<ValidMovieSuggestion
+							{event}
+							{suggestion}
+							selectedGroupId={selectedGroup?.id}
+							movieSuggestionSuccessfullyFetched={movieSuggestionQuery.isSuccess}
+							{hasSuggestionVotesBeenFetched}
+						/>
 					{/each}
 
 					{#if movieSuggestionQuery.data?.movieNightSuggestions.some((s) => s.isDisqualified)}
 						<VetoedMovieSection
 							{event}
 							bind:movieSuggestionQuery
-							selectedGroupId={selectedGroup?.id}
+							movieSuggestionSuccessfullyFetched={movieSuggestionQuery.isSuccess}
+							{hasSuggestionVotesBeenFetched}
 						/>
 					{/if}
 				</div>

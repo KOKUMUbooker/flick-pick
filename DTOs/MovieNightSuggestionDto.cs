@@ -12,28 +12,39 @@ public class CreateMovieSuggestionDto
     [Required]
     public string SuggestedById { get; set; } = null!; 
 
+    [Required]
+    public string ConnectionId { get; set; } = null!; 
 }
 
 public class DeleteMovieSuggestionDto
 {
     [Required]
     public string Initiator { get; set; } = null!; 
+
+    [Required]
+    public string ConnectionId { get; set; } = null!; 
 }
 
 public class MovieSuggestionDto
 {
-    public string Id { get; set; } = string.Empty;
-
-    public int TmdbId { get; set; }
-
-    public TMDBMovieDetailsDto MovieDetails { get; set; } = new();
-
-    public UserInfoDto SuggestedBy { get; set; } = new();
-
-    public List<VoteDto> Votes { get; set; } = new();
-
+    public Guid Id { get; set; }
+    public int MovieId { get; set; }
+    public Guid MovieNightEventId { get; set; }
     public bool IsDisqualified { get; set; }
+
+    public UserInfoDto SuggestedBy { get; set; } = null!;
+    public TMDBMovieDto Movie { get; set; } = null!;
+
+    public int UpvoteCount { get; set; }
+    public int DownVoteCount { get; set; }
+
+    public VoteType? UserVote { get; set; }
 }
+// public class SuggestedByDto
+// {
+//     public string FullName { get; set; } = null!;
+//     public string Email { get; set; } = null!;
+// }
 
 public class TMDBMovieDetailsDto
     {
@@ -68,24 +79,16 @@ public class UserInfoDto
     public string Email { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Vote DTO with proper enum handling
-/// </summary>
 public class VoteDto
 {
-    [JsonPropertyName("userId")]
-    public string UserId { get; set; } = string.Empty;
-
-    [JsonPropertyName("movieSuggestionId")]
-    public string MovieSuggestionId { get; set; } = string.Empty;
-
-    [JsonPropertyName("voteType")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public string Id { get; set; } = string.Empty;
+    public required UserInfoDto User { get; set; }
     public VoteType VoteType { get; set; }
+    public string MovieSuggestionId { get; set; } = string.Empty;
+}
 
-    [JsonPropertyName("user")]
-    public UserInfoDto User { get; set; } = new();
-
-    [JsonPropertyName("votedAt")] // Optional: track when vote was cast
-    public DateTime? VotedAt { get; set; }
+public class VoteCountDto
+{
+    public int UpvoteCount { get; set; }
+    public int DownvoteCount { get; set; }
 }

@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { Eye, Undo2 } from '@lucide/svelte';
-	import { createMutation, type CreateQueryResult } from '@tanstack/svelte-query';
+	import { createMutation, createQuery, type CreateQueryResult } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
-	import { apiFetch, QUERY_KEYS, queryClient } from '../../../api';
+	import { apiFetch, QUERY_KEYS } from '../../../api';
+	import { UpdateSuggestionInQueryCache, UpdateVoteCountInQueryCache } from '../../../api/query-cache-crud';
 	import type { CreateVoteData } from '../../../api/types';
-	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
+	import type {
+		FetchedMovieSuggestion,
+		FetchedVoteCountData,
+
+		VoteForSuggestionRes
+	} from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { movieNightHub } from '../../../hubs';
 	import { appState, getAppUser, hubIsDisconnected } from '../../../store';
@@ -22,14 +28,16 @@
 		>;
 		event: MovieNightEvent;
 		suggestion: FetchedMovieSuggestion;
-		selectedGroupId: string | undefined;
+		movieSuggestionSuccessfullyFetched: boolean;
+		hasSuggestionVotesBeenFetched: boolean;
 	}
 
 	let {
 		movieSuggestionQuery = $bindable(),
 		event,
 		suggestion,
-		selectedGroupId
+		movieSuggestionSuccessfullyFetched,
+		hasSuggestionVotesBeenFetched
 	}: VetoedMovieSuggestionProps = $props();
 	let user = getAppUser();
 	let showMovieDetailsDialog = $state(false);
@@ -42,7 +50,7 @@
 	}
 
 	let voteMutation = createMutation<
-		{ message: string }, // response type
+		VoteForSuggestionRes, // response type
 		Error, // error type
 		CreateVoteData // variables type
 	>(() => ({
@@ -53,11 +61,35 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
-			});
+		onSuccess: async ({data},input) => {
+			if (input.VoteType == VoteType.Veto) {
+				await UpdateSuggestionInQueryCache(event.id,data.movieSuggestion);
+			}
+			await UpdateVoteCountInQueryCache(suggestion.id,data.voteCountData,input.VoteType)
 		}
+	}));
+
+	let votesCountQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		FetchedVoteCountData // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.VOTECOUNT + suggestion.id],
+		queryFn: async () => {
+			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes?initiator=${encodeURIComponent(user?.id || '')}`;
+			console.log('Fetching from:', url);
+			return apiFetch(url, {
+				method: 'GET',
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+		},
+		enabled:
+			movieSuggestionSuccessfullyFetched &&
+			!!suggestion.id &&
+			!!user &&
+			hasSuggestionVotesBeenFetched
 	}));
 
 	const handleVoteClick = async (vote: VoteType) => {
@@ -98,7 +130,7 @@
 			View Movie
 		</Button>
 		<div>
-			{#if suggestion?.userVote == VoteType.Veto}
+			{#if votesCountQuery.data?.voteData.userVote == VoteType.Veto}
 				<Button
 					size="sm"
 					variant="outline"

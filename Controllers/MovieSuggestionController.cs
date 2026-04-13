@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using WatchHive.DTOs;
+using WatchHive.Hubs;
 using WatchHive.Models;
+using WatchHive.Services;
 
 namespace WatchHive.Controllers;
 
@@ -10,10 +13,12 @@ namespace WatchHive.Controllers;
 public class MovieSuggestionController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
+    private readonly IHubContext<MovieNightHub> _hubContext;
 
-    public MovieSuggestionController(WatchHiveDbContext dbContext)
+    public MovieSuggestionController(WatchHiveDbContext dbContext, IHubContext<MovieNightHub> hubContext)
     {
         _dbContext = dbContext;
+        _hubContext = hubContext;
     }
 
     [HttpGet("movie-nights/{movieNightId}/suggestions")]
@@ -90,6 +95,10 @@ public class MovieSuggestionController : ControllerBase
             .Where(ms => ms.Id == suggestionId && ms.MovieNightEventId == movieEventId && ms.SuggestedById == parsedInitiatorId)
             .ExecuteDeleteAsync();
 
+        await _hubContext.Clients
+            .GroupExcept(movieEventId.ToString(), new[] {delDto.ConnectionId} )
+            .SendAsync("suggestion", movieEventId.ToString(), new { Id =  suggestionId.ToString() }, "delete");
+
         return Ok(new { Message });
     }
 
@@ -106,8 +115,8 @@ public class MovieSuggestionController : ControllerBase
             return BadRequest(new CustomError { Message = "Invalid groupId provided" });
         }
 
-        var userExist = await _dbContext.Users.FindAsync(parsedUserId);
-        if (userExist == null)
+        var existingUser = await _dbContext.Users.FindAsync(parsedUserId);
+        if (existingUser == null)
         {
             return NotFound(new CustomError{ Message = "The user creating the movie night does not exist" });
         }
@@ -129,9 +138,11 @@ public class MovieSuggestionController : ControllerBase
  
         // Create the movie first
         // Check if movie exists first
-        var movieExists = await _dbContext.Movies
-                            .AnyAsync(m => m.TmdbId == createDto.SelectedMovie.TmdbId);
-        if (!movieExists)
+        var existingMovie = await _dbContext.Movies
+                            .Where(m => m.TmdbId == createDto.SelectedMovie.TmdbId)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+        if (existingMovie == null)
         {
             var SelectedMovie = new Movie {
                 TmdbId = createDto.SelectedMovie.TmdbId,
@@ -144,9 +155,10 @@ public class MovieSuggestionController : ControllerBase
                 VoteAverage  = createDto.SelectedMovie.VoteAverage,
             };
             await  _dbContext.Movies.AddAsync(SelectedMovie);
+            existingMovie = SelectedMovie;
         }
 
-        var MovieSuggestion = new MovieSuggestion
+        var movieSuggestion = new MovieSuggestion
         {
             MovieId = createDto.SelectedMovie.TmdbId,
             SuggestedById = parsedUserId,
@@ -155,19 +167,33 @@ public class MovieSuggestionController : ControllerBase
             DownVoteCount = 0
         };
 
-        await  _dbContext.MovieSuggestions.AddAsync(MovieSuggestion);
+        var newMovieSuggestion = await  _dbContext.MovieSuggestions.AddAsync(movieSuggestion);
 
         // Automatically create an upvote by the suggestor for the suggestion
         var upVote = new Vote
         {
             VoteType = VoteType.Upvote,
-            MovieSuggestionId = MovieSuggestion.Id,
+            MovieSuggestionId = movieSuggestion.Id,
             UserId = parsedUserId,
         };
 
         await _dbContext.Votes.AddAsync(upVote);
 
         await _dbContext.SaveChangesAsync();
+
+        var suggestedBy = new UserInfoDto {
+            Email = existingUser.Email,
+            FullName = existingUser.FullName
+        };
+
+        await _hubContext.Clients
+            .GroupExcept(movieSuggestion.Id.ToString(), new[] {createDto.ConnectionId} )
+            .SendAsync(
+                "suggestion", 
+                movieSuggestion.Id.ToString(), 
+                VoteService.ToMovieSuggestionDto(movieSuggestion,suggestedBy,existingMovie),
+                "create"
+            );
 
         return Ok(new { Message = "Movie suggestion created successfully"});
     }

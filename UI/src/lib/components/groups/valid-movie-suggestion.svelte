@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { Eye, ThumbsDown, ThumbsUp, Trash, XCircle } from '@lucide/svelte';
-	import { createMutation } from '@tanstack/svelte-query';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS, queryClient } from '../../../api';
 	import type { CreateVoteData } from '../../../api/types';
-	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
+	import type {
+		FetchedMovieSuggestion,
+		FetchedVoteCountData,
+
+		VoteForSuggestionRes
+
+	} from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { movieNightHub } from '../../../hubs';
 	import { appState, getAppUser, hubIsDisconnected } from '../../../store';
@@ -13,14 +19,24 @@
 	import Button from '../ui/button/button.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
 	import MovieDetailsContent from './movie-details-content.svelte';
+	import { DeleteSuggestionFromQueryCache, UpdateSuggestionInQueryCache, UpdateVoteCountInQueryCache } from '../../../api/query-cache-crud';
+	import type { VoteCountEventPayload } from '../../../hubs/event-payload-types';
 
 	interface MovieSuggestionItem {
 		selectedGroupId: string | undefined;
 		event: MovieNightEvent;
 		suggestion: FetchedMovieSuggestion;
+		movieSuggestionSuccessfullyFetched: boolean;
+		hasSuggestionVotesBeenFetched: boolean;
 	}
 
-	let { suggestion, event = $bindable(), selectedGroupId }: MovieSuggestionItem = $props();
+	let {
+		suggestion,
+		event = $bindable(),
+		selectedGroupId,
+		movieSuggestionSuccessfullyFetched,
+		hasSuggestionVotesBeenFetched = $bindable()
+	}: MovieSuggestionItem = $props();
 	let user = getAppUser();
 	let showDeleteWarnDialog = $state(false);
 	let showMovieDetailsDialog = $state(false);
@@ -38,7 +54,7 @@
 	let suggestionDeleteMutation = createMutation<
 		{ message: string }, // response type
 		Error, // error type
-		{ Initiator: string } // variables type
+		{ Initiator: string , ConnectionId : string } // variables type
 	>(() => ({
 		mutationFn: async (data) => {
 			return apiFetch(`${API_BASE_URL}/api/movie-events/${event.id}/suggestion/${suggestion.id}`, {
@@ -48,10 +64,30 @@
 			});
 		},
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
-			});
+			await DeleteSuggestionFromQueryCache(event.id,suggestion.id)
+			// await queryClient.invalidateQueries({
+			// 	queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
+			// });
 		}
+	}));
+
+	let votesCountQuery = createQuery<
+		null, // variables type
+		Error, // error type
+		FetchedVoteCountData // response type
+	>(() => ({
+		queryKey: [QUERY_KEYS.VOTECOUNT + suggestion.id],
+		queryFn: async () => {
+			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes?initiator=${encodeURIComponent(user?.id || '')}`;
+			// console.log('Fetching from:', url);
+			return apiFetch(url, {
+				method: 'GET',
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+		},
+		enabled: movieSuggestionSuccessfullyFetched && !!suggestion.id && !!user
 	}));
 
 	// let votesQuery = createQuery<
@@ -70,12 +106,12 @@
 	// 			}
 	// 		});
 	// 	},
-	// 	enabled: movieSuggestionSuccefullyFetched && !!suggestion.id
+	// 	enabled: movieSuggestionSuccessfullyFetched && !!suggestion.id
 	// }));
 
 	// suggestions/{movieSuggestionId}/vote
 	let voteMutation = createMutation<
-		{ message: string }, // response type
+		VoteForSuggestionRes, // response type
 		Error, // error type
 		CreateVoteData // variables type
 	>(() => ({
@@ -86,15 +122,11 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onSuccess: async (res, data) => {
-			if (data.VoteType == VoteType.Veto) {
-				await queryClient.invalidateQueries({
-					queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
-				});
+		onSuccess: async ({data},input) => {
+			if (input.VoteType == VoteType.Veto) {
+				await UpdateSuggestionInQueryCache(event.id,data.movieSuggestion);
 			}
-			await queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.VOTES + suggestion.id]
-			});
+			await UpdateVoteCountInQueryCache(suggestion.id,data.voteCountData,input.VoteType)
 		}
 	}));
 
@@ -123,11 +155,21 @@
 
 	const onProceedSuggestionDelete = async () => {
 		if (!user) return toast.error('Please login to proceed', { richColors: true });
-
-		const res = await suggestionDeleteMutation.mutateAsync({ Initiator: user.id });
+		if (!hubIsDisconnected()) {
+				await movieNightHub.join(event.id);
+		}
+		
+		const res = await suggestionDeleteMutation.mutateAsync({ 
+			Initiator: user.id, 
+			ConnectionId: appState.hubConnection.connectionId || '' 
+		});
 		toast.success(res.message, { richColors: true });
 		onShowDelWarningOnchange(false);
 	};
+
+	$effect(() => {
+		hasSuggestionVotesBeenFetched = votesCountQuery.isSuccess;
+	});
 
 	const iconFillClasses = 'fill-current text-primary';
 </script>
@@ -174,13 +216,13 @@
 			<div class="flex items-center gap-1">
 				<ThumbsUp class="h-4 w-4 text-green-500" />
 				<span class="font-semibold">
-					{suggestion.upvoteCount}
+					{votesCountQuery?.data?.voteData.upvoteCount}
 				</span>
 			</div>
 			<div class="flex items-center gap-1">
 				<ThumbsDown class="h-4 w-4 text-red-500" />
 				<span class="font-semibold">
-					{suggestion.downVoteCount || 0}
+					{votesCountQuery?.data?.voteData.downvoteCount}
 				</span>
 			</div>
 		</div>
@@ -206,7 +248,7 @@
 						<Spinner />
 					{/if}
 					<ThumbsUp
-						class={`mr-2 h-4 w-4 ${suggestion?.userVote == VoteType.Upvote ? iconFillClasses : ''}`}
+						class={`mr-2 h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Upvote ? iconFillClasses : ''}`}
 					/>
 					Upvote
 				</Button>
@@ -221,7 +263,7 @@
 						<Spinner />
 					{/if}
 					<ThumbsDown
-						class={`mr-2 h-4 w-4 ${suggestion?.userVote == VoteType.Downvote ? iconFillClasses : ''}`}
+						class={`mr-2 h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Downvote ? iconFillClasses : ''}`}
 					/>
 					Downvote
 				</Button>
@@ -236,7 +278,7 @@
 						<Spinner />
 					{/if}
 					<XCircle
-						class={`mr-2 h-4 w-4 ${suggestion?.userVote == VoteType.Veto ? iconFillClasses : ''}`}
+						class={`mr-2 h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Veto ? iconFillClasses : ''}`}
 					/>
 					Veto
 				</Button>

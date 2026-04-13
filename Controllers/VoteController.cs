@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using WatchHive.DTOs;
 using WatchHive.Hubs;
 using WatchHive.Models;
+using WatchHive.Services;
 
 [ApiController]
 [Route("/api/")]
@@ -24,20 +25,20 @@ public class VoteController : ControllerBase
     public async Task<IActionResult> GetVoteDetails([FromRoute] Guid voteId)
     {
         var vote = await _dbContext.Votes
-                        .Where(v => v.Id == voteId)
-                        .Select(v => new
-                        {
-                            Id = v.Id,
-                            VoteType = v.VoteType,
-                            MovieSuggestionId = v.MovieSuggestionId,
-                            MovieNightEventId = v.MovieSuggestion.MovieNightEventId,
-                            user = new
-                            {
-                                FullName = v.User.FullName,
-                                Email = v.User.Email
-                            }
-                        }) 
-                        .SingleOrDefaultAsync();
+            .Where(v => v.Id == voteId)
+            .Select(v => new
+            {
+                Id = v.Id,
+                VoteType = v.VoteType,
+                MovieSuggestionId = v.MovieSuggestionId,
+                MovieNightEventId = v.MovieSuggestion.MovieNightEventId,
+                user = new
+                {
+                    FullName = v.User.FullName,
+                    Email = v.User.Email
+                }
+            }) 
+            .SingleOrDefaultAsync();
         
         return Ok(new {vote});
     }
@@ -68,6 +69,36 @@ public class VoteController : ControllerBase
             .ToListAsync();
  
         return Ok( new { votes } );
+    }
+
+    [HttpGet("movie-suggestions/{movieSuggestionId}/voteCount")]
+    public async Task<IActionResult> GetSuggestionVoteCount([FromRoute] string movieSuggestionId, [FromQuery] string initiator)
+    {
+        if (!Guid.TryParse(movieSuggestionId, out Guid parsedMovieSuggestionId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movieSuggestionId provided" });
+        }
+
+        if (!Guid.TryParse(initiator, out Guid parsedInitiatorId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid initiator provided" });
+        }
+
+        var voteData = await _dbContext.Votes
+            .Where(v => v.MovieSuggestionId == parsedMovieSuggestionId)
+            .GroupBy(v => v.MovieSuggestionId)
+            .Select(g => new
+            {
+                UpvoteCount = g.Count(v => v.VoteType == VoteType.Upvote),
+                DownvoteCount = g.Count(v => v.VoteType == VoteType.Downvote),
+                UserVote = g
+                    .Where(v => v.UserId == parsedInitiatorId)
+                    .Select(v => (VoteType?)v.VoteType)
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+ 
+        return Ok( new { voteData } );
     }
 
     [HttpPost("movie-suggestions/{movieSuggestionId}/vote")]
@@ -122,28 +153,34 @@ public class VoteController : ControllerBase
                     .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == parsedMovieSuggestionId)
                     .ExecuteDeleteAsync();
  
-            // Update movie suggestion Upvote & Downvote counts
-            if (initialVote.VoteType == VoteType.Upvote && movieSuggestion.UpvoteCount > 0)
-            {
-                movieSuggestion.UpvoteCount--;
-            }
-            else if (initialVote.VoteType == VoteType.Downvote && movieSuggestion.DownVoteCount > 0)
-            {
-                movieSuggestion.DownVoteCount--;
-            }
-            
             if (createDto.VoteType == VoteType.Veto && movieSuggestion.IsDisqualified)
             {
                 movieSuggestion.IsDisqualified = false;
             }
 
-            await _hubContext.Clients
-                .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
-                .SendAsync("suggestion", movieNightId, ToMovieSuggestionDto(movieSuggestion,parsedUserId), "vote");
-
             await _dbContext.SaveChangesAsync();
+             var userUpdatedVote = await _dbContext.Votes
+                        .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
+                        .Select(v => v.VoteType )
+                        .FirstOrDefaultAsync();
+            var voteCountDetails = VoteService.ToVoteCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+            var upToDateMovieSuggestion = VoteService.ToMovieSuggestionDto(movieSuggestion);
+            if (createDto.VoteType == VoteType.Veto)
+            {
+                await _hubContext.Clients
+                    .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                    .SendAsync("suggestion", movieNightId, upToDateMovieSuggestion, "edit");
+            } else 
+            {
+                await _hubContext.Clients
+                    .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                    .SendAsync("vote", movieSuggestionId,  voteCountDetails );
+            }
 
-            return Ok(new { Message = "Vote removed successfully" });
+            return Ok(new { 
+                Message = "Vote removed successfully" ,
+                Data = new { voteCountData = voteCountDetails, movieSuggestion = upToDateMovieSuggestion }
+            });
         }
 
         // If voteType is different, delete the previous one before adding a new one
@@ -193,38 +230,28 @@ public class VoteController : ControllerBase
             movieSuggestion.IsDisqualified = false;
         }
 
-        await _hubContext.Clients
-            .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
-            .SendAsync("suggestion", movieNightId, ToMovieSuggestionDto(movieSuggestion ,parsedUserId), "vote");
         await _dbContext.SaveChangesAsync();
+        var userVote = await _dbContext.Votes
+                        .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
+                        .Select(v => v.VoteType)
+                        .FirstOrDefaultAsync();
+        var voteCountData = VoteService.ToVoteCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+        var updatedMovieSuggestion =  VoteService.ToMovieSuggestionDto(movieSuggestion);
+        if (createDto.VoteType == VoteType.Veto)
+        {
+            await _hubContext.Clients
+                .GroupExcept(movieNightId, new[] { createDto.ConnectionId } )
+                .SendAsync("suggestion", movieNightId, updatedMovieSuggestion, "edit");
+        } else 
+        {
+                await _hubContext.Clients
+                    .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                    .SendAsync("vote", movieSuggestionId, voteCountData );
+        }
 
-        return Ok(new { Message = "Vote added successfully" });
-    }
-
-    private static Object ToMovieSuggestionDto(MovieSuggestion ms, Guid initiatorId)
-    {
-         return new {
-            Id = ms.Id,
-            MovieId = ms.MovieId,
-            MovieNightEventId = ms.MovieNightEventId,
-            IsDisqualified = ms.IsDisqualified,
-            SuggestedBy = new
-            {
-                fullName = ms.SuggestedBy.FullName,
-                email = ms.SuggestedBy.Email
-            },
-            Movie = new TMDBMovieDto
-            {
-                TmdbId = ms.Movie.TmdbId,
-                Title = ms.Movie.Title,
-                PosterPath = ms.Movie.PosterPath,
-                ReleaseDate = ms.Movie.ReleaseDate.ToString(),
-                Overview = ms.Movie.Overview,
-                VoteAverage = ms.Movie.VoteAverage
-            },
-            ms.UpvoteCount,
-            ms.DownVoteCount,
-            UserVote = ms.Votes.Where(v => v.UserId == initiatorId).Select(v => v.VoteType).FirstOrDefault()
-        };
+        return Ok(new {
+            Message = "Vote added successfully", 
+            Data = new { voteCountData , movieSuggestion = updatedMovieSuggestion }
+        });
     }
 }
