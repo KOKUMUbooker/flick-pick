@@ -25,20 +25,20 @@ public class VoteController : ControllerBase
     public async Task<IActionResult> GetVoteDetails([FromRoute] Guid voteId)
     {
         var vote = await _dbContext.Votes
-                        .Where(v => v.Id == voteId)
-                        .Select(v => new
-                        {
-                            Id = v.Id,
-                            VoteType = v.VoteType,
-                            MovieSuggestionId = v.MovieSuggestionId,
-                            MovieNightEventId = v.MovieSuggestion.MovieNightEventId,
-                            user = new
-                            {
-                                FullName = v.User.FullName,
-                                Email = v.User.Email
-                            }
-                        }) 
-                        .SingleOrDefaultAsync();
+            .Where(v => v.Id == voteId)
+            .Select(v => new
+            {
+                Id = v.Id,
+                VoteType = v.VoteType,
+                MovieSuggestionId = v.MovieSuggestionId,
+                MovieNightEventId = v.MovieSuggestion.MovieNightEventId,
+                user = new
+                {
+                    FullName = v.User.FullName,
+                    Email = v.User.Email
+                }
+            }) 
+            .SingleOrDefaultAsync();
         
         return Ok(new {vote});
     }
@@ -153,33 +153,34 @@ public class VoteController : ControllerBase
                     .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == parsedMovieSuggestionId)
                     .ExecuteDeleteAsync();
  
-            // Update movie suggestion Upvote & Downvote counts
-            if (initialVote.VoteType == VoteType.Upvote && movieSuggestion.UpvoteCount > 0)
-            {
-                movieSuggestion.UpvoteCount--;
-            }
-            else if (initialVote.VoteType == VoteType.Downvote && movieSuggestion.DownVoteCount > 0)
-            {
-                movieSuggestion.DownVoteCount--;
-            }
-            
             if (createDto.VoteType == VoteType.Veto && movieSuggestion.IsDisqualified)
             {
                 movieSuggestion.IsDisqualified = false;
             }
-
 
             await _dbContext.SaveChangesAsync();
              var userUpdatedVote = await _dbContext.Votes
                         .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
                         .Select(v => v.VoteType )
                         .FirstOrDefaultAsync();
-            var upToDateMovieSuggestion = VoteService.ToMovieSuggestionDto(movieSuggestion, userUpdatedVote);
-            await _hubContext.Clients
-                .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
-                .SendAsync("suggestion", movieNightId, upToDateMovieSuggestion, "vote");
+            var voteCountDetails = VoteService.ToVoteCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+            var upToDateMovieSuggestion = VoteService.ToMovieSuggestionDto(movieSuggestion);
+            if (createDto.VoteType == VoteType.Veto)
+            {
+                await _hubContext.Clients
+                    .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                    .SendAsync("suggestion", movieNightId, upToDateMovieSuggestion, "edit");
+            } else 
+            {
+                await _hubContext.Clients
+                    .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                    .SendAsync("vote", movieSuggestionId,  voteCountDetails );
+            }
 
-            return Ok(new { Message = "Vote removed successfully" , updatedMovieSuggestion = upToDateMovieSuggestion });
+            return Ok(new { 
+                Message = "Vote removed successfully" ,
+                Data = new { voteCountData = voteCountDetails, movieSuggestion = upToDateMovieSuggestion }
+            });
         }
 
         // If voteType is different, delete the previous one before adding a new one
@@ -234,11 +235,23 @@ public class VoteController : ControllerBase
                         .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
                         .Select(v => v.VoteType)
                         .FirstOrDefaultAsync();
-        var updatedMovieSuggestion =  VoteService.ToMovieSuggestionDto(movieSuggestion ,userVote);
-        await _hubContext.Clients
-            .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
-            .SendAsync("suggestion", movieNightId, updatedMovieSuggestion, "vote");
+        var voteCountData = VoteService.ToVoteCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+        var updatedMovieSuggestion =  VoteService.ToMovieSuggestionDto(movieSuggestion);
+        if (createDto.VoteType == VoteType.Veto)
+        {
+            await _hubContext.Clients
+                .GroupExcept(movieNightId, new[] { createDto.ConnectionId } )
+                .SendAsync("suggestion", movieNightId, updatedMovieSuggestion, "edit");
+        } else 
+        {
+                await _hubContext.Clients
+                    .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                    .SendAsync("vote", movieSuggestionId, voteCountData );
+        }
 
-        return Ok(new { Message = "Vote added successfully", updatedMovieSuggestion });
+        return Ok(new {
+            Message = "Vote added successfully", 
+            Data = new { voteCountData , movieSuggestion = updatedMovieSuggestion }
+        });
     }
 }
