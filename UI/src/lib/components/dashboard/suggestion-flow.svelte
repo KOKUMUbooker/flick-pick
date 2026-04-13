@@ -10,10 +10,11 @@
 		TmdbSearchResponse
 	} from '../../../api/types';
 	import { API_BASE_URL } from '../../../api/urls';
-	import { getAppUser } from '../../../store';
+	import { appState, getAppUser, hubIsDisconnected } from '../../../store';
 	import MovieSearch from './movie-suggestion/movie-search.svelte';
 	import SearchResults from './movie-suggestion/search-results.svelte';
 	import SuggestionConfirm from './movie-suggestion/suggestion-confirm.svelte';
+	import { movieNightHub } from '../../../hubs';
 
 	let { movieNightId, onCancel, onSuggestionAdded ,movieEventId}: SuggestionFlowProps = $props();
 
@@ -82,7 +83,7 @@
 	let movieSuggestionMutation = createMutation<
 		{ message :string }, // response type
 		Error, // error type
-		{ SelectedMovie : TmdbMovieResult, SuggestedById : string} // variables type
+		{ SelectedMovie : TmdbMovieResult, SuggestedById : string, ConnectionId : string } // variables type
 	>(() => ({
 		mutationFn: async (data) => {
 			return apiFetch(`${API_BASE_URL}/api/movie-nights/${movieNightId}/suggestion`, {
@@ -105,11 +106,15 @@
 
 		try {
 			if (!user) return toast.error("No user found, please log in",{richColors:true})
+			if (!hubIsDisconnected()) {
+				await movieNightHub.join(movieEventId);
+		}
 
 			// Create suggestion
 			const res = await movieSuggestionMutation.mutateAsync({
 					SelectedMovie : selectedMovie,
-					SuggestedById : user.id
+					SuggestedById : user.id,
+					ConnectionId: appState.hubConnection.connectionId || '' 
 			});
 
 			toast.success(res.message,{richColors:true})
