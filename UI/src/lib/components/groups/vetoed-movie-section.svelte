@@ -10,19 +10,27 @@
 			Error
 		>;
 		event: MovieNightEvent;
-		selectedGroupId: string | undefined;
+		movieSuggestionSuccessfullyFetched: boolean;
+		hasSuggestionVotesBeenFetched: boolean;
 	}
 
 	let {
 		movieSuggestionQuery = $bindable(),
 		event,
-		selectedGroupId
+		movieSuggestionSuccessfullyFetched,
+		hasSuggestionVotesBeenFetched
 	}: VetoedMovieSuggestionProps = $props();
 </script>
 
 <div class="mt-4">
 	<h4 class="mb-2 text-sm font-medium text-muted-foreground">Disqualified (Vetoed)</h4>
 	{#each movieSuggestionQuery.data?.movieNightSuggestions.filter((s) => s.isDisqualified) as suggestion (suggestion.id)}
-		<VetoedMovieSuggestion {event} {suggestion} bind:movieSuggestionQuery {selectedGroupId} />
+		<VetoedMovieSuggestion
+			{event}
+			{suggestion}
+			bind:movieSuggestionQuery
+			{movieSuggestionSuccessfullyFetched}
+			{hasSuggestionVotesBeenFetched}
+		/>
 	{/each}
 </div>
