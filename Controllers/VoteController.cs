@@ -71,6 +71,36 @@ public class VoteController : ControllerBase
         return Ok( new { votes } );
     }
 
+    [HttpGet("movie-suggestions/{movieSuggestionId}/voteCount")]
+    public async Task<IActionResult> GetSuggestionVoteCount([FromRoute] string movieSuggestionId, [FromQuery] string initiator)
+    {
+        if (!Guid.TryParse(movieSuggestionId, out Guid parsedMovieSuggestionId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movieSuggestionId provided" });
+        }
+
+        if (!Guid.TryParse(initiator, out Guid parsedInitiatorId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid initiator provided" });
+        }
+
+        var voteData = await _dbContext.Votes
+            .Where(v => v.MovieSuggestionId == parsedMovieSuggestionId)
+            .GroupBy(v => v.MovieSuggestionId)
+            .Select(g => new
+            {
+                UpvoteCount = g.Count(v => v.VoteType == VoteType.Upvote),
+                DownvoteCount = g.Count(v => v.VoteType == VoteType.Downvote),
+                UserVote = g
+                    .Where(v => v.UserId == parsedInitiatorId)
+                    .Select(v => (VoteType?)v.VoteType)
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+ 
+        return Ok( new { voteData } );
+    }
+
     [HttpPost("movie-suggestions/{movieSuggestionId}/vote")]
     public async Task<IActionResult> VoteForSuggestion([FromRoute] string movieSuggestionId, [FromBody] CreateVoteDto createDto)
     {
