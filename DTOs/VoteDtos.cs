@@ -1,3 +1,5 @@
+using WatchHive.Models;
+
 namespace WatchHive.DTOs;
 
 using System.ComponentModel.DataAnnotations;
@@ -13,4 +15,12 @@ public class CreateVoteDto
 
     [Required]
     public VoteType VoteType { get; set; }
+}
+
+
+public class VoteCountDto
+{
+    public int UpvoteCount { get; set; }
+    public int DownvoteCount { get; set; }
+    public VoteType? UserVote { get; set; }
 }
