@@ -18,8 +18,8 @@ public class VoteService
             MovieId = ms.MovieId,
             MovieNightEventId = ms.MovieNightEventId,
             IsDisqualified = ms.IsDisqualified,
-            DownVoteCount = ms.DownVoteCount,
-            UpvoteCount = ms.UpvoteCount,
+            // DownVoteCount = ms.DownVoteCount,
+            // UpvoteCount = ms.UpvoteCount,
 
             SuggestedBy = new UserInfoDto
             {
@@ -52,8 +52,8 @@ public class VoteService
             MovieId = ms.MovieId,
             MovieNightEventId = ms.MovieNightEventId,
             IsDisqualified = ms.IsDisqualified,
-            DownVoteCount = ms.DownVoteCount,
-            UpvoteCount = ms.UpvoteCount,
+            // DownVoteCount = ms.DownVoteCount,
+            // UpvoteCount = ms.UpvoteCount,
 
             SuggestedBy = suggestedBy,
 
@@ -89,9 +89,9 @@ public class VoteService
         };
     }
 
-    public static VoteCountDto ToVoteCountDto(int upvoteCount, int downvoteCount)
+    public static VoteEventCountDto ToVoteEventCountDto(int upvoteCount, int downvoteCount)
     {
-        return new VoteCountDto
+        return new VoteEventCountDto
         {
           DownvoteCount = downvoteCount,
           UpvoteCount = upvoteCount  
