@@ -8,8 +8,8 @@ export interface FetchedMovieSuggestion {
     movieNightEventId: string;
     isDisqualified: boolean;
     movie: Movie;
-    upvoteCount: number;
-    downVoteCount: number;
+    // upvoteCount: number;
+    // downVoteCount: number;
     userVote?: VoteType
 }
 

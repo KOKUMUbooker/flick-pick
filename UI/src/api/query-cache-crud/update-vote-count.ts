@@ -21,12 +21,12 @@ export async function UpdateVoteCountInQueryCache(movieSuggestionId: string, upd
 
         const voteCountData: FetchedVoteCountData = { voteData: { ...oldData.voteData } }
 
-        voteCountData.voteData.upvoteCount = updatedVoteCount.downvoteCount
+        voteCountData.voteData.upvoteCount = updatedVoteCount.upvoteCount
         voteCountData.voteData.downvoteCount = updatedVoteCount.downvoteCount
 
         // Toggling behavior for setting user vote
         if (userVote != undefined) {
-            if (userVote === voteCountData.voteData.userVote) voteCountData.voteData.userVote = undefined
+            if (userVote === oldData.voteData.userVote) voteCountData.voteData.userVote = undefined
             else voteCountData.voteData.userVote = userVote;
         }
 
