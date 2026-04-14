@@ -13,8 +13,8 @@ public class MovieSuggestion : EntityBase
     public Guid MovieNightEventId { get; set; }
 
     public bool IsDisqualified { get; set; } = false;
-    public int UpvoteCount { get; set; }
-    public int DownVoteCount { get; set; }
+    // public int UpvoteCount { get; set; }
+    // public int DownVoteCount { get; set; }
 
     // Navigation properties
     public Movie Movie { get; set; } = null!;

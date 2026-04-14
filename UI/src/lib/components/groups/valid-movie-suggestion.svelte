@@ -1,15 +1,18 @@
 <script lang="ts">
-	import { Eye, ThumbsDown, ThumbsUp, Trash, XCircle } from '@lucide/svelte';
+	import { Eye, RefreshCcw, ThumbsDown, ThumbsUp, Trash, XCircle } from '@lucide/svelte';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
-	import { apiFetch, QUERY_KEYS, queryClient } from '../../../api';
+	import { apiFetch, QUERY_KEYS } from '../../../api';
+	import {
+		DeleteSuggestionFromQueryCache,
+		UpdateSuggestionInQueryCache,
+		UpdateVoteCountInQueryCache
+	} from '../../../api/query-cache-crud';
 	import type { CreateVoteData } from '../../../api/types';
 	import type {
 		FetchedMovieSuggestion,
 		FetchedVoteCountData,
-
 		VoteForSuggestionRes
-
 	} from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { movieNightHub } from '../../../hubs';
@@ -19,8 +22,6 @@
 	import Button from '../ui/button/button.svelte';
 	import Spinner from '../ui/spinner/spinner.svelte';
 	import MovieDetailsContent from './movie-details-content.svelte';
-	import { DeleteSuggestionFromQueryCache, UpdateSuggestionInQueryCache, UpdateVoteCountInQueryCache } from '../../../api/query-cache-crud';
-	import type { VoteCountEventPayload } from '../../../hubs/event-payload-types';
 
 	interface MovieSuggestionItem {
 		selectedGroupId: string | undefined;
@@ -54,7 +55,7 @@
 	let suggestionDeleteMutation = createMutation<
 		{ message: string }, // response type
 		Error, // error type
-		{ Initiator: string , ConnectionId : string } // variables type
+		{ Initiator: string; ConnectionId: string } // variables type
 	>(() => ({
 		mutationFn: async (data) => {
 			return apiFetch(`${API_BASE_URL}/api/movie-events/${event.id}/suggestion/${suggestion.id}`, {
@@ -64,7 +65,7 @@
 			});
 		},
 		onSuccess: async () => {
-			await DeleteSuggestionFromQueryCache(event.id,suggestion.id)
+			await DeleteSuggestionFromQueryCache(event.id, suggestion.id);
 			// await queryClient.invalidateQueries({
 			// 	queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroupId + 'upcoming']
 			// });
@@ -78,7 +79,7 @@
 	>(() => ({
 		queryKey: [QUERY_KEYS.VOTECOUNT + suggestion.id],
 		queryFn: async () => {
-			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/votes?initiator=${encodeURIComponent(user?.id || '')}`;
+			const url = `${API_BASE_URL}/api/movie-suggestions/${suggestion.id}/voteCount?initiator=${encodeURIComponent(user?.id || '')}`;
 			// console.log('Fetching from:', url);
 			return apiFetch(url, {
 				method: 'GET',
@@ -122,11 +123,11 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onSuccess: async ({data},input) => {
+		onSuccess: async ({ data }, input) => {
 			if (input.VoteType == VoteType.Veto) {
-				await UpdateSuggestionInQueryCache(event.id,data.movieSuggestion);
+				await UpdateSuggestionInQueryCache(event.id, data.movieSuggestion);
 			}
-			await UpdateVoteCountInQueryCache(suggestion.id,data.voteCountData,input.VoteType)
+			await UpdateVoteCountInQueryCache(suggestion.id, data.voteCountData, input.VoteType);
 		}
 	}));
 
@@ -156,12 +157,12 @@
 	const onProceedSuggestionDelete = async () => {
 		if (!user) return toast.error('Please login to proceed', { richColors: true });
 		if (!hubIsDisconnected()) {
-				await movieNightHub.join(event.id);
+			await movieNightHub.join(event.id);
 		}
-		
-		const res = await suggestionDeleteMutation.mutateAsync({ 
-			Initiator: user.id, 
-			ConnectionId: appState.hubConnection.connectionId || '' 
+
+		const res = await suggestionDeleteMutation.mutateAsync({
+			Initiator: user.id,
+			ConnectionId: appState.hubConnection.connectionId || ''
 		});
 		toast.success(res.message, { richColors: true });
 		onShowDelWarningOnchange(false);
@@ -225,6 +226,13 @@
 					{votesCountQuery?.data?.voteData.downvoteCount}
 				</span>
 			</div>
+			<Button
+				variant="ghost"
+				disabled={votesCountQuery.isPending || votesCountQuery.isFetching}
+				onclick={votesCountQuery.refetch}
+			>
+				<RefreshCcw />
+			</Button>
 		</div>
 	</div>
 

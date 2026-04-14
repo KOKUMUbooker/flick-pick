@@ -56,8 +56,6 @@ public class MovieSuggestionController : ControllerBase
                     Overview = ms.Movie.Overview,
                     VoteAverage = ms.Movie.VoteAverage
                 },
-                ms.UpvoteCount,
-                ms.DownVoteCount,
                 UserVote = ms.Votes.Where(v => v.UserId == parsedInitiatorId).Select(v => v.VoteType).FirstOrDefault()
             })
             .AsNoTracking()
@@ -91,7 +89,7 @@ public class MovieSuggestionController : ControllerBase
             return BadRequest(new CustomError {Message="You are not allowed to delete this suggestion"});
         }
 
-        var rows = await _dbContext.MovieSuggestions
+        await _dbContext.MovieSuggestions
             .Where(ms => ms.Id == suggestionId && ms.MovieNightEventId == movieEventId && ms.SuggestedById == parsedInitiatorId)
             .ExecuteDeleteAsync();
 
@@ -163,8 +161,6 @@ public class MovieSuggestionController : ControllerBase
             MovieId = createDto.SelectedMovie.TmdbId,
             SuggestedById = parsedUserId,
             MovieNightEventId = parsedMovieNightId,
-            UpvoteCount = 1,
-            DownVoteCount = 0
         };
 
         var newMovieSuggestion = await  _dbContext.MovieSuggestions.AddAsync(movieSuggestion);

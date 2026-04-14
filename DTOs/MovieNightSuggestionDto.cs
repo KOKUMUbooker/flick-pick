@@ -87,7 +87,7 @@ public class VoteDto
     public string MovieSuggestionId { get; set; } = string.Empty;
 }
 
-public class VoteCountDto
+public class VoteEventCountDto
 {
     public int UpvoteCount { get; set; }
     public int DownvoteCount { get; set; }

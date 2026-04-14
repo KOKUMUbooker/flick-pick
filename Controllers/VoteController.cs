@@ -84,19 +84,7 @@ public class VoteController : ControllerBase
             return BadRequest(new CustomError { Message = "Invalid initiator provided" });
         }
 
-        var voteData = await _dbContext.Votes
-            .Where(v => v.MovieSuggestionId == parsedMovieSuggestionId)
-            .GroupBy(v => v.MovieSuggestionId)
-            .Select(g => new
-            {
-                UpvoteCount = g.Count(v => v.VoteType == VoteType.Upvote),
-                DownvoteCount = g.Count(v => v.VoteType == VoteType.Downvote),
-                UserVote = g
-                    .Where(v => v.UserId == parsedInitiatorId)
-                    .Select(v => (VoteType?)v.VoteType)
-                    .FirstOrDefault()
-            })
-            .FirstOrDefaultAsync();
+        var voteData = await GetVoteCountData(parsedMovieSuggestionId,parsedInitiatorId);
  
         return Ok( new { voteData } );
     }
@@ -157,13 +145,10 @@ public class VoteController : ControllerBase
             {
                 movieSuggestion.IsDisqualified = false;
             }
-
+            
             await _dbContext.SaveChangesAsync();
-             var userUpdatedVote = await _dbContext.Votes
-                        .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
-                        .Select(v => v.VoteType )
-                        .FirstOrDefaultAsync();
-            var voteCountDetails = VoteService.ToVoteCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+            // var voteCountDetails = VoteService.ToVoteEventCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+            var voteCountDetails = await GetVoteCountData(parsedMovieSuggestionId,parsedUserId);
             var upToDateMovieSuggestion = VoteService.ToMovieSuggestionDto(movieSuggestion);
             if (createDto.VoteType == VoteType.Veto)
             {
@@ -186,16 +171,6 @@ public class VoteController : ControllerBase
         // If voteType is different, delete the previous one before adding a new one
         if (initialVote != null && initialVote.VoteType != createDto.VoteType)
         {
-             // Update movie suggestion Upvote & Downvote counts
-            if (initialVote.VoteType == VoteType.Upvote && movieSuggestion.UpvoteCount > 0)
-            {
-                movieSuggestion.UpvoteCount--;
-            }
-            if (initialVote.VoteType == VoteType.Downvote && movieSuggestion.DownVoteCount > 0)
-            {
-                movieSuggestion.DownVoteCount--;
-            }
-            
             await _dbContext.Votes 
                     .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == parsedMovieSuggestionId)
                     .ExecuteDeleteAsync();
@@ -207,16 +182,6 @@ public class VoteController : ControllerBase
             UserId = parsedUserId,
             VoteType = createDto.VoteType
         };
-
-         // Update movie suggestion Upvote & Downvote counts
-        if (createDto.VoteType == VoteType.Upvote)
-        {
-            movieSuggestion.UpvoteCount++;
-        }
-        if (createDto.VoteType == VoteType.Downvote)
-        {
-            movieSuggestion.DownVoteCount++;
-        }
 
         await _dbContext.Votes.AddAsync(vote);
 
@@ -231,11 +196,8 @@ public class VoteController : ControllerBase
         }
 
         await _dbContext.SaveChangesAsync();
-        var userVote = await _dbContext.Votes
-                        .Where(v => v.UserId == parsedUserId && v.MovieSuggestionId == movieSuggestion.Id)
-                        .Select(v => v.VoteType)
-                        .FirstOrDefaultAsync();
-        var voteCountData = VoteService.ToVoteCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+        // var voteCountData = VoteService.ToVoteEventCountDto(movieSuggestion.UpvoteCount, movieSuggestion.DownVoteCount);
+        var voteCountData = await GetVoteCountData(parsedMovieSuggestionId,parsedUserId);
         var updatedMovieSuggestion =  VoteService.ToMovieSuggestionDto(movieSuggestion);
         if (createDto.VoteType == VoteType.Veto)
         {
@@ -244,14 +206,33 @@ public class VoteController : ControllerBase
                 .SendAsync("suggestion", movieNightId, updatedMovieSuggestion, "edit");
         } else 
         {
-                await _hubContext.Clients
-                    .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
-                    .SendAsync("vote", movieSuggestionId, voteCountData );
+            await _hubContext.Clients
+                .GroupExcept(movieNightId, new[] {createDto.ConnectionId} )
+                .SendAsync("vote", movieSuggestionId, voteCountData );
         }
 
         return Ok(new {
             Message = "Vote added successfully", 
             Data = new { voteCountData , movieSuggestion = updatedMovieSuggestion }
         });
+    }
+
+    private async Task<VoteCountDto?> GetVoteCountData(Guid movieSuggestionId, Guid initiatorId)
+    {
+         var voteData = await _dbContext.Votes
+            .Where(v => v.MovieSuggestionId == movieSuggestionId)
+            .GroupBy(v => v.MovieSuggestionId)
+            .Select(g => new VoteCountDto
+            {
+                UpvoteCount = g.Count(v => v.VoteType == VoteType.Upvote),
+                DownvoteCount = g.Count(v => v.VoteType == VoteType.Downvote),
+                UserVote = g
+                    .Where(v => v.UserId == initiatorId)
+                    .Select(v => (VoteType?)v.VoteType)
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+
+            return voteData;
     }
 }

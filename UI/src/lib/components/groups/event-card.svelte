@@ -71,7 +71,7 @@
 	let hasGivenSuggestion = $derived(
 		movieSuggestionQuery?.data
 			? movieSuggestionQuery.data.movieNightSuggestions.find(
-					(ms) => ms.suggestedBy.email == user?.email
+					(ms) => ms?.suggestedBy?.email === user?.email
 				)
 			: true
 	);
