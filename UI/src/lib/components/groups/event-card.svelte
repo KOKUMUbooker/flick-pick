@@ -6,7 +6,7 @@
 	import type { FetchedMovieSuggestion } from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { movieNightHub } from '../../../hubs';
-	import { getAppUser, hubIsConnected } from '../../../store';
+	import { appState, getAppUser, hubIsConnected, hubIsDisconnected } from '../../../store';
 	import { type DBGroup, type MovieNightEvent } from '../../../types';
 	import CustomDialog from '../common/CustomDialog.svelte';
 	import AddMovieNightForm from '../dashboard/forms/add-movie-night-form.svelte';
@@ -23,6 +23,11 @@
 	} from '../ui/card';
 	import ValidMovieSuggestion from './valid-movie-suggestion.svelte';
 	import VetoedMovieSection from './vetoed-movie-section.svelte';
+	import type { DeleteMovieEventData } from '../../../api/types';
+	import {
+		DeleteMovieNightEventFromQueryCache,
+		UpdateMovieNightEventToQueryCache
+	} from '../../../api/query-cache-crud';
 
 	interface EventCardProps {
 		selectedGroup: DBGroup | null;
@@ -80,13 +85,13 @@
 		showAddMovieNightDialog = show;
 	}
 	let movieEventDeleteMutation = createMutation<
-		{ message: string }, // response type
+		{ message: string; movieEvent: { id: string } }, // response type
 		Error, // error type
-		void // variables type
+		DeleteMovieEventData // variables type
 	>(() => ({
 		mutationFn: async (data) => {
 			return apiFetch(
-				`${API_BASE_URL}/api/groups/${selectedGroup?.id || ''}/movie-event/${event.id}?userId=${encodeURIComponent(user?.id || '')}`,
+				`${API_BASE_URL}/api/groups/${selectedGroup?.id || ''}/movie-event/${event.id}`,
 				{
 					method: 'DELETE',
 					headers: { 'Content-Type': 'application/json' },
@@ -94,16 +99,17 @@
 				}
 			);
 		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming']
-			});
+		onSuccess: async (res) => {
+			await DeleteMovieNightEventFromQueryCache(selectedGroup?.id || '', res.movieEvent.id);
+			// await queryClient.invalidateQueries({
+			// 	queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming']
+			// });
 		}
 	}));
 	let computeEventResultsMutation = createMutation<
-		{ message: string }, // response type
+		{ message: string; movieEvent: MovieNightEvent }, // response type
 		Error, // error type
-		{ Initiator: string } // variables type
+		{ Initiator: string; ConnectionId: string } // variables type
 	>(() => ({
 		mutationFn: async (data) => {
 			return apiFetch(`${API_BASE_URL}/api/movieEvent/${event.id}/compute-results`, {
@@ -112,11 +118,11 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onSuccess: async () => {
-			// TODO: Update this to only fetch the updated movie event not all
-			await queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming']
-			});
+		onSuccess: async (res) => {
+			await UpdateMovieNightEventToQueryCache(selectedGroup?.id || '', res.movieEvent);
+			// await queryClient.invalidateQueries({
+			// 	queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming']
+			// });
 		}
 	}));
 	const onShowDelWarningOnchange = (show: boolean) => {
@@ -124,13 +130,30 @@
 	};
 
 	const onProceedMovieEventDelete = async () => {
-		const res = await movieEventDeleteMutation.mutateAsync();
+		if (!user) return toast.error('Please login to proceed', { richColors: true });
+		if (!hubIsDisconnected()) {
+			await movieNightHub.join(event.id);
+		}
+
+		const res = await movieEventDeleteMutation.mutateAsync({
+			Initiator: user.id,
+			ConnectionId: appState.hubConnection.connectionId || ''
+		});
 		toast.success(res.message, { richColors: true });
+		onShowDelWarningOnchange(false);
 	};
 	const onProceedComputeEventResults = async () => {
 		if (!user) return toast.error('Please log in', { richColors: true });
-		const res = await computeEventResultsMutation.mutateAsync({ Initiator: user.id });
+		if (!hubIsDisconnected()) {
+			await movieNightHub.join(event.id);
+		}
+
+		const res = await computeEventResultsMutation.mutateAsync({
+			Initiator: user.id,
+			ConnectionId: appState.hubConnection.connectionId || ''
+		});
 		toast.success(res.message, { richColors: true });
+		onShowComputeResultsOnchange(false);
 	};
 
 	$effect(() => {
@@ -156,7 +179,7 @@
 <CustomDialog
 	header={{ title: 'Compute Event Results' }}
 	bind:open={showComputeResultsDialog}
-	onOpenChange={(show) => (showComputeResultsDialog = show)}
+	onOpenChange={onShowComputeResultsOnchange}
 	isLoading={computeEventResultsMutation.isPending}
 	actions={{ onProceed: onProceedComputeEventResults }}
 >
@@ -192,7 +215,7 @@
 		onSuggestionAdded={() => (showSuggestionFlow = false)}
 	/>
 {/if}
-<Card class="overflow-hidden pt-0 pb-0">
+<Card class="max-h-90vh overflow-hidden pt-0 pb-0">
 	<CardHeader class="bg-muted/50 py-4">
 		<div class="flex items-center justify-between">
 			<div>
@@ -302,12 +325,12 @@
 			{#if selectedGroup?.isUserAdmin}
 				<div class="flex flex-row items-center gap-2">
 					<Button variant="outline" size="sm" onclick={() => (showAddMovieNightDialog = true)}>
-						<Edit class="mr-2 h-4 w-4" />
-						Edit Event
+						<Edit class="h-4 w-4" />
+						<span class="hidden lg:inline"> Edit Event </span>
 					</Button>
 					<Button variant="destructive" size="sm" onclick={() => (showDeleteWarnDialog = true)}>
-						<Trash class="mr-2 h-4 w-4" />
-						Delete Event
+						<Trash class="h-4 w-4" />
+						<span class="hidden lg:inline"> Delete Event </span>
 					</Button>
 				</div>
 			{/if}
