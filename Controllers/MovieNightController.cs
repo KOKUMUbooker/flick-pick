@@ -214,7 +214,7 @@ public class MovieNightController : ControllerBase
         }
 
         var isAdmin = await _dbContext.UserGroups
-                        .AnyAsync(ug => ug.UserId == parsedInitiatorId && ug.IsAdmin);
+            .AnyAsync(ug => ug.UserId == parsedInitiatorId && ug.IsAdmin && ug.GroupId == movieEvent.GroupId);
         
         if (!isAdmin)
         {
