@@ -183,10 +183,10 @@ public class MovieSuggestionController : ControllerBase
         };
 
         await _hubContext.Clients
-            .GroupExcept(movieSuggestion.Id.ToString(), new[] {createDto.ConnectionId} )
+            .GroupExcept(movieSuggestion.MovieNightEventId.ToString(), new[] {createDto.ConnectionId} )
             .SendAsync(
                 "suggestion", 
-                movieSuggestion.Id.ToString(), 
+                movieSuggestion.MovieNightEventId.ToString(), 
                 VoteService.ToMovieSuggestionDto(movieSuggestion,suggestedBy,existingMovie),
                 "create"
             );
