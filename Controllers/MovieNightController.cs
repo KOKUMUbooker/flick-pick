@@ -111,12 +111,17 @@ public class MovieNightController : ControllerBase
     public async Task<IActionResult> DeleteMovieEvent(
         [FromRoute] Guid groupId,
         [FromRoute] Guid movieEventId,
-        [FromQuery] Guid userId
+        [FromBody] DeleteMovieEventEventDto DelDto
     )
     {
+        if (!Guid.TryParse(DelDto.Initiator, out Guid parsedInitiatorId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid userId provided" });
+        }
+
         // Allow only group admins to update the movie event
         var isGroupAdmin = await _dbContext.UserGroups
-                                .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId && ug.IsAdmin);
+            .AnyAsync(ug => ug.UserId == parsedInitiatorId && ug.GroupId == groupId && ug.IsAdmin);
         if (!isGroupAdmin)
         {
             return BadRequest(new CustomError {Message = "You are not allowed to delete this movie event"});
@@ -126,7 +131,11 @@ public class MovieNightController : ControllerBase
                 .Where(me => me.Id == movieEventId)
                 .ExecuteDeleteAsync();
 
-        return Ok(new {message = "Movie Event deleted successfully" });
+        await _hubContext.Clients
+                .GroupExcept(movieEventId.ToString(), new[] {DelDto.ConnectionId} )
+                .SendAsync("movieEvent", groupId, new { Id = movieEventId }, "delete", DelDto.Initiator);
+
+        return Ok(new {message = "Movie Event deleted successfully", movieEvent = new { Id = movieEventId } });
     }
 
     [HttpGet("groups/{groupId}/movie-nights")]
@@ -223,11 +232,13 @@ public class MovieNightController : ControllerBase
         }
 
         var movieEvent = await _dbContext.MovieNightEvents
-                .Include(e => e.MovieSuggestions)
-                    .ThenInclude(s => s.Votes)
-                .Include(e => e.MovieSuggestions) 
-                    .ThenInclude(s => s.Movie)
-                .FirstOrDefaultAsync(e => e.Id == parsedMovieEventId);
+            .Include(me => me.SelectedMovie)
+            .Include(me => me.MovieNightRatings)
+            .Include(e => e.MovieSuggestions)
+                .ThenInclude(s => s.Votes)
+            .Include(e => e.MovieSuggestions) 
+                .ThenInclude(s => s.Movie)
+            .FirstOrDefaultAsync(e => e.Id == parsedMovieEventId);
         
         if (movieEvent == null)
         {
@@ -285,51 +296,15 @@ public class MovieNightController : ControllerBase
 
         movieEvent.SelectedMovieId = winner.Suggestion.Movie.TmdbId;
         await _dbContext.SaveChangesAsync();
-        
-        return Ok( new { Message = $"The movie {winner.Suggestion.Movie.Title} has been selected for the event {movieEvent.Name}" } );
+
+        var movieEventDto =  MovieNightEventService.ToMovieNightEventDto(movieEvent);
+        await _hubContext.Clients
+            .GroupExcept(movieEvent.Id.ToString(), new[] {resultsDto.ConnectionId} )
+            .SendAsync("movieEvent", movieEvent.GroupId, movieEventDto, "edit", resultsDto);
+
+        return Ok( new { 
+            Message = $"The movie {winner.Suggestion.Movie.Title} has been selected for the event {movieEvent.Name}",
+            movieEvent = movieEventDto 
+        });
     }
-
-    [HttpGet("movie-nights/{movieNightId}")]
-    public async Task<IActionResult> FetchMovieNight([FromRoute] string movieNightId)
-    {
-        if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
-        {
-            return BadRequest(new CustomError { Message = "Invalid movieNightId provided" });
-        }
-        
-        var MovieNight = await _dbContext.MovieNightEvents.FindAsync(parsedMovieNightId);
-
-        if (MovieNight == null)
-        {
-            return NotFound(new CustomError { Message = "Movie night event not found" } );
-        }
-
-        return Ok(new { MovieNight });
-    }
-
-    [HttpPatch("movie-nights/{movieNightId}")]
-    public async Task<IActionResult> UpdateMovieNight([FromRoute] string movieNightId, [FromBody] UpdateMovieNightDto updateDto)
-    {
-        if (!Guid.TryParse(movieNightId, out Guid parsedMovieNightId))
-        {
-            return BadRequest(new CustomError { Message = "Invalid movieNightId provided" });
-        }
-        
-        var MovieNight = await _dbContext.MovieNightEvents
-                            .Where(mn => mn.Id == parsedMovieNightId)
-                            .FirstAsync();
-
-        if (MovieNight == null)
-        {
-            return NotFound(new CustomError { Message = "Movie night event not found" } );
-        }
-
-        MovieNight.IsLocked = updateDto.IsLocked ?? MovieNight.IsLocked;
-        MovieNight.ScheduledAt = updateDto.ScheduledAt ?? MovieNight.ScheduledAt;
-        MovieNight.SelectedMovieId = updateDto.SelectedMovieTmdbId;
-
-        await _dbContext.SaveChangesAsync();
-
-        return Ok(new {Message = "Movie night updated successfully" });
-    }    
 }
