@@ -4,16 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 using WatchHive.Models;
 using WatchHive.DTOs;
 using Microsoft.EntityFrameworkCore;
+using WatchHive.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using WatchHive.Services;
 
 [ApiController]
 [Route("/api/")]
 public class MovieNightController : ControllerBase
 {
     private readonly WatchHiveDbContext _dbContext;
+      private readonly IHubContext<MovieNightHub> _hubContext;
 
-    public MovieNightController(WatchHiveDbContext dbContext)
+    public MovieNightController(WatchHiveDbContext dbContext, IHubContext<MovieNightHub> hubContext)
     {
         _dbContext = dbContext;
+        _hubContext = hubContext;
     }
 
     [HttpPost("groups/{groupId}/movie-night")]
@@ -53,7 +58,53 @@ public class MovieNightController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
 
-        return Ok(new { Message = "Movie night event created successfully", movieNightId = movieNight.Id });
+        return Ok(new { Message = "Movie night event created successfully" });
+    }
+
+    [HttpPatch("groups/{groupId}/movie-night/edit")]
+    public async Task<IActionResult> UpdateMovieNight(
+        [FromRoute] Guid groupId, 
+        [FromQuery] Guid userId,
+        [FromBody] UpdateMovieNightDto movieNightDto
+    )
+    {
+        if (!Guid.TryParse(movieNightDto.Id, out Guid parsedEventId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movie event id provided" });
+        }
+
+        // Allow only group admins to update the movie event
+        var isGroupAdmin = await _dbContext.UserGroups
+                                .AnyAsync(ug => ug.UserId == userId && ug.GroupId == groupId && ug.IsAdmin);
+        if (!isGroupAdmin)
+        {
+            return BadRequest(new CustomError {Message = "You are not allowed to update this movie event"});
+        }
+
+        var movieEvent = await _dbContext.MovieNightEvents
+            .Where(me => me.Id == parsedEventId)
+            .Include(me => me.SelectedMovie)
+            .Include(me => me.MovieNightRatings)
+            .FirstOrDefaultAsync();
+        if (movieEvent == null)
+        {
+            return BadRequest(new CustomError{ Message = "The movie event does not exist" });
+        }
+
+        movieEvent.Name = movieNightDto.Name ?? movieEvent.Name;
+        movieEvent.Description = movieNightDto.Description ?? movieEvent.Description;
+        movieEvent.ScheduledAt = movieNightDto.ScheduledAt != null? movieNightDto.ScheduledAt.Value : movieEvent.ScheduledAt;
+
+        var movieEventDto = MovieNightEventService.ToMovieNightEventDto(movieEvent);
+        if (movieNightDto.ConnectionId != null)
+        {
+            await _hubContext.Clients
+                .GroupExcept(movieEvent.Id.ToString(), new[] {movieNightDto.ConnectionId} )
+                .SendAsync("movieEvent", groupId, movieEventDto, "edit", userId);
+        }
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new { message="Movie event updated successfully", movieEvent = movieEventDto  });
     }
 
     [HttpDelete("groups/{groupId}/movie-event/{movieEventId}")]
