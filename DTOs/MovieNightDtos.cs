@@ -2,9 +2,8 @@ namespace WatchHive.DTOs;
 
 using System.ComponentModel.DataAnnotations;
 
-public class UpsertMovieNightDto
+public class CreateMovieNightDto
 {
-    public string? Id { get; set; }
 
     [Required]
     public string Name { get; set; } = null!;
@@ -16,15 +15,23 @@ public class UpsertMovieNightDto
 
     [Required]
     public string CreatedById {get; set;} = null!;
+
+    // public string? ConnectionId { get; set; }
 }
 
 public class UpdateMovieNightDto
 {
-    public DateTimeOffset? ScheduledAt { get; set; }
-    public bool? IsLocked { get; set; } = false;
-    public int? SelectedMovieTmdbId { get; set; }
-}
+    [Required]
+    public string? Id { get; set; }
 
+    public string Name { get; set; } = null!;
+
+    public string? Description { get; set; }
+
+    public DateTimeOffset? ScheduledAt { get; set; }
+
+    public string? ConnectionId { get; set; }
+}
  
 public class MovieNightEventDto
 {
@@ -44,4 +51,16 @@ public class ComputeEventResultDto
 {
     [Required]
     public string Initiator { get; set; } = null!;
+    
+    [Required]
+    public string ConnectionId { get; set; } = null!;
+}
+
+public class DeleteMovieEventEventDto 
+{
+    [Required]
+    public string Initiator { get; set; } = null!;
+    
+    [Required]
+    public string ConnectionId { get; set; } = null!;
 }

@@ -2,7 +2,7 @@ import { AddSuggestionToQueryCache, DeleteSuggestionFromQueryCache, UpdateSugges
 import type { FetchedMovieSuggestion } from "../../api/types/fetch-movie-suggestions";
 import { appState } from "../../store";
 
-export type SuggestionEventActions = "vote" | "create" | "delete" | "edit"
+export type SuggestionEventActions = "create" | "delete" | "edit"
 
 export function suggestionListeners() {
     appState.hubConnection.off("suggestion")

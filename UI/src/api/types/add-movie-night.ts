@@ -15,9 +15,15 @@ export interface AddMovieNightEventFormData extends MovieNightEventFormData {
 export interface AddMovieNightEventData extends MovieNightEventFormData {
     CreatedById: string;
     ScheduledAt: string;
+    ConnectionId: string
 }
 
 export interface AddMovieNightEventRes {
     message: string;
     movieNightId: string;
+}
+
+export interface DeleteMovieEventData {
+    Initiator: string;
+    ConnectionId: string
 }

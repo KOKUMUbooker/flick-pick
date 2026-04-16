@@ -22,7 +22,7 @@ export async function DeleteSuggestionFromQueryCache(movieEventId: string, sugge
         if (targetSuggestionIdx < 0) {
             return oldData
         }
-        delete suggestionsToUpdate[targetSuggestionIdx]
+        suggestionsToUpdate.splice(targetSuggestionIdx, 1);
 
         return { movieNightSuggestions: suggestionsToUpdate }
     });
