@@ -28,7 +28,7 @@ export const addMovieNightSchema = z.object({
 export function getDefaultMovieEventFormData(data?: MovieNightEvent): AddMovieNightEventFormData {
     const today = new Date();
     let ScheduledTime = '21:00';
-    let ScheduledDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    let ScheduledDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate() + 1);
 
     if (data && data.scheduledAt) {
         const sDate = new Date(data.scheduledAt);
