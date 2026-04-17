@@ -269,6 +269,7 @@ public class MovieNightController : ControllerBase
                     {
                         s.Movie.TmdbId,
                         s.Movie.Title,
+                        VoteAverage = s.Movie?.VoteAverage ?? 0
                     }
                 },
                 // HasVeto = s.Votes.Any(v => v.VoteType == VoteType.Veto),
@@ -281,12 +282,14 @@ public class MovieNightController : ControllerBase
                 x.Suggestion,
                 Score = x.Upvotes - x.Downvotes,
                 x.Upvotes,
-                x.Downvotes
+                x.Downvotes,
+                MovieTmdbRating = x.Suggestion.Movie.VoteAverage,
             })
-            .OrderByDescending(x => x.Score)       // primary
-            .ThenByDescending(x => x.Upvotes)      // tie-breaker 1
-            .ThenBy(x => x.Downvotes)              // tie-breaker 2
-            .ThenBy(x => x.Suggestion.Created)  // tie-breaker 3 (fairness)
+            .OrderByDescending(x => x.Score)                // primary
+            .ThenByDescending(x => x.Upvotes)               // tie-breaker 1 (Highest upvotes - most popular)
+            .ThenBy(x => x.Downvotes)                       // tie-breaker 2 (Least upvotes - least disliked)
+            .ThenByDescending(x => x.MovieTmdbRating)       // tie-breaker 3 (Better movie based on TMDB rating)
+            .ThenBy(x => x.Suggestion.Created)              // tie-breaker 4 (fairness - Suggestion that got created first)
             .FirstOrDefault();
 
         if (winner == null)
