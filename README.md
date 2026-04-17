@@ -1,239 +1,251 @@
-# 🎬 WatchHive - Stop Debating, Start Watching
+# 🎬 WatchHive - Collaborative Movie Night Decision Making
 
-WatchHive is a decision-making platform that helps friends, couples, and families choose movies together—without the endless group chat debates. We solve the coordination problem so you can focus on the fun part: actually watching.
-
----
-
-## The Problem
-
-### The Movie Night Planning Nightmare:
-
-- **30+ minutes** lost debating in group chats
-- **No fair system** - someone always compromises
-- **Scheduling headaches** across time zones and busy lives
-- **Streaming confusion** - "Who has Netflix? Does anyone have Hulu?"
-- **Lost conversations** - Great discussions disappear in chat history
-
-**Result:** Decision fatigue, frustration, or movie night never happens.
+WatchHive is a full-stack application designed to solve the age-old problem of groups struggling to pick a movie to watch together. With a sophisticated voting engine, real-time updates, and comprehensive group management features, WatchHive transforms chaotic group debates into a fair, transparent, and efficient decision-making process.
 
 ---
 
-## The Solution
+## The Problem Solved
 
-WatchHive transforms chaotic planning into a **simple 4-step process:**
+Groups face several challenges when planning movie nights:
 
-1. **Create** a group for your movie nights
-2. **Suggest & Vote** on movies with fair voting (up/down + veto power)
-3. **Schedule** a time that works for everyone
-4. **Watch & Discuss** with post-movie ratings and conversations
+- **Endless debates** over what to watch
+- **No fair voting system** where everyone has a voice
+- **One person's strong dislike** being overlooked
+- **Disorganized suggestions** scattered across different chats
+- **No clear final decision** mechanism
 
-**We don't stream movies—we help you decide which ones to watch.**
+**WatchHive eliminates these pain points** with a structured, democratic approach that respects everyone's preferences while ensuring a decision gets made.
 
 ---
 
 ## Core Features
 
-### Smart Voting System
+### Intelligent Decision Engine
 
-- **Upvote/downvote** movies in real-time
-- **One veto per person** to prevent absolute no-gos
-- **Live results** so everyone sees what's winning
-- **Streaming availability check** before voting
+The voting system ensures fair movie selection:
 
-### Group Coordination
+| Vote Type    | Value                    | Impact                                    |
+| ------------ | ------------------------ | ----------------------------------------- |
+| **Upvote**   | +1                       | Increases movie's chances                 |
+| **Downvote** | -1                       | Decreases movie's chances                 |
+| **Veto**     | Instant Disqualification | Removes movie from consideration entirely |
 
-- **Persistent groups** for your friend circles
-- **Anonymous voting** - friends can vote without accounts
-- **Easy invites** with shareable links
-- **Member management** with admin controls
+**Key Voting Rules:**
 
-### Decision & Scheduling
+- Each member gets **one suggestion** per movie night event
+- Members can vote on all suggestions (except their own)
+- A single **veto disqualifies** a movie (ensures nobody has to watch what they hate)
+- Vetos can be **undone**, restoring the movie to active voting
+- **Real-time updates** via SignalR keep everyone in sync
 
-- **Calendar integration** to find mutual availability
-- **Time zone support** for long-distance friends
-- **Reminders & notifications** for upcoming movie nights
-- **Watch tracking** - mark when you actually start watching
+### Tie-Breaking Algorithm
 
-### Post-Movie Experience
+When multiple movies have the same score, tie-breakers are applied in this order:
 
-- **Group ratings** (1-10 with averages)
-- **Watch history** - see all movies your group has watched
+```
+Score = (Upvotes × 1) + (Downvotes × -1)
+```
+
+1. **Highest Upvote Count** - Most popular choice wins
+2. **Lowest Downvote Count** - Least disliked wins
+3. **TMDB Rating** - Critically acclaimed movies get priority
+4. **Earliest Suggestion** - First come, first served
+
+### Group Management
+
+**Group Creation & Membership:**
+
+- Create groups and automatically become **Group Admin**
+- Send **invitations** to registered users
+- Users can **search and request** to join groups
+- Admins **approve/reject** join requests
+
+**Admin Powers:**
+
+- Promote members to **co-admin** status
+- Revoke admin privileges (except for group creator)
+- Remove members from groups
+- Create and manage **Movie Night Events**
+
+### Real-Time Communication
+
+**Event-Scoped Chat:**
+
+- Dedicated chat room for each Movie Night Event
+- Real-time messaging via SignalR
+- Discuss suggestions and coordinate viewing plans
+- All conversations stay within event context
+
+**Live Notifications:**
+
+- Snackbar alerts for important events
+- Real-time voting updates
+- Final movie selection announcements
+
+### Authentication & Security
+
+**Complete JWT Authentication Flow:**
+
+- User registration with **email verification**
+- Secure login with JWT tokens
+- Password reset via email
+- "Forgot Password" functionality
+- Protected API endpoints
+
+### Movie Night Event Lifecycle
+
+```mermaid
+graph LR
+    A[Admin Creates Event] --> B[Members Add Suggestions]
+    B --> C[Voting Period]
+    C --> D[Admin Computes Results]
+    D --> E[Movie Selected & Event Locked]
+    E --> F[Group Watches Together]
+```
+
+---
 
 ## Tech Stack
 
 ### Frontend
 
-- **Svelte** + **SvelteKit** - Reactive, fast UI
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** + **shadcn-svelte** - Beautiful, consistent components
-- **Lucide Icons** - Clean iconography
+| Technology         | Purpose                           |
+| ------------------ | --------------------------------- |
+| **Svelte**         | Reactive UI framework             |
+| **TypeScript**     | Type-safe development             |
+| **TanStack Query** | Server state management & caching |
+| **Tailwind CSS**   | Utility-first styling             |
+| **SignalR Client** | Real-time WebSocket connections   |
 
 ### Backend
 
-- **ASP.NET Core** - Robust API framework
-- **Entity Framework Core** - Database ORM
-- **PostgreSQL** - Relational database with JSONB support
-- **SignalR** - Real-time voting and chat
+| Technology                | Purpose                               |
+| ------------------------- | ------------------------------------- |
+| **ASP.NET Core**          | REST API framework                    |
+| **Entity Framework Core** | ORM for database operations           |
+| **PostgreSQL**            | Relational database                   |
+| **SignalR**               | Real-time bidirectional communication |
+| **JWT Bearer**            | Authentication middleware             |
 
-### APIs & Services
+### External APIs
 
-- **TMDB API** - Movie metadata and details
-- **JWT Authentication** - Secure user sessions
+| Service      | Usage                                |
+| ------------ | ------------------------------------ |
+| **TMDB API** | Movie metadata, ratings, and details |
 
 ---
 
-## Quick Start
+## Getting Started
 
 ### Prerequisites
 
-- .NET 8 SDK
-- Docker
-- Git
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [Node.js 18+](https://nodejs.org/) (for frontend development)
+- [Docker](https://www.docker.com/products/docker-desktop/) (for PostgreSQL)
+- [Git](https://git-scm.com/)
 
-### Installation
+### Installation Steps
 
-1. **Clone and setup**
+#### 1. Clone the Repository
 
 ```bash
-git clone <repo-url>
-cd watch-hive
+git clone https://github.com/KOKUMUbooker/watchhive.git
+cd watchhive
 ```
 
-2. **Start PostgreSQL**
+#### 2. Set Up Environment Variables
 
+Some considerations
+
+- Sending emails is done via google SMTP Server.
+  - To get EmailConf\_\_Password & EmailConf\_\_Port, you can look up tutorials on how to get them online.
+- For TMDB\_\_ApiKey, you'll need to create an account with TMDB and obtain an api key from their dashboard.
+- To generate CLIENT_SECRET correctly, I'd recommend using passing a really long string to base64 command eg
+  - `echo -n "<some-really-long-phrase>" | base64`
+
+``bash
+cp env.example .env
+
+````
+
+#### 3. Start PostgreSQL with Docker
 ```bash
 docker compose -f docker-compose-db.yaml up -d
 ```
 
-1. **Install EF Core tools**
+#### 4. Install EF Core Tools
 
 ```bash
 dotnet tool restore
-```
+````
 
-4. **Create & Apply migrations**
-
-```bash
-rm -r Migrations/
-```
-
-If database contained some data first (for local development)
+#### 5. Apply Database Migrations
 
 ```bash
-docker exec -it postgres psql -U admin -d WatchHive -c "DROP SCHEMA app CASCADE";
-```
-
-```bash
+# Create initial migration (NOTE: SKIP IF Migrations folder has files)
 dotnet ef migrations add InitialCreate
+
+# Apply to database
 dotnet ef database update
 ```
 
-5. **Run the API**
+#### 6. Running application as single unit (Building)
 
 ```bash
+# Will build the UI then copy its files into wwwroot so that the server will serve lates UI code
+dotnet publish -c Release
+
+# Run server as usual, and access the UI from the server endpoint
 dotnet run
 ```
 
-OR via docker
+##### Frontend will be available at `http://localhost:5167`
 
-1. Build image
+##### Backed also available at `http://localhost:5173`
 
-```bash
-docker build -t watchhive:1.0 .
-```
+##### **Scalar UI**: `https://localhost:5167/scalar`
 
-2. Start image
+---
 
-```bash
-docker run --env-file .env watchhive:1.0
-```
+OR
 
-OR via docker compose
+### Running the Backend and UI separately
+
+#### 6. Run the Backend API
 
 ```bash
-docker compose -f docker-compose-server.yaml up -d
-```
-
-API runs on `https://localhost:5167`
-
-## API Documentation
-
-Once running, explore the API:
-
-- **Swagger UI**: `https://localhost:5167/swagger`
-- **Interactive docs** with full endpoint details
-
-### Endpoints
-
-## Development
-
-### Useful Commands
-
-```bash
-# Run with auto-reload
+# Development with hot reload
 dotnet watch run
 
-# Create new migration
-dotnet ef migrations add MigrationName
-
-# Update database
-dotnet ef database update
-
-# Stop PostgreSQL
-docker-compose down
-```
-
-### Project Structure
-
-```
-WatchHive/
-├── Models/          # Domain entities & DB context
-├── DTOs/           # Data transfer objects
-├── Services/       # Business logic
-├── Endpoints/      # API endpoints
-├── Migrations/     # Database migrations
-└── Utils/          # Database seeding
-```
-
-## Configuration
-
-Connection string in `appsettings.json`:
-
-```json
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5480;Database=watchhive;Username=admin;Password=secret;"
-  }
-```
-
-## Troubleshooting
-
-**Can't connect to database?**
-
-```bash
-# Check if PostgreSQL is running
-docker ps
-# Should show 'postgres' container
-
-# View logs
-docker-compose logs postgres
-```
-
-**Migrations not working?**
-
-```bash
-# Reset everything
-docker-compose down -v
-docker-compose up -d
-rm -rf Migrations/
-dotnet ef migrations add InitialCreate
-dotnet ef database update
-```
-
-**API won't start?**
-
-```bash
-# Clean and rebuild
-dotnet clean
-dotnet build
+# Or standard run
 dotnet run
 ```
+
+The API will be available at:
+
+- **HTTP**: `http://localhost:5167`
+- **Scalar UI**: `https://localhost:5167/scalar`
+
+#### 7. Run the Frontend (Separate Terminal)
+
+- To allow the UI to communicate with the backend, change this file `watch-hive/UI/src/api/urls.ts` url variable to use localhost ie
+
+```js
+// ONLY IN DEV (If running backend and UI separately)
+export const API_BASE_URL = 'http://localhost:5167';
+// FOR PROD OR running app as a single unit - leave empty & let it use relative urls
+// export const API_BASE_URL = "";
+```
+
+```bash
+cd UI
+npm install
+npm run dev
+```
+
+##### Frontend will be available at `http://localhost:5173`
+
+### Useful tools
+
+- `dbReset.sh` - For droping the database and applying the latest migration to the db
+- `build-artifact.sh` - For creating an artifact for deployment to monsterasp.net
