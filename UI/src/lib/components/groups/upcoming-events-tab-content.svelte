@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Calendar, Plus, RefreshCw } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { onMount } from 'svelte';
 	import { apiFetch, QUERY_KEYS } from '../../../api';
 	import { API_BASE_URL } from '../../../api/urls';
 	import { getAppUser } from '../../../store';
