@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Clock, MessageSquare, RefreshCw, Star } from '@lucide/svelte';
+	import { Clock, EditIcon, MessageSquare, RefreshCw, Star, Trash } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
 	import { QUERY_KEYS, apiFetch } from '../../../api';
@@ -10,12 +10,18 @@
 	import { Card, CardContent } from '../ui/card';
 	import Skeleton from '../ui/skeleton/skeleton.svelte';
 	import { TabsContent } from '../ui/tabs';
+	import CardHeader from '../ui/card/card-header.svelte';
+	import CardTitle from '../ui/card/card-title.svelte';
+	import Separator from '../ui/separator/separator.svelte';
+	import PastEventCard from './past-event-card.svelte';
 	interface PastEventsTabContentProps {
 		selectedGroup: DBGroup | null;
 		openEventChat: (event: MovieNightEvent) => void;
 	}
 
 	let { selectedGroup, openEventChat }: PastEventsTabContentProps = $props();
+	let showAddGroupDialog = $state(false);
+	let showDeleteWarnDialog = $state(false);
 	let user = getAppUser();
 	let _movieEventsQuery = createQuery<
 		null, // variables type
@@ -58,75 +64,12 @@
 	{:else if movieEventsQuery.data != undefined}
 		{#if movieEventsQuery.data.movieEvents.length > 0}
 			<div class="grid gap-4 md:grid-cols-2">
-				{#each movieEventsQuery.data.movieEvents as event (event.id)}
-					<Card class="group transition-all hover:shadow-lg">
-						<CardContent class="p-6">
-							<div class="mb-4 flex items-start justify-between">
-								<div class="flex items-center gap-3">
-									<img
-										src={`https://image.tmdb.org/t/p/w92${event.selectedMovie?.posterPath}`}
-										alt={event.selectedMovie?.title}
-										class="h-16 w-12 rounded object-cover"
-									/>
-									<div>
-										<h3 class="text-lg font-semibold">{event.selectedMovie?.title}</h3>
-										<p class="text-sm text-muted-foreground">
-											{new Date(event.scheduledAt).toLocaleDateString('en-US', {
-												month: 'short',
-												day: 'numeric',
-												year: 'numeric'
-											})}
-										</p>
-									</div>
-								</div>
-							</div>
-
-							<div class="space-y-3">
-								<div class="flex items-center justify-between">
-									<span class="text-sm text-muted-foreground">Group Rating</span>
-
-									<div class="flex items-center gap-1">
-										{#if event.totalRatings > 0}
-											{#each [1, 2, 3, 4, 5] as i (i)}
-												<Star
-													class={`h-4 w-4 ${
-														i < event.averageRating
-															? 'fill-primary text-primary'
-															: 'text-muted-foreground'
-													}`}
-												/>
-											{/each}
-
-											<span class="ml-1 text-sm font-medium">
-												{event.averageRating.toFixed(1)} ({event.totalRatings})
-											</span>
-										{:else}
-											{#each [1, 2, 3, 4, 5] as i (i)}
-												<Star class="h-4 w-4 text-muted-foreground" />
-											{/each}
-											<span class="ml-1 text-sm text-muted-foreground"> No ratings </span>
-										{/if}
-									</div>
-								</div>
-
-								<div class="flex items-center gap-2 pt-2">
-									<Button
-										variant="outline"
-										size="sm"
-										class="flex-1"
-										onclick={() => openEventChat(event)}
-									>
-										<MessageSquare class="mr-2 h-4 w-4" />
-										Chat
-									</Button>
-									<Button variant="outline" size="sm" class="flex-1">
-										<Star class="mr-2 h-4 w-4" />
-										Rate
-									</Button>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
+				{#each movieEventsQuery.data.movieEvents as event, i (event.id)}
+					<PastEventCard
+						bind:event={movieEventsQuery.data.movieEvents[i]}
+						{openEventChat}
+						{selectedGroup}
+					/>
 				{/each}
 			</div>
 		{:else}

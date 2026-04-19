@@ -15,7 +15,7 @@ public class MovieNightEventService
             ScheduledAt = me.ScheduledAt,
             Description = me.Description,
             TotalRatings = me.MovieNightRatings.Count,
-           AverageRating = me.MovieNightRatings
+            AverageRating = me.MovieNightRatings
                 .Select(r => (double?)r.Rating)
                 .Average() ?? 0,
         };

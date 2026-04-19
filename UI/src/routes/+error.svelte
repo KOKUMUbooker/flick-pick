@@ -15,7 +15,6 @@
 			: 'Something went wrong';
 </script>
 
-/* eslint-disable svelte/valid-prop-names-in-kit-pages */
 <div class="flex min-h-screen flex-col items-center justify-center gap-6 bg-background p-4">
 	<div class="text-center">
 		<div class="mb-4 text-7xl font-bold text-destructive">{status}</div>

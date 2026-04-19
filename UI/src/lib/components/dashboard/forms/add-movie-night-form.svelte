@@ -85,6 +85,7 @@
 	function validateSheduleDate() {
 		const field: keyof typeof formData = 'ScheduledAt';
 		const scheduledAt = combineDateTime(formData.ScheduledDate, formData.ScheduledTime);
+		if (scheduledAt) formData.ScheduledAt = scheduledAt;
 		const partial = addMovieNightSchema.pick({ [field]: true } as object);
 		const result = partial.safeParse({ [field]: scheduledAt });
 

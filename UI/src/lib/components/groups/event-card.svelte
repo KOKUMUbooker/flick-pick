@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Calculator, Edit, MessageSquare, Plus, Trash } from '@lucide/svelte';
+	import { Calculator, Edit, MessageSquare, Plus, Trash, Undo } from '@lucide/svelte';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { QUERY_KEYS, apiFetch, queryClient } from '../../../api';
@@ -42,6 +42,7 @@
 	let showAddMovieNightDialog = $state(false);
 	let showDeleteWarnDialog = $state(false);
 	let showComputeResultsDialog = $state(false);
+	let showUndoSelectionsDialog = $state(false);
 	function getEventStatus(event: MovieNightEvent): {
 		label: string;
 		variant: 'default' | 'outline' | 'destructive' | 'secondary';
@@ -120,11 +121,26 @@
 		},
 		onSuccess: async (res) => {
 			await UpdateMovieNightEventToQueryCache(selectedGroup?.id || '', res.movieEvent);
-			// await queryClient.invalidateQueries({
-			// 	queryKey: [QUERY_KEYS.MOVIE_NIGHT_EVENTS + selectedGroup?.id + 'upcoming']
-			// });
 		}
 	}));
+
+	let undoSelectionMutation = createMutation<
+		{ message: string; movieEvent: MovieNightEvent }, // response type
+		Error, // error type
+		{ Initiator: string; ConnectionId: string } // variables type
+	>(() => ({
+		mutationFn: async (data) => {
+			return apiFetch(`${API_BASE_URL}/api/movieEvent/${event.id}/undo-selection`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+		},
+		onSuccess: async (res) => {
+			await UpdateMovieNightEventToQueryCache(selectedGroup?.id || '', res.movieEvent);
+		}
+	}));
+
 	const onShowDelWarningOnchange = (show: boolean) => {
 		showDeleteWarnDialog = show;
 	};
@@ -155,11 +171,27 @@
 		toast.success(res.message, { richColors: true });
 		onShowComputeResultsOnchange(false);
 	};
+	const onProceedUndoSelection = async () => {
+		if (!user) return toast.error('Please log in', { richColors: true });
+		if (!hubIsDisconnected()) {
+			await movieNightHub.join(event.id);
+		}
+
+		const res = await undoSelectionMutation.mutateAsync({
+			Initiator: user.id,
+			ConnectionId: appState.hubConnection.connectionId || ''
+		});
+		toast.success(res.message, { richColors: true });
+		onShowUndoSelectionOnchange(false);
+	};
 
 	$effect(() => {
 		(async () => {
-			if (hubIsConnected()) {
+			if (hubIsDisconnected()) {
 				// console.log(`${user?.email} is joining event ${event.id} ...`);
+				if (appState.hubConnection.connectionId) {
+					await movieNightHub.leave(appState.hubConnection.connectionId);
+				}
 				await movieNightHub.join(event.id);
 			}
 		})();
@@ -172,10 +204,25 @@
 	const onShowComputeResultsOnchange = (show: boolean) => {
 		showComputeResultsDialog = show;
 	};
+	const onShowUndoSelectionOnchange = (show: boolean) => {
+		showUndoSelectionsDialog = show;
+	};
 
 	let hasSuggestionVotesBeenFetched = $state(false);
 </script>
 
+<CustomDialog
+	header={{ title: 'Revert movie selection' }}
+	bind:open={showUndoSelectionsDialog}
+	onOpenChange={onShowUndoSelectionOnchange}
+	isLoading={undoSelectionMutation.isPending}
+	actions={{ onProceed: onProceedUndoSelection }}
+>
+	<p>
+		Are you sure you want to undo the movie selection ? This will reset the selected option and will
+		unlock the movie event to allow new movie suggestions and voting.
+	</p>
+</CustomDialog>
 <CustomDialog
 	header={{ title: 'Compute Event Results' }}
 	bind:open={showComputeResultsDialog}
@@ -341,10 +388,17 @@
 				Event Chat
 			</Button>
 			{#if selectedGroup?.isUserAdmin}
-				<Button size="sm" onclick={() => (showComputeResultsDialog = true)}>
-					<Calculator />
-					Compute results
-				</Button>
+				{#if !event.selectedMovie}
+					<Button size="sm" onclick={() => (showComputeResultsDialog = true)}>
+						<Calculator />
+						Compute results
+					</Button>
+				{:else}
+					<Button size="sm" onclick={() => (showUndoSelectionsDialog = true)}>
+						<Undo />
+						Undo selection
+					</Button>
+				{/if}
 			{/if}
 		</div>
 	</CardFooter>
