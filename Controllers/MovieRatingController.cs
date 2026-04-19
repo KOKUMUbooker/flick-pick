@@ -37,6 +37,13 @@ public class MovieRatingController : ControllerBase
             return BadRequest(new CustomError { Message = "Invalid user id provided" });
         }
 
+        // Check if user already rated
+        var alreadyRated = await _dbContext.MovieNightRatings
+            .AnyAsync(mr => mr.UserId == parsedUserId && mr.MovieNightEventId == parsedEventId);
+        if (alreadyRated)
+        {
+            return BadRequest(new CustomError{ Message = "You already rated this movie event" });
+        }
 
         var movieEvent = await _dbContext.MovieNightEvents
             .Where(me => me.Id == parsedEventId)
@@ -55,12 +62,13 @@ public class MovieRatingController : ControllerBase
 
         var newRating = new MovieNightRating
         {
-            Comment = createDto.Comment,
+            Comment = createDto.Comment ?? "",
             Rating = createDto.Rating,
             UserId = parsedUserId,
+            MovieNightEventId = parsedEventId
         };
 
-        await _dbContext.AddAsync(newRating);
+        await _dbContext.MovieNightRatings.AddAsync(newRating);
         await _dbContext.SaveChangesAsync();
 
         var result = await _dbContext.MovieNightRatings
@@ -81,8 +89,8 @@ public class MovieRatingController : ControllerBase
         };
 
         await _hubContext.Clients
-            .GroupExcept(movieEventId.ToString(), new[] {createDto.ConnectionId} )
-            .SendAsync("movieEvent", movieEvent.GroupId, partialMovieEvent, "rate", parsedEventId);
+            .GroupExcept(movieEventId, new[] {createDto.ConnectionId} )
+            .SendAsync("movieEvent", movieEvent.GroupId, partialMovieEvent, "rate", parsedUserId.ToString());
 
         return Ok(new {message = "Movie rating added successfully", movieEvent = partialMovieEvent });
     }
