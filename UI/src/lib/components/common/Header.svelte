@@ -56,7 +56,7 @@
 </script>
 
 <LoadingOverlay show={logoutMutation.isPending} message="Logging you out..." spinnerSize="md" />
-<header class="fixed top-0 z-10 w-full border-b border-border bg-background/80 backdrop-blur-sm">
+<header class="fixed top-0 z-25 w-full border-b border-border bg-background/80 backdrop-blur-sm">
 	<div class="container mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex h-16 items-center justify-between">
 			<!-- Logo -->
