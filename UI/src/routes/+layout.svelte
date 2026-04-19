@@ -1,5 +1,5 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/logo.png';
 	import Header from '@/components/common/Header.svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { QueryClientProvider } from '@tanstack/svelte-query';

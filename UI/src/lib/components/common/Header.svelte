@@ -4,15 +4,9 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/stores';
 	import type { RouteId } from '$app/types';
+	import logo from '$lib/assets/logo.png';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import {
-		Home,
-		LayoutDashboard,
-		LogIn,
-		MessageCircleQuestionMark,
-		Play,
-		User
-	} from '@lucide/svelte';
+	import { Home, LayoutDashboard, LogIn, MessageCircleQuestionMark, User } from '@lucide/svelte';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import { createMutation } from '@tanstack/svelte-query';
@@ -62,11 +56,12 @@
 			<!-- Logo -->
 			<div class="flex items-center">
 				<a href={resolve('/')} class="flex items-center gap-3">
-					<div
+					<!-- <div
 						class="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-primary to-primary/80"
 					>
 						<Play class="h-4 w-4 text-primary-foreground" />
-					</div>
+					</div> -->
+					<img src={logo} alt="watch hive logo" class="h-16" />
 					<span class="text-xl font-bold tracking-tight">WatchHive</span>
 				</a>
 			</div>
