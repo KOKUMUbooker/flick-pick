@@ -525,17 +525,11 @@
 						Create your first group and experience fair movie selection today.
 					</p>
 					<div class="flex flex-col justify-center gap-4 sm:flex-row">
-						<Button size="lg" class="h-14 rounded-full px-8 text-base" href="/signup">
+						<Button size="lg" class="h-14 rounded-2xl px-8 text-base" href="/signup">
 							Get Started Free
 							<ArrowRight class="ml-2 h-5 w-5" />
 						</Button>
-						<Button size="lg" variant="outline" class="h-14 rounded-full px-8" href="/groups">
-							Browse Groups
-						</Button>
 					</div>
-					<p class="mt-6 text-sm text-muted-foreground">
-						No credit card required • Create unlimited groups
-					</p>
 				</div>
 			</div>
 		</div>
