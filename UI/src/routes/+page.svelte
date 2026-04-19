@@ -105,7 +105,9 @@
 			style="background-image: url('{movieBg}'); background-size: cover; background-position: center; background-repeat: no-repeat;"
 		>
 			<!-- Dark overlay for better text readability -->
-			<div class="absolute inset-0 bg-background/70 backdrop-blur-[2px]"></div>
+			<div
+				class="absolute inset-0 bg-background/60 backdrop-blur-[1px] dark:bg-background/70"
+			></div>
 		</div>
 
 		<!-- Hero Section - Content sits above the fixed background -->
@@ -185,7 +187,7 @@
 						class="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
 					>
 						<div
-							class={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+							class={`absolute inset-0 bg-linear-to-br ${feature.color} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
 						></div>
 						<div class="relative">
 							<div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
@@ -256,7 +258,7 @@
 	<section class="relative z-20 bg-background px-4 py-20">
 		<div class="container mx-auto max-w-4xl">
 			<div
-				class="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/5 to-secondary/5 p-8 md:p-12"
+				class="relative overflow-hidden rounded-3xl border border-border bg-linear-to-br from-primary/5 to-secondary/5 p-8 md:p-12"
 			>
 				<div class="relative z-10 text-center">
 					<h2 class="mb-4 text-3xl font-bold sm:text-4xl">Ready to end the movie night debates?</h2>
@@ -264,14 +266,11 @@
 						Join groups already using WatchHive to pick movies fairly and efficiently.
 					</p>
 					<div class="flex flex-col justify-center gap-4 sm:flex-row">
-						<Button size="lg" class="h-14 rounded-full px-8 text-base" href="/signup">
+						<Button size="lg" class="h-14 rounded-2xl px-8 text-base" href="/signup">
 							Get Started Free
 							<ArrowRight class="ml-2 h-5 w-5" />
 						</Button>
 					</div>
-					<p class="mt-6 text-sm text-muted-foreground">
-						No credit card required • Create unlimited groups
-					</p>
 				</div>
 			</div>
 		</div>
