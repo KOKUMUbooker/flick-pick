@@ -170,23 +170,29 @@ Some considerations
 - To generate CLIENT_SECRET correctly, I'd recommend using passing a really long string to base64 command eg
   - `echo -n "<some-really-long-phrase>" | base64`
 
-``bash
+```bash
 cp env.example .env
-
-````
+```
 
 #### 3. Start PostgreSQL with Docker
+
 ```bash
 docker compose -f docker-compose-db.yaml up -d
 ```
 
-#### 4. Install EF Core Tools
+### 4. Install Project Dependencies
+
+```bash
+dotnet restore
+```
+
+#### 5. Install EF Core Tools
 
 ```bash
 dotnet tool restore
-````
+```
 
-#### 5. Apply Database Migrations
+#### 6. Apply Database Migrations
 
 ```bash
 # Create initial migration (NOTE: SKIP IF Migrations folder has files)
@@ -196,7 +202,7 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-#### 6. Running application as single unit (Building)
+#### 7. Running application as single unit (Building)
 
 ```bash
 # Will build the UI then copy its files into wwwroot so that the server will serve lates UI code
@@ -218,7 +224,7 @@ OR
 
 ### Running the Backend and UI separately
 
-#### 6. Run the Backend API
+#### 7. Run the Backend API
 
 ```bash
 # Development with hot reload
@@ -233,7 +239,7 @@ The API will be available at:
 - **HTTP**: `http://localhost:5167`
 - **Scalar UI**: `https://localhost:5167/scalar`
 
-#### 7. Run the Frontend (Separate Terminal)
+#### 8. Run the Frontend (Separate Terminal)
 
 - To allow the UI to communicate with the backend, change this file `watch-hive/UI/src/api/urls.ts` url variable to use localhost ie
 
