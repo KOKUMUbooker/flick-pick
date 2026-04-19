@@ -16,7 +16,7 @@
 	import { toast } from 'svelte-sonner';
 	import { movieNightHub } from '../../../hubs';
 	import { hubIsDisconnected, appState, getAppUser } from '../../../store';
-	import DialogPortal from '../ui/dialog/dialog-portal.svelte';
+	import RateMovieNightForm from '../dashboard/forms/rate-movie-night-form.svelte';
 
 	interface PastEventCardProps {
 		selectedGroup: DBGroup | null;
@@ -29,9 +29,13 @@
 
 	let showAddMovieNightDialog = $state(false);
 	let showDeleteWarnDialog = $state(false);
+	let showRateMovieDialog = $state(false);
 
 	function onShowMovieNightDialogOpenChange(show: boolean) {
 		showAddMovieNightDialog = show;
+	}
+	function onShowRateMovieNightDialogOpenChange(show: boolean) {
+		showRateMovieDialog = show;
 	}
 	let movieEventDeleteMutation = createMutation<
 		{ message: string; movieEvent: { id: string } }, // response type
@@ -91,6 +95,13 @@
 		bind:defaultMovieEvent={event}
 		{selectedGroup}
 		onOpenChange={onShowMovieNightDialogOpenChange}
+	/>
+</CustomDialog>
+<CustomDialog bind:open={showRateMovieDialog} onOpenChange={onShowRateMovieNightDialogOpenChange}>
+	<RateMovieNightForm
+		movieEvent={event}
+		{selectedGroup}
+		onOpenChange={onShowRateMovieNightDialogOpenChange}
 	/>
 </CustomDialog>
 <Card class="group transition-all hover:shadow-lg">
@@ -169,7 +180,12 @@
 					<MessageSquare class="mr-2 h-4 w-4" />
 					Chat
 				</Button>
-				<Button variant="outline" size="sm" class="flex-1">
+				<Button
+					variant="outline"
+					size="sm"
+					class="flex-1"
+					onclick={() => (showRateMovieDialog = true)}
+				>
 					<Star class="mr-2 h-4 w-4" />
 					Rate
 				</Button>
