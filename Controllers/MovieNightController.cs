@@ -218,6 +218,53 @@ public class MovieNightController : ControllerBase
             return Ok(new { movieEvents });
     }
 
+     [HttpPost("movieEvent/{movieEventId}/undo-selection")]
+    public async Task<IActionResult> UndoMovieSelection([FromRoute] string movieEventId, [FromBody] ComputeEventResultDto undoDto)
+    {
+        if (!Guid.TryParse(movieEventId, out Guid parsedMovieEventId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid movieEventId provided" });
+        }
+
+        if (!Guid.TryParse(undoDto.Initiator, out Guid parsedInitiatorId))
+        {
+            return BadRequest(new CustomError { Message = "Invalid initiatorId provided" });
+        }
+
+       var movieEvent = await _dbContext.MovieNightEvents
+            .Where(me => me.Id == parsedMovieEventId)
+            .Include(me => me.SelectedMovie)
+            .Include(me => me.MovieNightRatings)
+            .FirstOrDefaultAsync();
+
+        if (movieEvent == null)
+        {
+            return BadRequest(new CustomError{ Message = "The movie event does not exist" });
+        }
+
+        var isAdmin = await _dbContext.UserGroups
+            .AnyAsync(ug => ug.UserId == parsedInitiatorId && ug.IsAdmin && ug.GroupId == movieEvent.GroupId);
+        
+        if (!isAdmin)
+        {
+            return BadRequest(new CustomError {Message = "Only group admins are allowed to perform this action"} );
+        }
+
+        movieEvent.SelectedMovieId = null;
+        movieEvent.IsLocked = false;
+
+        await _dbContext.SaveChangesAsync();
+         var movieEventDto = MovieNightEventService.ToMovieNightEventDto(movieEvent);
+        if (undoDto.ConnectionId != null)
+        {
+            await _hubContext.Clients
+                .GroupExcept(movieEvent.Id.ToString(), new[] {undoDto.ConnectionId} )
+                .SendAsync("movieEvent", movieEvent.GroupId, movieEventDto, "edit", undoDto.Initiator);
+        }
+
+        return Ok(new { message="Movie event updated successfully", movieEvent = movieEventDto  });
+    }
+
     [HttpPost("movieEvent/{movieEventId}/compute-results")]
     public async Task<IActionResult> ComputeMovieEventResults([FromRoute] string movieEventId, [FromBody] ComputeEventResultDto resultsDto)
     {
