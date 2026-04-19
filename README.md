@@ -18,6 +18,12 @@ Groups face several challenges when planning movie nights:
 
 ---
 
+## Project screenshot
+
+<img src="./ReadmeAssets/project-demo.png">
+
+---
+
 ## Core Features
 
 ### Intelligent Decision Engine
@@ -112,6 +118,7 @@ graph LR
 | Technology         | Purpose                           |
 | ------------------ | --------------------------------- |
 | **Svelte**         | Reactive UI framework             |
+| **Svelte-Shadcn**  | UI Component Library              |
 | **TypeScript**     | Type-safe development             |
 | **TanStack Query** | Server state management & caching |
 | **Tailwind CSS**   | Utility-first styling             |
@@ -158,7 +165,7 @@ cd watchhive
 Some considerations
 
 - Sending emails is done via google SMTP Server.
-  - To get EmailConf\_\_Password & EmailConf\_\_Port, you can look up tutorials on how to get them online.
+  - To get EmailConf\_\_Password & EmailConf\_\_Port, you can get them from a google gmail account. I'd recommend looking up "Setting up an SMTP server using gmail account" if unsure.
 - For TMDB\_\_ApiKey, you'll need to create an account with TMDB and obtain an api key from their dashboard.
 - To generate CLIENT_SECRET correctly, I'd recommend using passing a really long string to base64 command eg
   - `echo -n "<some-really-long-phrase>" | base64`
@@ -245,7 +252,7 @@ npm run dev
 
 ##### Frontend will be available at `http://localhost:5173`
 
-### Useful tools
+### Useful Scripts
 
 - `dbReset.sh` - For droping the database and applying the latest migration to the db
 - `build-artifact.sh` - For creating an artifact for deployment to monsterasp.net
