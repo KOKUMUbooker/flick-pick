@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EditIcon, MessageSquare, Star, Trash } from '@lucide/svelte';
+	import { EditIcon, MessageSquare, Star, Trash, X } from '@lucide/svelte';
 	import type { DBGroup, MovieNightEvent } from '../../../types';
 	import Button from '../ui/button/button.svelte';
 	import { Card, CardContent } from '../ui/card';
@@ -108,16 +108,25 @@
 		{/if}
 	</CardHeader>
 	<Separator />
-	<CardContent class="p-6">
+	<CardContent class="p-6 pt-0">
+		<h6 class="mb-2">Selected Movie</h6>
 		<div class="mb-4 flex items-start justify-between">
 			<div class="flex items-center gap-3">
-				<img
-					src={`https://image.tmdb.org/t/p/w92${event.selectedMovie?.posterPath}`}
-					alt={event.selectedMovie?.title}
-					class="h-16 w-12 rounded object-cover"
-				/>
+				{#if event.selectedMovie}
+					<img
+						src={`https://image.tmdb.org/t/p/w92${event.selectedMovie?.posterPath}`}
+						alt={event.selectedMovie?.title}
+						class="h-16 w-12 rounded object-cover"
+					/>
+				{:else}
+					<div class="flex h-16 w-12 items-center justify-center rounded bg-accent object-cover">
+						<X />
+					</div>
+				{/if}
 				<div>
-					<h3 class="text-lg font-semibold">{event.selectedMovie?.title}</h3>
+					<h3 class="text-lg font-semibold">
+						{event.selectedMovie ? event.selectedMovie?.title : '[NO MOVIE SELECTED]'}
+					</h3>
 					<p class="text-sm text-muted-foreground">
 						{new Date(event.scheduledAt).toLocaleDateString('en-US', {
 							month: 'short',
