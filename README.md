@@ -18,6 +18,12 @@ Groups face several challenges when planning movie nights:
 
 ---
 
+## Project screenshot
+
+<img src="./ReadmeAssets/project-demo.png">
+
+---
+
 ## Core Features
 
 ### Intelligent Decision Engine
@@ -112,6 +118,7 @@ graph LR
 | Technology         | Purpose                           |
 | ------------------ | --------------------------------- |
 | **Svelte**         | Reactive UI framework             |
+| **Svelte-Shadcn**  | UI Component Library              |
 | **TypeScript**     | Type-safe development             |
 | **TanStack Query** | Server state management & caching |
 | **Tailwind CSS**   | Utility-first styling             |
@@ -158,28 +165,34 @@ cd watchhive
 Some considerations
 
 - Sending emails is done via google SMTP Server.
-  - To get EmailConf\_\_Password & EmailConf\_\_Port, you can look up tutorials on how to get them online.
+  - To get EmailConf\_\_Password & EmailConf\_\_Port, you can get them from a google gmail account. I'd recommend looking up "Setting up an SMTP server using gmail account" if unsure.
 - For TMDB\_\_ApiKey, you'll need to create an account with TMDB and obtain an api key from their dashboard.
 - To generate CLIENT_SECRET correctly, I'd recommend using passing a really long string to base64 command eg
   - `echo -n "<some-really-long-phrase>" | base64`
 
-``bash
+```bash
 cp env.example .env
-
-````
+```
 
 #### 3. Start PostgreSQL with Docker
+
 ```bash
 docker compose -f docker-compose-db.yaml up -d
 ```
 
-#### 4. Install EF Core Tools
+### 4. Install Project Dependencies
+
+```bash
+dotnet restore
+```
+
+#### 5. Install EF Core Tools
 
 ```bash
 dotnet tool restore
-````
+```
 
-#### 5. Apply Database Migrations
+#### 6. Apply Database Migrations
 
 ```bash
 # Create initial migration (NOTE: SKIP IF Migrations folder has files)
@@ -189,7 +202,7 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-#### 6. Running application as single unit (Building)
+#### 7. Running application as single unit (Building)
 
 ```bash
 # Will build the UI then copy its files into wwwroot so that the server will serve lates UI code
@@ -211,7 +224,7 @@ OR
 
 ### Running the Backend and UI separately
 
-#### 6. Run the Backend API
+#### 7. Run the Backend API
 
 ```bash
 # Development with hot reload
@@ -226,7 +239,7 @@ The API will be available at:
 - **HTTP**: `http://localhost:5167`
 - **Scalar UI**: `https://localhost:5167/scalar`
 
-#### 7. Run the Frontend (Separate Terminal)
+#### 8. Run the Frontend (Separate Terminal)
 
 - To allow the UI to communicate with the backend, change this file `watch-hive/UI/src/api/urls.ts` url variable to use localhost ie
 
@@ -245,7 +258,7 @@ npm run dev
 
 ##### Frontend will be available at `http://localhost:5173`
 
-### Useful tools
+### Useful Scripts
 
 - `dbReset.sh` - For droping the database and applying the latest migration to the db
 - `build-artifact.sh` - For creating an artifact for deployment to monsterasp.net
