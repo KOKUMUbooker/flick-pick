@@ -1,8 +1,8 @@
-import { AddMovieNightEventToQueryCache, DeleteMovieNightEventFromQueryCache, UpdateMovieNightEventToQueryCache } from "../../api/query-cache-crud";
+import { AddMovieNightEventToQueryCache, DeleteMovieNightEventFromQueryCache, UpdateMovieNightEventRatingDataToQueryCache, UpdateMovieNightEventToQueryCache } from "../../api/query-cache-crud";
 import { appState } from "../../store";
 import type { MovieNightEvent } from "../../types";
 
-export type MovieNightEventActions = "create" | "delete" | "edit"
+export type MovieNightEventActions = "create" | "delete" | "edit" | "rate"
 
 export function movieNightEventListeners() {
     appState.hubConnection.off("movieEvent")
@@ -16,6 +16,9 @@ export function movieNightEventListeners() {
         }
         else if (action === "edit") {
             await UpdateMovieNightEventToQueryCache(movieEventId, movieEvent, initiatorId)
+        }
+        else if (action === "rate") {
+            await UpdateMovieNightEventRatingDataToQueryCache(movieEventId, movieEvent)
         }
     });
 }
