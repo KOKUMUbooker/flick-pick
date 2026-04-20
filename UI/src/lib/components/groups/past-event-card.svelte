@@ -17,6 +17,7 @@
 	import { movieNightHub } from '../../../hubs';
 	import { hubIsDisconnected, appState, getAppUser } from '../../../store';
 	import RateMovieNightForm from '../dashboard/forms/rate-movie-night-form.svelte';
+	import StarRating from '../common/star-rating.svelte';
 
 	interface PastEventCardProps {
 		selectedGroup: DBGroup | null;
@@ -154,24 +155,8 @@
 				<span class="text-sm text-muted-foreground">Group Rating</span>
 
 				<div class="flex items-center gap-1">
-					{#if event.totalRatings > 0}
-						{#each [1, 2, 3, 4, 5] as i (i)}
-							<Star
-								class={`h-4 w-4 ${
-									i < event.averageRating ? 'fill-primary text-primary' : 'text-muted-foreground'
-								}`}
-							/>
-						{/each}
-
-						<span class="ml-1 text-sm font-medium">
-							{event.averageRating.toFixed(1)} ({event.totalRatings})
-						</span>
-					{:else}
-						{#each [1, 2, 3, 4, 5] as i (i)}
-							<Star class="h-4 w-4 text-muted-foreground" />
-						{/each}
-						<span class="ml-1 text-sm text-muted-foreground"> No ratings </span>
-					{/if}
+					<StarRating rating={event.averageRating} size={16}/>
+					<span class="ml-1 text-sm text-muted-foreground">{event.totalRatings > 0 ? `(${event.totalRatings})`: ""}  </span>
 				</div>
 			</div>
 
