@@ -2,9 +2,11 @@ namespace WatchHive.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using WatchHive.DTOs;
 using WatchHive.Models;
 
+[Authorize]
 [ApiController]
 [Route("/api/")]
 public class UserGroupController : ControllerBase

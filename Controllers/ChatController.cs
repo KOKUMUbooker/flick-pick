@@ -3,10 +3,12 @@ namespace WatchHive.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 using WatchHive.DTOs;
 using WatchHive.Models;
 using WatchHive.Hubs;
 
+[Authorize]
 [ApiController]
 [Route("/api/movie-night/")]
 public class ChatController : ControllerBase

@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using WatchHive.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using WatchHive.Services;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 [ApiController]
 [Route("/api/")]
 public class MovieNightController : ControllerBase

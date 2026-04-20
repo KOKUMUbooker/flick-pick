@@ -5,8 +5,10 @@ using TMDbLib.Client;
 using WatchHive.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 // using System.Text.Json;
 
+[Authorize]
 [ApiController]
 [Route("/api/tmdb/")]
 public class TMDBController : ControllerBase
