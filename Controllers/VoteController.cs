@@ -3,11 +3,13 @@ namespace WatchHive.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using WatchHive.DTOs;
 using WatchHive.Hubs;
 using WatchHive.Models;
 using WatchHive.Services;
 
+[Authorize]
 [ApiController]
 [Route("/api/")]
 public class VoteController : ControllerBase

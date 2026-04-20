@@ -45,6 +45,7 @@ public class Program
 
         // Configure JWT Bearer Authentication
         builder.Services.AddJwtAuthentication(builder.Configuration, appClient);
+        builder.Services.AddAuthorization();
 
         // Configure a specific CORS policy
         builder.Services.AddCors(options =>

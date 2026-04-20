@@ -38,9 +38,20 @@ public static class AuthenticationExtensions
                     }
                 };
 
- 
                 options.Events = new JwtBearerEvents
                 {
+                    OnMessageReceived = context =>
+                    {
+                        var token = context.Request.Cookies["accessToken"];
+
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    
                     OnTokenValidated = async context =>
                     {
                         var clientId = context.Principal?.FindFirst("clientId")?.Value;

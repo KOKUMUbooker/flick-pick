@@ -6,7 +6,9 @@ using WatchHive.DTOs;
 using Microsoft.EntityFrameworkCore;
 using WatchHive.Hubs;
 using Microsoft.AspNetCore.SignalR;
- 
+ using Microsoft.AspNetCore.Authorization;
+
+[Authorize]
 [ApiController]
 [Route("/api")]
 public class MovieRatingController : ControllerBase

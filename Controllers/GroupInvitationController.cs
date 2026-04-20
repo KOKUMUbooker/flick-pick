@@ -1,10 +1,12 @@
 namespace WatchHive.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WatchHive.DTOs;
 using WatchHive.Models;
 
+[Authorize]
 [ApiController]
 [Route("/api/")]
 public class GroupInvitationController : ControllerBase
