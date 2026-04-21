@@ -50,7 +50,14 @@
 	<div class="flex h-16 items-center justify-between border-b border-border px-4">
 		<div class="flex flex-row items-center gap-2">
 			<h2 class="text-lg font-semibold">Your Groups</h2>
-			<Button variant="ghost" onclick={refetchGroups} disabled={isFetching || isPending}>
+			<Button
+				variant="ghost"
+				onclick={() => {
+					selectedGroup = null;
+					refetchGroups();
+				}}
+				disabled={isFetching || isPending}
+			>
 				<RefreshCw />
 			</Button>
 		</div>
@@ -74,7 +81,7 @@
 
 	<!-- Groups List -->
 	<div class="max-h-40vh flex-1 overflow-y-auto p-2">
-		{#if isPending}
+		{#if isPending || isFetching}
 			<div class="grid space-y-2">
 				{#each [1, 2, 3, 4, 5] as count (count)}
 					<Skeleton class="h-16" />

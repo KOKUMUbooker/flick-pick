@@ -38,7 +38,7 @@ public class MovieNightController : ControllerBase
         var groupExists = await _dbContext.Groups.FindAsync(groupId);
         if (groupExists == null)
         {
-            return NotFound(new CustomError{ Message = "The movie night's group does not exist" });
+            return NotFound(new CustomError{ Message = "The movie night's group does not exist, please reload the page" });
         }
 
         var userExist = await _dbContext.Users.FindAsync(parsedUserId);
