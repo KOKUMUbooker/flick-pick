@@ -3,6 +3,7 @@ import type { AuthResponseData } from "../api";
 import { API_BASE_URL } from "../api/urls";
 import { chatListeners, movieNightEventListeners, suggestionListeners, voteListeners } from "../hubs/listeners";
 import type { AppState } from "../types";
+import { setLoggedStat } from "../utils/logged-status";
 
 export const appState = $state<AppState>({
     user: undefined,
@@ -15,10 +16,12 @@ export const appState = $state<AppState>({
 export function logIn(authData: AuthResponseData) {
     const { userDetails } = authData;
     appState.user = userDetails;
+    setLoggedStat("1")
 }
 
 export async function logOut() {
     appState.user = undefined
+    setLoggedStat("0")
 }
 
 export function isLoggedIn() {

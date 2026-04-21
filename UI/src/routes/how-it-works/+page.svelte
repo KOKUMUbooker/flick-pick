@@ -7,15 +7,24 @@
 		Bell,
 		Calendar,
 		CheckCircle,
+		Crown,
 		MessageSquare,
 		RefreshCw,
 		Sparkles,
+		Star,
+		ThumbsDown,
+		ThumbsUp,
+		TrendingDown,
+		TrendingUp,
 		Trophy,
+		User,
 		UserPlus,
 		Users,
 		Vote,
+		XCircle,
 		Zap
 	} from '@lucide/svelte';
+	import { appState } from '../../store';
 
 	// Main process steps
 	const mainSteps = [
@@ -87,21 +96,21 @@
 	const votingMechanics = [
 		{
 			action: 'Upvote',
-			icon: '👍',
+			icon: ThumbsUp,
 			effect: '+1 point',
 			description: 'Support a movie you want to watch',
 			color: 'text-green-500'
 		},
 		{
 			action: 'Downvote',
-			icon: '👎',
+			icon: ThumbsDown,
 			effect: '-1 point',
 			description: 'Vote against a movie',
 			color: 'text-red-500'
 		},
 		{
 			action: 'Veto',
-			icon: '🚫',
+			icon: XCircle,
 			effect: 'Disqualifies',
 			description: 'Block a movie completely',
 			color: 'text-destructive'
@@ -114,25 +123,25 @@
 			level: 1,
 			title: 'Highest Upvote Count',
 			description: 'The movie with the most upvotes wins - popularity matters!',
-			icon: '📈'
+			icon: TrendingUp
 		},
 		{
 			level: 2,
 			title: 'Lowest Downvote Count',
 			description: 'If still tied, the least disliked movie takes it.',
-			icon: '📉'
+			icon: TrendingDown
 		},
 		{
 			level: 3,
 			title: 'TMDB Rating',
 			description: 'Critically acclaimed movies get the edge.',
-			icon: '⭐'
+			icon: Star
 		},
 		{
 			level: 4,
 			title: 'First Suggested',
 			description: 'The earliest suggestion wins if all else is equal.',
-			icon: '⏰'
+			icon: Bell
 		}
 	];
 
@@ -145,7 +154,8 @@
 				'Cannot be demoted by other admins',
 				'Manage all group settings'
 			],
-			icon: '👑'
+			icon: Crown,
+			color: 'text-color-accent'
 		},
 		{
 			role: 'Admin',
@@ -156,7 +166,7 @@
 				'Remove members from group',
 				'Compute final results'
 			],
-			icon: '⭐'
+			icon: Star
 		},
 		{
 			role: 'Member',
@@ -166,7 +176,7 @@
 				'Use veto power once',
 				'Chat in event discussions'
 			],
-			icon: '👤'
+			icon: User
 		}
 	];
 </script>
@@ -270,7 +280,12 @@
 				{#each votingMechanics as mechanic (mechanic.description)}
 					<Card class="border-border/50">
 						<CardContent class="p-6 text-center">
-							<div class="mb-4 text-5xl">{mechanic.icon}</div>
+							<div class="mb-4 flex w-full justify-center">
+								<svelte:component
+									this={mechanic.icon}
+									class={'h-12 w-12 text-center ' + mechanic.color}
+								/>
+							</div>
 							<h3 class="mb-2 text-xl font-semibold">{mechanic.action}</h3>
 							<div class={`mb-2 text-2xl font-bold ${mechanic.color}`}>
 								{mechanic.effect}
@@ -303,7 +318,12 @@
 					{#each tieBreakers as rule (rule.title)}
 						<Card class="border-border/50">
 							<CardContent class="p-6 text-center">
-								<div class="mb-3 text-4xl">{rule.icon}</div>
+								<!-- <div class="mb-3 text-4xl">{rule.icon}</div> -->
+								<div class="mb-2 flex items-center justify-center">
+									<div class="rounded-full border-2 bg-linear-to-r from-accent to-primary/5 p-2">
+										<svelte:component this={rule.icon} class="h-8 w-8 text-center" />
+									</div>
+								</div>
 								<div
 									class="mb-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
 								>
@@ -334,10 +354,12 @@
 					<Card class="border-border/50">
 						<CardContent class="p-6">
 							<div class="mb-4 text-center">
-								<div class="mb-3 text-5xl">{role.icon}</div>
+								<div class="mb-2 flex justify-center">
+									<svelte:component this={role.icon} class="h-10 w-10 text-center text-primary" />
+								</div>
 								<h3 class="text-xl font-semibold">{role.role}</h3>
 							</div>
-							<ul class="space-y-2">
+							<ul class="mx-auto space-y-2">
 								{#each role.permissions as permission (permission)}
 									<li class="flex items-start gap-2 text-sm">
 										<CheckCircle class="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -525,7 +547,11 @@
 						Create your first group and experience fair movie selection today.
 					</p>
 					<div class="flex flex-col justify-center gap-4 sm:flex-row">
-						<Button size="lg" class="h-14 rounded-2xl px-8 text-base" href="/signup">
+						<Button
+							size="lg"
+							class="h-14 rounded-2xl px-8 text-base"
+							href={appState.user ? '/dashboard' : '/signup'}
+						>
 							Get Started Free
 							<ArrowRight class="ml-2 h-5 w-5" />
 						</Button>

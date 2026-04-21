@@ -185,7 +185,7 @@
 	{#if isGettingInvites}
 		<!-- Skeletons -->
 		<div class="space-y-4">
-			{#each Array(3) as _, i (i)}
+			{#each Array(1) as _, i (i)}
 				<Card>
 					<CardContent class="p-6">
 						<div class="flex items-start justify-between">
