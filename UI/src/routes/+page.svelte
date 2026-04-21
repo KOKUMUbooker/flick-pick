@@ -20,6 +20,7 @@
 		Vote,
 		Zap
 	} from '@lucide/svelte';
+	import { appState } from '../store';
 
 	// Features - Updated to match actual app capabilities
 	const features = [
@@ -134,7 +135,11 @@
 					</p>
 
 					<div class="mb-16 flex flex-col justify-center gap-4 sm:flex-row">
-						<Button size="lg" class="h-14 rounded-2xl px-14 text-base" href="/signup">
+						<Button
+							size="lg"
+							class="h-14 rounded-2xl px-14 text-base"
+							href={appState.user ? '/dashboard' : '/signup'}
+						>
 							Create Your Group — It's Free
 							<ArrowRight class="ml-4 h-5 w-5" />
 						</Button>
@@ -266,7 +271,11 @@
 						Join groups already using WatchHive to pick movies fairly and efficiently.
 					</p>
 					<div class="flex flex-col justify-center gap-4 sm:flex-row">
-						<Button size="lg" class="h-14 rounded-2xl px-8 text-base" href="/signup">
+						<Button
+							size="lg"
+							class="h-14 rounded-2xl px-8 text-base"
+							href={appState.user ? '/dashboard' : '/signup'}
+						>
 							Get Started Free
 							<ArrowRight class="ml-2 h-5 w-5" />
 						</Button>
