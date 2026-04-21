@@ -2,6 +2,7 @@
 	import tmdbLogo from '$lib/assets/TMDB-logo.svg';
 	import { Github, Globe, Heart, Linkedin, Mail, ArrowUpRight, Sparkles } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+	import logo from '../../assets/logo.png';
 </script>
 
 <footer
@@ -12,7 +13,8 @@
 			<!-- Brand Column -->
 			<div class="flex flex-col items-center gap-3 text-center md:items-start md:text-left">
 				<div class="flex items-center gap-2">
-					<Sparkles class="h-5 w-5 text-primary" />
+					<!-- <Sparkles class="h-5 w-5 text-primary" /> -->
+					<img src={logo} alt="WatchHive logo" class="h-16" />
 					<span class="text-lg font-bold">WatchHive</span>
 				</div>
 				<p class="text-sm text-muted-foreground">
