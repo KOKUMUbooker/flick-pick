@@ -85,8 +85,6 @@
 			if (groupsRes.data.groups.length > 0) {
 				selectedGroup = groupsRes.data.groups[0];
 			}
-
-		
 		} catch (err) {
 			console.error('error : ', err);
 		}
@@ -188,7 +186,7 @@
 	width="4xl"
 	onOpenChange={() => (showPendingInvitesDialog = false)}
 >
-	<div class="mt-6">
+	<div class="mt-6 min-h-[50vh]">
 		<InvitesTabContent selectedGroup={null} allowAutomaticFetch={true} />
 	</div>
 </CustomDialog>
