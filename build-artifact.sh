@@ -29,14 +29,14 @@ echo "⚙️ Publishing ASP.NET Core..."
 # Monster ASP.NET build instructions 
 # Works if place to be deployed to is a windows environment & runs a 64 bit system 
 # dotnet publish WatchHive.csproj \
-#   -c Release \
+#   -c BuildArtifact \
 #   -r win-x64 \
 #   --self-contained true \
 #   -o $PUBLISH_DIR
 
 # Works if place to be deployed to is a windows environment & runs a 32 bit system 
 dotnet publish $PROJECT_PATH \
-    -c Build \
+    -c BuildArtifact \
     -o $PUBLISH_DIR  \
     -r win-x86 \
     --self-contained true
