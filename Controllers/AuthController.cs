@@ -306,7 +306,7 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = false, // TODO: Till I can afford consitent monthly hosting that supports https this will be false for the app to work     
+            Secure = _env.IsDevelopment() ? false : true, // Ensure cookie only works under https connection
             SameSite = _env.IsDevelopment() ? SameSiteMode.Lax :  SameSiteMode.Strict, 
             Expires = expiresAt,
             IsEssential = true 
