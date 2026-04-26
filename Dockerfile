@@ -1,27 +1,27 @@
 # =========================
 # 1️⃣ Build Svelte UI
 # =========================
-FROM node:lts-alpine AS ui-build
+FROM node:20-alpine AS ui-build
 
 WORKDIR /app/UI
 
 COPY UI/package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY UI/ .
 RUN npm run build
 
 
 # =========================
-# 2️⃣ Build ASP.NET Core
+# 2️⃣ Build ASP.NET Core (.NET 10)
 # =========================
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 
 WORKDIR /src
 
-# Copy only csproj first (better layer caching)
-COPY WatchHive.csproj .
-RUN dotnet restore WatchHive.csproj
+# Copy project files first (cache restore)
+COPY WatchHive.csproj ./
+RUN dotnet restore
 
 # Copy everything else
 COPY . .
@@ -31,16 +31,23 @@ RUN rm -rf wwwroot/*
 COPY --from=ui-build /app/UI/build ./wwwroot
 
 # Publish
-RUN dotnet publish WatchHive.csproj -c Build --self-contained false -o /app/publish
+RUN dotnet publish -c Release -o /app/publish \
+    -p:UseAppHost=false \
+    -p:PublishTrimmed=false
 
 
 # =========================
-# 3️⃣ Runtime Image
+# 3️⃣ Runtime (.NET 10)
 # =========================
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 
 WORKDIR /app
 
 COPY --from=build /app/publish .
+
+ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+EXPOSE 5000
 
 ENTRYPOINT ["dotnet", "WatchHive.dll"]
