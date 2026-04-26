@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.HttpOverrides;
 using Scalar.AspNetCore;
 using dotenv.net;
 using WatchHive.Models;
@@ -47,25 +47,30 @@ public class Program
         builder.Services.AddJwtAuthentication(builder.Configuration, appClient);
         builder.Services.AddAuthorization();
 
-        // Configure a specific CORS policy
+        // Configure a Development CORS policy
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigin", policy =>
+            options.AddPolicy("DevCors", policy =>
             {
                 policy.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials(); // If using cookies/auth headers
             });
-        });        
+        }); 
 
         var app = builder.Build();
 
-        app.UseCors("AllowSpecificOrigin");
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
+
         app.UseExceptionHandler();
 
         if (app.Environment.IsDevelopment())
         {
+            app.UseCors("DevCors");
             app.MapOpenApi();
             app.MapScalarApiReference();
         }

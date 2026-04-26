@@ -23,7 +23,7 @@
     <PackageReference Include="TMDbLib" Version="3.0.0" />
   </ItemGroup>
 
-  <Target Name="BuildSvelte" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+  <Target Name="BuildSvelte" BeforeTargets="Build" Condition="'$(Configuration)' == 'BuildArtifact'">
     <Exec WorkingDirectory="UI" Command="npm install" />
     <Exec WorkingDirectory="UI" Command="npm run build" />
   </Target>
