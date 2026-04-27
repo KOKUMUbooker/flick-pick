@@ -1,19 +1,33 @@
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
+using Resend;
 
 namespace WatchHive.Services;
 
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
+    private readonly IResend _resend;
 
-    public EmailService(IConfiguration configuration)
+    public EmailService(IConfiguration configuration, IResend resend)
     {
         _configuration = configuration;
+        _resend = resend;
     }
 
     public async Task SendEmail(string receptor, string subject, string htmlBody)
+    {
+        var env = _configuration.GetValue<string>("ASPNETCORE__ENVIRONMENT");
+        if (env == "Production")
+        {
+            await SendEmailPrd(receptor,subject,htmlBody);
+        } else
+        {
+            await SendEmailDev(receptor,subject,htmlBody);
+        }
+    }
+    public async Task SendEmailDev(string receptor, string subject, string htmlBody)
     {
         var email = _configuration.GetValue<string>("EmailConf:Email");
         var password = _configuration.GetValue<string>("EmailConf:Password");
@@ -29,7 +43,7 @@ public class EmailService : IEmailService
 
         var message = new MailMessage
         {
-            From = new MailAddress(email!, "Watch Hive"),
+            From = new MailAddress(email!, "WatchHive"),
             Subject = subject,
         };
 
@@ -45,64 +59,19 @@ public class EmailService : IEmailService
 
         await smtpClient.SendMailAsync(message);
     }
+
+    public async Task SendEmailPrd(string receptor, string subject, string htmlBody)
+    {
+        var from = _configuration["EmailConf:From"];
+
+        var message = new EmailMessage
+        {
+            From = from ?? throw new Exception("EmailConf:From not configured"),
+            To = new EmailAddressList {receptor},
+            Subject = subject,
+            HtmlBody = htmlBody
+        };
+        
+        await _resend.EmailSendAsync( message );
+    }
 }
-
-// using System.Threading.Tasks;
-// using MailKit.Net.Smtp;
-// using MimeKit;
-
-// namespace WatchHive.Services;
-
-// public class EmailSender : IEmailSender
-// {
-//     private readonly string?  SmtpServer;
-//     private readonly int SmtpPort;
-//     private readonly string?  SmtpUsername;
-//     private readonly string?  SmtpPassword;
-
-//     public EmailSender(IConfiguration configuration)
-//     {
-//         SmtpServer = configuration.GetValue<string>("SmtpSettings:SmtpServer","");
-//         SmtpPort = configuration.GetValue<int>("SmtpSettings:SmtpPort",0);
-//         SmtpUsername = configuration.GetValue<string>("SmtpSettings:SmtpUsername","");
-//         SmtpPassword = configuration.GetValue<string>("SmtpSettings:SmtpPassword","");
-//     }
-
-//     public async Task SendEmail(
-//         string senderName,
-//         string senderEmail,
-//         string toName,
-//         string toEmail,
-//         string subject,
-//         string textContext)
-//     {
-//         var message = new MimeMessage();
-//         message.From.Add(new MailboxAddress(senderName, senderEmail));
-//         message.To.Add(new MailboxAddress(toName, toEmail));
-//         message.Subject = subject;
-
-//         message.Body = new TextPart("plain")
-//         {
-//             Text = textContext
-//         };
-
-//         using var client = new SmtpClient();
-
-//         Console.WriteLine($"Connecting to {SmtpServer}:{SmtpPort}");
-
-//         await client.ConnectAsync(
-//             SmtpServer,
-//             SmtpPort,
-//             MailKit.Security.SecureSocketOptions.StartTls
-//         );
-
-//         Console.WriteLine("Connected");
-
-//         await client.AuthenticateAsync(SmtpUsername, SmtpPassword);
-
-//         Console.WriteLine("Authenticated");
-
-//         await client.SendAsync(message);
-//         await client.DisconnectAsync(true);
-//     }
-// }
