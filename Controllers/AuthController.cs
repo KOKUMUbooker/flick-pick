@@ -39,12 +39,10 @@ public class AuthController : ControllerBase
     [HttpPost("sign-up")]
     public async Task<IActionResult> SignUp([FromBody] RegisterUserDto userDetails)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var userExists = await _context.Users.AnyAsync(u => u.Email == userDetails.Email);
         if (userExists)
         {
-            return BadRequest("Email is already in use, please log in");
+            return BadRequest(new CustomError{Message = "Email is already in use, please log in"});
         }
 
         var user = await _userService.CreateUserAsync(userDetails);
@@ -62,8 +60,6 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(UserLoginDto loginDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
         var result = await _userService.AuthenticateUserAsync(loginDto, ipAddress);
@@ -126,8 +122,6 @@ public class AuthController : ControllerBase
     [HttpGet("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromQuery] string clientId)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         string? refreshToken = Request.Cookies["refreshToken"];
         if (string.IsNullOrEmpty(refreshToken)) 
