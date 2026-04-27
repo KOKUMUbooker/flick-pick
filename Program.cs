@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Scalar.AspNetCore;
 using dotenv.net;
+using Resend;
 using WatchHive.Models;
 using WatchHive.Services;
 using WatchHive.Extensions;
@@ -36,6 +37,13 @@ public class Program
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
         builder.Services.AddSingleton(appClient);
+        builder.Services.AddOptions();
+        builder.Services.AddHttpClient<ResendClient>();
+        builder.Services.Configure<ResendClientOptions>( o =>
+        {
+            o.ApiToken = Environment.GetEnvironmentVariable("Resend__ApiKey")!;
+        } );
+        builder.Services.AddTransient<IResend, ResendClient>();
 
         builder.Services.AddDbContext<WatchHiveDbContext>(options =>
         {
