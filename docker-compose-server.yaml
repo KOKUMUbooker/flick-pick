@@ -1,7 +1,8 @@
 services:
-  watchhive:
-    image: watchhive:1.0
+  app:
+    image: watchhive:v1.0
     ports:
-      - '8080:8080'
+      - '5000:5000'
     env_file:
       - .env
+    restart: always
