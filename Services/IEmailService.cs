@@ -3,6 +3,9 @@ namespace WatchHive.Services;
 public interface IEmailService
 {
     Task SendEmail(string receptor, string subject, string body);
+    Task SendEmailDev(string receptor, string subject, string body);
+    Task SendEmailPrd(string receptor, string subject, string body);
+   
 }
 
 // namespace WatchHive.Services;

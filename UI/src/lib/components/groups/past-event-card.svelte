@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EditIcon, MessageSquare, Star, Trash, X } from '@lucide/svelte';
+	import { EditIcon, Eye, MessageSquare, Star, Trash, X } from '@lucide/svelte';
 	import type { DBGroup, MovieNightEvent } from '../../../types';
 	import Button from '../ui/button/button.svelte';
 	import { Card, CardContent } from '../ui/card';
@@ -18,6 +18,7 @@
 	import { hubIsDisconnected, appState, getAppUser } from '../../../store';
 	import RateMovieNightForm from '../dashboard/forms/rate-movie-night-form.svelte';
 	import StarRating from '../common/star-rating.svelte';
+	import MovieDetailsContent from './movie-details-content.svelte';
 
 	interface PastEventCardProps {
 		selectedGroup: DBGroup | null;
@@ -31,6 +32,7 @@
 	let showAddMovieNightDialog = $state(false);
 	let showDeleteWarnDialog = $state(false);
 	let showRateMovieDialog = $state(false);
+	let showMovieDetailsDialog = $state(false);
 
 	function onShowMovieNightDialogOpenChange(show: boolean) {
 		showAddMovieNightDialog = show;
@@ -77,8 +79,20 @@
 		toast.success(res.message, { richColors: true });
 		onShowDelWarningOnchange(false);
 	};
+
+	const onShowMovieDialogChange = (show: boolean) => {
+		showMovieDetailsDialog = show;
+	};
 </script>
 
+<CustomDialog
+	header={{ title: 'Movie Details' }}
+	bind:open={showMovieDetailsDialog}
+	width="5xl"
+	onOpenChange={onShowMovieDialogChange}
+>
+	<MovieDetailsContent movie={event?.selectedMovie} />
+</CustomDialog>
 <CustomDialog
 	header={{ title: 'Delete Movie Event' }}
 	bind:open={showDeleteWarnDialog}
@@ -107,7 +121,7 @@
 </CustomDialog>
 <Card class="group transition-all hover:shadow-lg">
 	<CardHeader class="my-0 flex flex-wrap items-center justify-between py-0 md:flex-row">
-		<CardTitle class="my-0 py-0">{event.name}</CardTitle>
+		<CardTitle class="my-0 truncate py-0">{event.name}</CardTitle>
 		{#if selectedGroup?.isUserAdmin}
 			<div class="flex flex-row items-center gap-2">
 				<Button variant="outline" onclick={() => (showAddMovieNightDialog = true)}>
@@ -121,7 +135,15 @@
 	</CardHeader>
 	<Separator />
 	<CardContent class="p-6 pt-0">
-		<h6 class="mb-2">Selected Movie</h6>
+		<div class="flex justify-between">
+			<h6 class="mb-2">Selected Movie</h6>
+			{#if event.selectedMovie}
+				<Button size="sm" variant="outline" onclick={() => (showMovieDetailsDialog = true)}>
+					<Eye class="mr-2 h-4 w-4" />
+					<span class="hidden sm:inline">View Movie</span>
+				</Button>
+			{/if}
+		</div>
 		<div class="mb-4 flex items-start justify-between">
 			<div class="flex items-center gap-3">
 				{#if event.selectedMovie}
@@ -155,8 +177,10 @@
 				<span class="text-sm text-muted-foreground">Group Rating</span>
 
 				<div class="flex items-center gap-1">
-					<StarRating rating={event.averageRating} size={16}/>
-					<span class="ml-1 text-sm text-muted-foreground">{event.totalRatings > 0 ? `(${event.totalRatings})`: ""}  </span>
+					<StarRating rating={event.averageRating} size={16} />
+					<span class="ml-1 text-sm text-muted-foreground"
+						>{event.totalRatings > 0 ? `(${event.totalRatings})` : ''}
+					</span>
 				</div>
 			</div>
 
