@@ -18,7 +18,7 @@ public class EmailService : IEmailService
 
     public async Task SendEmail(string receptor, string subject, string htmlBody)
     {
-        var env = _configuration.GetValue<string>("ASPNETCORE__ENVIRONMENT");
+        var env = _configuration.GetValue<string>("ASPNETCORE:ENVIRONMENT");
         if (env == "Production")
         {
             await SendEmailPrd(receptor,subject,htmlBody);

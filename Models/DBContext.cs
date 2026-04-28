@@ -5,8 +5,12 @@ namespace WatchHive.Models;
 
 public partial class WatchHiveDbContext : DbContext
 {
-    public WatchHiveDbContext(DbContextOptions<WatchHiveDbContext> options) : base(options)
+    private readonly IConfiguration _configuration;
+
+    public WatchHiveDbContext(DbContextOptions<WatchHiveDbContext> options, IConfiguration configuration) 
+    : base(options)
     {
+        _configuration = configuration;
     }
 
     public DbSet<User> Users { get; set; } = null!;
@@ -195,8 +199,8 @@ public partial class WatchHiveDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         SeedRoles(modelBuilder);
-        SeedAdminUser(modelBuilder);
-        SeedDemoUsers(modelBuilder);
+        SeedAdminUser(modelBuilder,_configuration);
+        SeedDemoUsers(modelBuilder,_configuration);
 
         // Configure required properties and constraints
         ConfigureEntityConstraints(modelBuilder);
