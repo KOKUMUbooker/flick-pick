@@ -156,36 +156,50 @@
 						</div>
 					{:else if membersQuery.data != undefined}
 						{#each membersQuery.data.groupMembers as member (member.id)}
-							<div class="flex items-center justify-between rounded-lg border border-border p-4">
-								<div class="flex items-center gap-3">
-									<Avatar>
+							<div
+								class="flex flex-col gap-3 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
+							>
+								<!-- LEFT -->
+								<div class="flex min-w-0 flex-1 items-start gap-3">
+									<Avatar class="shrink-0">
 										<AvatarFallback>{member.fullName.charAt(0)}</AvatarFallback>
 									</Avatar>
-									<div>
-										<div class="font-medium">{member.fullName}</div>
-										<div class="flex items-center gap-2 text-sm text-muted-foreground">
-											{member.isAdmin ? 'Group Admin' : 'Member'}
-											<span>•</span>
-											<span
-												>Joined {new Date(member.joinedAt).toLocaleDateString('en-US', {
+
+									<div class="min-w-0">
+										<div class="truncate font-medium">
+											{member.fullName}
+										</div>
+
+										<div
+											class="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground sm:text-sm"
+										>
+											<span>{member.isAdmin ? 'Group Admin' : 'Member'}</span>
+											<span class="hidden sm:inline">•</span>
+											<span>
+												Joined {new Date(member.joinedAt).toLocaleDateString('en-US', {
 													month: 'short',
 													day: 'numeric'
-												})}</span
-											>
+												})}
+											</span>
 										</div>
 									</div>
 								</div>
-								<div class="flex items-center gap-2">
+
+								<!-- RIGHT -->
+								<div class="flex shrink-0 items-center gap-2">
 									{#if member.isAdmin}
-										<Badge variant="outline">Admin</Badge>
+										<Badge variant="outline" class="whitespace-nowrap">Admin</Badge>
 									{/if}
+
 									{#if selectedGroup?.isUserAdmin && member.email != user?.email}
 										<DropdownMenu>
 											<DropdownMenuTrigger>
-												<Button size="sm" variant="ghost">
+												<Button variant="outline" size="sm" class="flex items-center gap-2">
 													<MoreVertical class="h-4 w-4" />
+													<span class="sm:hidden">More</span>
 												</Button>
 											</DropdownMenuTrigger>
+
 											<DropdownMenuContent align="end">
 												<DropdownMenuItem
 													onclick={() => {
@@ -197,7 +211,9 @@
 													<Users class="mr-2 h-4 w-4" />
 													{member.isAdmin ? 'Revoke Admin role' : 'Make Admin'}
 												</DropdownMenuItem>
+
 												<DropdownMenuSeparator />
+
 												<DropdownMenuItem
 													class="text-destructive"
 													onclick={() => {

@@ -178,6 +178,7 @@
 <CustomDialog
 	header={{ title: 'Movie Details' }}
 	bind:open={showMovieDetailsDialog}
+	width="5xl"
 	onOpenChange={onShowMovieDialogChange}
 >
 	<MovieDetailsContent movie={suggestion.movie} />
@@ -197,36 +198,49 @@
 <div
 	class={`rounded-lg border border-border ${user?.email == suggestion.suggestedBy.email ? 'bg-primary/15' : ''} p-4`}
 >
-	<div class="mb-3 flex items-center justify-between">
-		<div class="flex items-center gap-3">
+	<!-- HEADER -->
+	<div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+		<!-- LEFT: poster + title -->
+		<div class="flex min-w-0 flex-1 items-start gap-3">
 			<img
 				src={`https://image.tmdb.org/t/p/w92${suggestion.movie?.posterPath}`}
 				alt={suggestion.movie?.title}
-				class="h-12 w-8 rounded object-cover"
+				class="h-12 w-8 shrink-0 rounded object-cover"
 			/>
-			<div>
-				<span class="font-medium">{suggestion.movie?.title}</span>
-				<span class="ml-2 text-sm text-muted-foreground">
+
+			<div class="min-w-0">
+				<!-- Title -->
+				<span class="block truncate font-medium">
+					{suggestion.movie?.title}
+				</span>
+
+				<!-- Added by -->
+				<span class="block truncate text-xs text-muted-foreground sm:text-sm">
 					Added by {user?.email == suggestion.suggestedBy.email
 						? 'You'
 						: suggestion.suggestedBy.fullName}
 				</span>
 			</div>
 		</div>
-		<div class="flex items-center gap-4">
+
+		<!-- RIGHT: votes -->
+		<div class="flex shrink-0 flex-wrap items-center gap-3">
 			<div class="flex items-center gap-1">
 				<ThumbsUp class="h-4 w-4 text-green-500" />
 				<span class="font-semibold">
 					{votesCountQuery?.data?.voteData.upvoteCount}
 				</span>
 			</div>
+
 			<div class="flex items-center gap-1">
 				<ThumbsDown class="h-4 w-4 text-red-500" />
 				<span class="font-semibold">
 					{votesCountQuery?.data?.voteData.downvoteCount}
 				</span>
 			</div>
+
 			<Button
+				size="icon"
 				variant="ghost"
 				disabled={votesCountQuery.isPending || votesCountQuery.isFetching}
 				onclick={votesCountQuery.refetch}
@@ -236,12 +250,13 @@
 		</div>
 	</div>
 
+	<!-- ACTIONS -->
 	{#if suggestion.suggestedBy.email !== user?.email}
 		<div class="flex items-center justify-between">
 			<div class="flex-1">
 				<Button size="sm" variant="outline" onclick={() => (showMovieDetailsDialog = true)}>
 					<Eye class="mr-2 h-4 w-4" />
-					View Movie
+					<span class="hidden sm:inline">View Movie</span>
 				</Button>
 			</div>
 			<div class="flex flex-3 gap-2">
@@ -256,9 +271,9 @@
 						<Spinner />
 					{/if}
 					<ThumbsUp
-						class={`mr-2 h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Upvote ? iconFillClasses : ''}`}
+						class={`h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Upvote ? iconFillClasses : ''}`}
 					/>
-					Upvote
+					<span class="hidden sm:inline">Upvote</span>
 				</Button>
 				<Button
 					size="sm"
@@ -271,9 +286,9 @@
 						<Spinner />
 					{/if}
 					<ThumbsDown
-						class={`mr-2 h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Downvote ? iconFillClasses : ''}`}
+						class={`h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Downvote ? iconFillClasses : ''}`}
 					/>
-					Downvote
+					<span class="hidden sm:inline">Downvote</span>
 				</Button>
 				<Button
 					size="sm"
@@ -286,26 +301,26 @@
 						<Spinner />
 					{/if}
 					<XCircle
-						class={`mr-2 h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Veto ? iconFillClasses : ''}`}
+						class={`h-4 w-4 ${votesCountQuery.data?.voteData?.userVote == VoteType.Veto ? iconFillClasses : ''}`}
 					/>
-					Veto
+					<span class="hidden sm:inline">Veto</span>
 				</Button>
 			</div>
 		</div>
 	{:else}
-		<div class="flex justify-between gap-2">
-			<Button size="sm" variant="outline" onclick={() => (showMovieDetailsDialog = true)}>
+		<div class="flex flex-col justify-between gap-2 sm:flex-row">
+			<Button variant="outline" onclick={() => (showMovieDetailsDialog = true)}>
 				<Eye class="mr-2 h-4 w-4" />
 				View Movie
 			</Button>
+
 			<Button
-				size="sm"
 				variant="destructive"
 				disabled={!canVote(event)}
 				onclick={() => (showDeleteWarnDialog = true)}
 			>
 				<Trash class="mr-2 h-4 w-4" />
-				Delete suggestion
+				Delete
 			</Button>
 		</div>
 	{/if}

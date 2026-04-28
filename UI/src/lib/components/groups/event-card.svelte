@@ -264,10 +264,14 @@
 {/if}
 <Card class="max-h-90vh overflow-hidden pt-0 pb-0">
 	<CardHeader class="bg-muted/50 py-4">
-		<div class="flex items-center justify-between">
-			<div>
-				<CardTitle>{event.name}</CardTitle>
-				<CardDescription>
+		<div class="flex items-start justify-between gap-2">
+			<!-- LEFT: Title + Date -->
+			<div class="min-w-0 flex-1">
+				<CardTitle class="truncate">
+					{event.name}
+				</CardTitle>
+
+				<CardDescription class="text-xs sm:text-sm">
 					{new Date(event.scheduledAt).toLocaleString('en-US', {
 						weekday: 'short',
 						month: 'short',
@@ -277,18 +281,14 @@
 					})}
 				</CardDescription>
 			</div>
-			<div class="flex items-center gap-2">
-				<Button size="sm" variant="ghost" class="relative" onclick={() => openEventChat(event)}>
+
+			<!-- RIGHT: Actions -->
+			<div class="flex shrink-0 items-center gap-2">
+				<Button size="icon" variant="ghost" class="relative" onclick={() => openEventChat(event)}>
 					<MessageSquare class="h-4 w-4" />
-					<!-- {#if event.chatMessages.length > 0}
-						<span
-							class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground"
-						>
-							{event.chatMessages.length}
-						</span>
-					{/if} -->
 				</Button>
-				<Badge variant={getEventStatus(event).variant}>
+
+				<Badge variant={getEventStatus(event).variant} class="whitespace-nowrap">
 					{getEventStatus(event).label}
 				</Badge>
 			</div>
@@ -384,19 +384,19 @@
 		</div>
 		<div>
 			<Button size="sm" variant="outline" onclick={() => openEventChat(event)}>
-				<MessageSquare class="mr-2 h-4 w-4" />
-				Event Chat
+				<MessageSquare class="h-4 w-4" />
+				<span class="hidden sm:inline">Event chat</span>
 			</Button>
 			{#if selectedGroup?.isUserAdmin}
 				{#if !event.selectedMovie}
 					<Button size="sm" onclick={() => (showComputeResultsDialog = true)}>
 						<Calculator />
-						Compute results
+						<span class="hidden sm:inline">Compute results</span>
 					</Button>
 				{:else}
 					<Button size="sm" onclick={() => (showUndoSelectionsDialog = true)}>
 						<Undo />
-						Undo selection
+						<span class="hidden sm:inline">Undo selection</span>
 					</Button>
 				{/if}
 			{/if}

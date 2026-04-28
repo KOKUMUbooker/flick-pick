@@ -3,12 +3,14 @@
 	import { createMutation, createQuery, type CreateQueryResult } from '@tanstack/svelte-query';
 	import { toast } from 'svelte-sonner';
 	import { apiFetch, QUERY_KEYS } from '../../../api';
-	import { UpdateSuggestionInQueryCache, UpdateVoteCountInQueryCache } from '../../../api/query-cache-crud';
+	import {
+		UpdateSuggestionInQueryCache,
+		UpdateVoteCountInQueryCache
+	} from '../../../api/query-cache-crud';
 	import type { CreateVoteData } from '../../../api/types';
 	import type {
 		FetchedMovieSuggestion,
 		FetchedVoteCountData,
-
 		VoteForSuggestionRes
 	} from '../../../api/types/fetch-movie-suggestions';
 	import { API_BASE_URL } from '../../../api/urls';
@@ -61,11 +63,11 @@
 				body: JSON.stringify(data)
 			});
 		},
-		onSuccess: async ({data},input) => {
+		onSuccess: async ({ data }, input) => {
 			if (input.VoteType == VoteType.Veto) {
-				await UpdateSuggestionInQueryCache(event.id,data.movieSuggestion);
+				await UpdateSuggestionInQueryCache(event.id, data.movieSuggestion);
 			}
-			await UpdateVoteCountInQueryCache(suggestion.id,data.voteCountData,input.VoteType)
+			await UpdateVoteCountInQueryCache(suggestion.id, data.voteCountData, input.VoteType);
 		}
 	}));
 
@@ -108,6 +110,7 @@
 <CustomDialog
 	header={{ title: 'Movie Details' }}
 	bind:open={showMovieDetailsDialog}
+	width="5xl"
 	onOpenChange={onShowMovieDialogChange}
 >
 	<MovieDetailsContent movie={suggestion.movie} />
@@ -115,35 +118,51 @@
 <div
 	class="mb-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 opacity-80 hover:opacity-100"
 >
-	<div class="flex items-center gap-3">
+	<!-- TOP ROW -->
+	<div class="flex items-start gap-3">
 		<img
 			src={`https://image.tmdb.org/t/p/w92${suggestion.movie?.posterPath}`}
 			alt={suggestion.movie?.title}
-			class="h-10 w-7 rounded object-cover"
+			class="h-10 w-7 shrink-0 rounded object-cover"
 		/>
-		<span class="font-medium line-through">{suggestion.movie?.title}</span>
-		<Badge variant="destructive" class="ml-auto">Vetoed</Badge>
+
+		<!-- Title -->
+		<div class="min-w-0 flex-1">
+			<span class="block truncate font-medium line-through">
+				{suggestion.movie?.title}
+			</span>
+		</div>
+
+		<!-- Badge -->
+		<Badge variant="destructive" class="shrink-0 whitespace-nowrap">Vetoed</Badge>
 	</div>
-	<div class="mt-2 flex justify-between gap-2">
-		<Button size="sm" variant="outline" onclick={() => (showMovieDetailsDialog = true)}>
+
+	<!-- ACTIONS -->
+	<div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+		<Button
+			size="sm"
+			variant="outline"
+			class="w-full sm:w-auto"
+			onclick={() => (showMovieDetailsDialog = true)}
+		>
 			<Eye class="mr-2 h-4 w-4" />
 			View Movie
 		</Button>
-		<div>
-			{#if votesCountQuery.data?.voteData.userVote == VoteType.Veto}
-				<Button
-					size="sm"
-					variant="outline"
-					disabled={!canVote(event) || voteMutation.isPending}
-					onclick={handleVoteClick.bind(null, VoteType.Veto)}
-				>
-					{#if voteMutation.isPending}
-						<Spinner />
-					{/if}
-					<Undo2 class="mr-2 h-4 w-4" />
-					Undo veto
-				</Button>
-			{/if}
-		</div>
+
+		{#if votesCountQuery.data?.voteData.userVote == VoteType.Veto}
+			<Button
+				size="sm"
+				variant="secondary"
+				class="w-full sm:w-auto"
+				disabled={!canVote(event) || voteMutation.isPending}
+				onclick={handleVoteClick.bind(null, VoteType.Veto)}
+			>
+				{#if voteMutation.isPending}
+					<Spinner />
+				{/if}
+				<Undo2 class="mr-2 h-4 w-4" />
+				Undo veto
+			</Button>
+		{/if}
 	</div>
 </div>
