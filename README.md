@@ -24,8 +24,7 @@ Groups face several challenges when planning movie nights:
 
 ## Project demo
 
-<video src="./ReadmeAssets/project-demo.mp4" controls="controls" height="600" width="1366" >
-</video>
+https://github.com/user-attachments/assets/a4efb1db-fe40-4fa5-88b0-dd32b833c199
 
 ---
 
