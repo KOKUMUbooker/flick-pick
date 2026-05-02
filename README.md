@@ -22,6 +22,10 @@ Groups face several challenges when planning movie nights:
 
 <img src="./ReadmeAssets/project-demo.png">
 
+## Project demo
+
+https://github.com/user-attachments/assets/a4efb1db-fe40-4fa5-88b0-dd32b833c199
+
 ---
 
 ## Core Features

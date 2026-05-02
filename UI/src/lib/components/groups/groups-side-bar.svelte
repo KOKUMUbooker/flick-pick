@@ -39,7 +39,7 @@
 </CustomDialog>
 <aside
 	class={`
-			fixed inset-y-0 left-0 z-45 flex
+			fixed inset-y-0 left-0 z-55 flex
 			w-80 flex-col border-r border-border bg-card
 			transition-transform duration-300 ease-in-out
 			md:static
