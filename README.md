@@ -22,6 +22,11 @@ Groups face several challenges when planning movie nights:
 
 <img src="./ReadmeAssets/project-demo.png">
 
+## Project demo
+
+<video src="./ReadmeAssets/project-demo.mp4" controls="controls" height="600" width="1366" >
+</video>
+
 ---
 
 ## Core Features
